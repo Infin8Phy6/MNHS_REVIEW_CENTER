@@ -1,0 +1,44 @@
+{% extends "jl_base.html" %}
+{% block title %}My result{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>{{ sheet.name }}&rsquo;s result</h2>
+  <p class="muted">One A4 page with your name on it, ready to print or hand to the teacher.</p>
+  <p><button type="button" class="wide" id="dl">Download the result (PNG)</button></p>
+  <p class="muted small" id="note">The picture is drawn on this device, so it works with no internet.</p>
+</section>
+
+<section class="card">
+  <h3>What is on the sheet</h3>
+  <table class="res">
+    <thead><tr><th>#</th><th>Jumble</th><th>Word</th><th>You</th></tr></thead>
+    <tbody>
+      {% for line in sheet.words %}
+      <tr>
+        <td>{{ line.number }}</td>
+        <td><b>{{ line.jumble }}</b></td>
+        <td>{{ line.word }}</td>
+        <td>{% if line.solved %}solved it{% else %}not solved{% endif %}
+          {% if line.bonus %}
+          <ol class="sent">{% for w in line.bonus %}<li>{{ w }}</li>{% endfor %}</ol>
+          {% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted small" style="margin-top:12px;">
+    Score {{ sheet.score }} &middot; {{ sheet.solved }} of {{ sheet.total }} topic words &middot;
+    {{ sheet.bonus }} bonus word{{ '' if sheet.bonus == 1 else 's' }}.
+  </p>
+  <div class="row2" style="margin-top:16px">
+    <a class="btnlink" href="{{ url_for('jumbled.setup') }}">Play again</a>
+  </div>
+</section>
+
+<script id="sheetData" type="application/json">{{ sheet|tojson }}</script>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('jumbled.static', filename='jl_export.js') }}"></script>
+{% endblock %}

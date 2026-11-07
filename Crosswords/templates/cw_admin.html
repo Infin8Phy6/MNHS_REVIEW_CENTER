@@ -1,0 +1,74 @@
+{% extends "cw_base.html" %}
+{% block title %}Teachers{% endblock %}
+{% block body %}
+{% if notice %}<p class="flash good">{{ notice }}</p>{% endif %}
+{% if problem %}<p class="flash bad">{{ problem }}</p>{% endif %}
+
+<section class="card">
+  <h2>New crossword puzzle</h2>
+  <p class="muted">Give one word and one clue per row - exactly {{ words }} rows.
+    The app interlocks the words into one grid and hides half of them
+    back-to-front, just for the fun of it.</p>
+  <form method="post" action="{{ url_for('crossword.create') }}" class="create">
+    <div class="row">
+      <label>Title
+        <input name="title" maxlength="120" required
+               value="{{ form.title if form else '' }}" placeholder="Grade 7 Science - Cells">
+      </label>
+      <label>Time limit (seconds)
+        <input name="time_limit" type="number" min="60" max="3600" step="30"
+               value="{{ form.time_limit if form else default_limit }}">
+      </label>
+    </div>
+    <table class="wordlist">
+      <tr><th>#</th><th>Word</th><th>Clue</th></tr>
+      {% for i in range(words) %}
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td><input name="word[]" maxlength="15" placeholder="CELL"
+                   value="{{ form.words[i] if form and form.words|length > i else '' }}"></td>
+        <td><input name="clue[]" maxlength="300" placeholder="The smallest unit of life."
+                   value="{{ form.clues[i] if form and form.clues|length > i else '' }}"></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <button class="btn primary" type="submit">Build the puzzle</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Puzzles</h2>
+  {% if not rows %}<p class="empty">Nothing built yet.</p>{% endif %}
+  {% for r in rows %}
+    <div class="puzzle-row">
+      <div>
+        <b>#{{ r.id }} &middot; {{ r.title }}</b>
+        <span class="chip {{ 'off' if r.status == 'closed' }}">{{ r.status }}</span>
+        <span class="muted">{{ r.time_limit }}s &middot; {{ r.rows }}&times;{{ r.cols }} board
+          {% if r.created_by %}&middot; {{ r.created_by }}{% endif %}</span>
+        {% set s = stats.get(r.id) %}
+        {% if s %}<span class="muted">&middot; {{ s.plays }} finished {{ 'try' if s.plays == 1 else 'tries' }},
+          best {{ s.best }}</span>{% endif %}
+      </div>
+      <div class="row wrap">
+        <a class="btn" href="{{ url_for('crossword.worksheet_print', pid=r.id) }}">Print worksheet</a>
+        <a class="btn" href="{{ url_for('crossword.worksheet_print_key', pid=r.id) }}">Print with answers</a>
+        <a class="btn" href="{{ url_for('crossword.worksheet_print_easy', pid=r.id) }}">Print as easy level worksheet</a>
+        <a class="btn" href="{{ url_for('crossword.pdf_unsolved', pid=r.id) }}">Worksheet PDF</a>
+        <a class="btn" href="{{ url_for('crossword.pdf_solved', pid=r.id) }}">Answer key PDF</a>
+        <a class="btn" href="{{ url_for('crossword.pdf_easy', pid=r.id) }}">Easy level PDF</a>
+        <a class="btn" href="{{ url_for('crossword.scores', pid=r.id) }}">Scores</a>
+        {% if r.status == 'open' %}
+        <form method="post" action="{{ url_for('crossword.close', pid=r.id) }}">
+          <button class="btn" type="submit">Close</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('crossword.delete', pid=r.id) }}"
+              onsubmit="return confirm('Delete puzzle #{{ r.id }} and every attempt at it?');">
+          <button class="btn danger" type="submit">Delete</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+</section>
+{% endblock %}

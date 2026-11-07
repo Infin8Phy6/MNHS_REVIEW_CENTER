@@ -1,0 +1,29 @@
+{% extends "ww_base.html" %}
+{% block title %}Scores{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Finished rounds</h2>
+  <p class="muted">These are Who's Who rounds only. They never appear in My Results or in the
+    Results Dashboard.</p>
+
+  {% if rows %}
+  <table class="list">
+    <thead><tr><th>Room</th><th>Activity</th><th>Players</th><th>Top score</th><th>Ended</th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><b>{{ r.room.code }}</b></td>
+        <td>{{ r.title }}</td>
+        <td>{{ r.players }}</td>
+        <td>{% if r.players %}{{ r.top }}{% else %}&mdash;{% endif %}</td>
+        <td class="muted">{{ (r.room.finished or '')[:16] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">No round has finished on this copy yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

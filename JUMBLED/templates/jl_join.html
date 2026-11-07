@@ -1,0 +1,49 @@
+{% extends "jl_base.html" %}
+{% block title %}Join room {{ room.code }}{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Join room {{ room.code }}</h2>
+  <p class="muted">
+    {{ room.grade }} &middot; {{ room.subject }} &middot; Quarter {{ room.quarter }} &middot;
+    <b>{{ room.topic }}</b>
+  </p>
+  <p class="muted">{{ words_per_round }} words, {{ word_seconds }} seconds each.
+    Everyone in this room is shown the same jumble at the same time.</p>
+
+  {% if room.status != 'lobby' %}
+  <p class="fb no">This round has already started. Scores still update live once you join, but the
+    words you missed cannot be answered.</p>
+  {% endif %}
+
+  {% if full %}
+  <p class="fb no">This room is full &mdash; {{ max_players }} players is the limit. Ask the host to
+    open another room.</p>
+  {% elif account %}
+  <form method="post" action="{{ url_for('jumbled.join', code=room.code) }}">
+    <div class="who-card">
+      <span class="who-label">You will join as</span>
+      <b class="who-name">{{ account.name }}</b>
+      {% if account.grade or account.section %}
+      <span class="who-meta">{{ [account.grade, account.section]|select|join(' · ') }}</span>
+      {% endif %}
+      <p class="muted">This comes from your Review Center account.</p>
+    </div>
+    <button class="wide" type="submit">Join the room</button>
+  </form>
+  {% else %}
+  <form method="post" action="{{ url_for('jumbled.join', code=room.code) }}">
+    <label for="nickname">Nickname</label>
+    <input type="text" id="nickname" name="nickname" maxlength="30" required
+           placeholder="e.g. Marisol" value="{{ request.cookies.get('jl_nick', '') }}">
+    <p class="muted">No account is needed to play — the nickname is only used for the scoreboard.
+      If you sign in to the Review Center, your own name is used instead.</p>
+    <button class="wide" type="submit">Join the room</button>
+  </form>
+  {% endif %}
+
+  <div class="row2" style="margin-top:14px">
+    <a class="btnlink" href="{{ url_for('jumbled.setup') }}">Start your own room</a>
+  </div>
+</section>
+{% endblock %}

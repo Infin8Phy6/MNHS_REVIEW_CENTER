@@ -1,0 +1,607 @@
+{% extends "base.html" %}
+{% block content %}
+{% set back_fields = [('grade', grade), ('section', section), ('subject', subject), ('topic', topic)] %}
+<div class="container">
+    <div class="card" style="padding: 18px;">
+        <h2>Assessment</h2>
+        <p style="color: #666; margin-bottom: 18px;">
+            Choose a section and a quiz set to pull its scores, add the marks taken on
+            paper, and correct a score. Use <b>Change class</b> on a row to move a learner to
+            another grade level and section. The main admin also corrects or removes a quiz
+            answered on the app and opens a learner's details; a teacher listed on the
+            <a href="/admin/classes">Classes</a> page may only record a mark, take back
+            one they recorded, and move the learners of their own classes.
+        </p>
+
+        <form method="GET" action="/admin/assessment" class="admin-filters">
+            <div class="admin-filter-field">
+                <label>Grade Level:</label>
+                <select id="asGrade" name="grade" data-grade-pick>
+                    <option value="">-- Choose Grade --</option>
+                    {% for g in grade_choices %}
+                    <option value="{{ g }}" {% if g == grade %}selected{% endif %}>{{ g }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field">
+                <label>Section:</label>
+                <select id="asSection" name="section" data-section-pick data-from="asGrade"
+                        data-current="{{ section }}">
+                    <option value="">All Sections</option>
+                    {% for s in sections %}
+                    <option value="{{ s }}" {% if s == section %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field">
+                <label>Subject:</label>
+                <select id="asSubject" name="subject">
+                    <option value="">-- Choose Subject --</option>
+                    {% for set in sets %}
+                    <option value="{{ set.subject }}" {% if set.subject == subject %}selected{% endif %}>{{ set.subject }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field">
+                <label>Quiz set (topic):</label>
+                <select id="asTopic" name="topic">
+                    <option value="">All Topics in the subject</option>
+                    {% for set in sets %}
+                        {% for t in set.topics %}
+                        <option value="{{ t }}" data-subject="{{ set.subject }}"
+                                {% if t == topic and set.subject == subject %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field admin-filter-btn">
+                <button type="submit" class="btn btn-primary">Pull the data</button>
+            </div>
+        </form>
+
+        <div class="admin-filter-field as-learner-field">
+            <label for="asStudent">Open one learner:</label>
+            <select id="asStudent"
+                    onchange="if (this.value) { window.location = '/admin/assessment/student/' + this.value; }">
+                <option value="">-- Choose from {{ learners|length }} accounts --</option>
+                {% for value, label in learners %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <p class="db-help">Jump to one learner&rsquo;s record without pulling the whole class.</p>
+        </div>
+
+        {% if notice %}<p class="res-message">{{ notice }}</p>{% endif %}
+        {% if error %}<p class="res-message" style="border-left-color: var(--danger); background: #fef2f2; color: #991b1b;">{{ error }}</p>{% endif %}
+
+        {% if not grade %}
+            <p style="color: #666; margin-top: 24px;">
+                Pick a grade level first. The subject and quiz-set lists fill in from the
+                MATATAG tree for that grade, plus anything its students have answered.
+            </p>
+        {% else %}
+            <div class="admin-summary">
+                <div class="admin-stat">
+                    <small>Students{% if section %} in {{ section }}{% endif %}</small>
+                    <div class="admin-stat-num">{{ rows|length }}</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Has a score</small>
+                    <div class="admin-stat-num">{{ scored }}</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Waiting for a score</small>
+                    <div class="admin-stat-num">{{ waiting }}</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Section average{% if subject %} on this set{% endif %}</small>
+                    <div class="admin-stat-num">{% if class_pct is not none %}{{ class_pct }}%{% else %}--{% endif %}</div>
+                </div>
+            </div>
+
+            {% if subject and not topic %}
+                <p class="games-note">
+                    Showing every topic of <b>{{ subject }}</b> for {{ grade }}{% if section %} — {{ section }}{% endif %}.
+                    Choose one quiz set above to record a score against it.
+                </p>
+            {% endif %}
+
+            <div class="table-scroll">
+                <table class="db-table as-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Section</th>
+                            {% if subject %}<th>Score on this set</th><th>Best</th><th>Overall</th>{% endif %}
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td class="db-name">{{ row.user.full_name() }}
+                                {% if not row.user.section %}<span class="as-dropped">no section</span>{% endif %}
+                            </td>
+                            <td>
+                                {{ row.user.section|section_name or '--' }}
+                                <details class="as-record">
+                                    <summary>Change class</summary>
+                                    <form method="POST" action="/admin/assessment/student/{{ row.user.id }}/class"
+                                          class="as-form cs-form"
+                                          data-grade="{{ row.user.grade }}"
+                                          data-section="{{ row.user.section|section_name }}">
+                                        {% for name, value in back_fields %}
+                                        <input type="hidden" name="{{ name }}" value="{{ value }}">
+                                        {% endfor %}
+                                        <label>Grade level
+                                            <select name="new_grade" class="cs-grade">
+                                                {% for g in classes %}
+                                                <option value="{{ g }}" {% if g == row.user.grade %}selected{% endif %}>{{ g }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </label>
+                                        <label>Section
+                                            <select name="new_section" class="cs-section"></select>
+                                        </label>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </form>
+                                </details>
+                            </td>
+                            {% if subject %}
+                            <td>
+                                {% if row.attempts %}
+                                    <ul class="as-scores">
+                                        {% for a in row.attempts %}
+                                        <li>
+                                            {% if not topic %}{{ a.topic }} — {% endif %}
+                                            <b>{{ a.score }}/{{ a.total }}</b>
+                                            <span class="as-pct">{{ a.pct }}%</span>
+                                            <span class="as-when">{{ a.date }}</span>
+                                            <span class="as-src">{{ 'recorded' if a.manual else 'app' }}</span>
+                                            {% if can_reach('admin') %}
+                                            <details class="as-record as-adjust">
+                                                <summary>Adjust</summary>
+                                                <form method="POST" action="/admin/assessment/score/{{ a.id }}/edit" class="as-form">
+                                                    {% for name, value in back_fields %}
+                                                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                                                    {% endfor %}
+                                                    <label>Score
+                                                        <input type="number" name="score" min="0" max="200" step="1" value="{{ a.score }}" required></label>
+                                                    <label>Out of
+                                                        <input type="number" name="total" min="1" max="200" step="1" value="{{ a.total }}" required></label>
+                                                    <label>Date taken
+                                                        <input type="date" name="date_taken" value="{{ a.day }}"></label>
+                                                    <button type="submit" class="btn btn-primary">Save change</button>
+                                                </form>
+                                            </details>
+                                            {% endif %}
+                                            {% if is_admin or a.mine %}
+                                            <form method="POST" action="/admin/assessment/score/{{ a.id }}/delete" class="as-del"
+                                                  onsubmit="return confirm('Remove this score for good?');">
+                                                {% for name, value in back_fields %}
+                                                <input type="hidden" name="{{ name }}" value="{{ value }}">
+                                                {% endfor %}
+                                                <button type="submit" class="btn btn-outline res-remove">Remove</button>
+                                            </form>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <span class="db-null">no score yet</span>
+                                {% endif %}
+                                {% if topic %}
+                                <details class="as-record">
+                                    <summary>Record a score</summary>
+                                    <form method="POST" action="/admin/assessment/score" class="as-form">
+                                        <input type="hidden" name="user_id" value="{{ row.user.id }}">
+                                        {% for name, value in back_fields %}
+                                        <input type="hidden" name="{{ name }}" value="{{ value }}">
+                                        {% endfor %}
+                                        <label>Score
+                                            <input type="number" name="score" min="0" max="200" step="1" required></label>
+                                        <label>Out of
+                                            <input type="number" name="total" min="1" max="200" step="1" value="10" required></label>
+                                        <label>Date taken
+                                            <input type="date" name="date_taken" value="{{ today }}"></label>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </form>
+                                </details>
+                                {% endif %}
+                            </td>
+                            <td>{% if row.best is not none %}{{ row.best }}%{% else %}--{% endif %}</td>
+                            <td>{% if row.pct is not none %}{{ row.pct }}%{% else %}--{% endif %}</td>
+                            {% endif %}
+                            <td>
+                                {% if is_admin %}
+                                <a class="btn btn-outline db-open"
+                                   href="/admin/assessment/student/{{ row.user.id }}?grade={{ grade }}&section={{ section }}&subject={{ subject }}&topic={{ topic }}">
+                                    Details</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="db-null">
+                            No account is in {{ grade }}{% if section %} — {{ section }}{% endif %} yet.
+                            Students appear here when they sign up.
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="games-note">
+                A score marked <b>recorded</b> was typed in here; the teacher who typed it
+                can take it back. A score marked <b>app</b> was answered on the quiz, and
+                the main admin corrects it with <b>Adjust</b> above &mdash; the questions
+                stay exactly as they were answered, so the item analysis on the
+                <a href="/admin?grade={{ grade }}&section={{ section }}">Results Dashboard</a>
+                still reports the real attempt. Everything stored here is also on the
+                <a href="/admin/database">Database</a> page.
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+{% if can_summative %}
+<div class="card" style="padding: 18px; margin-top: 18px;">
+    <h2>Create a Summative Test</h2>
+    <p style="color: #666; margin-bottom: 18px;">
+        Choose the grade, subject and quarter the way a quiz is set up, then check
+        <b>every topic</b> the test should draw from. The questions pulled are listed with a
+        box each: only the checked questions go into the final draft, and the draft is
+        exported as a PDF of questions and choices for the learners to answer on paper.
+    </p>
+
+    <div class="admin-filters">
+        <div class="admin-filter-field">
+            <label for="stGrade">Grade Level:</label>
+            <select id="stGrade">
+                <option value="">-- Choose Grade --</option>
+            </select>
+        </div>
+        <div class="admin-filter-field">
+            <label for="stSubject">Subject:</label>
+            <select id="stSubject">
+                <option value="">-- Select Grade First --</option>
+            </select>
+        </div>
+        <div class="admin-filter-field">
+            <label for="stQuarter">Quarter:</label>
+            <select id="stQuarter">
+                <option value="">-- Select Subject First --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="st-pick">
+        <div class="st-pick-head">
+            <label>Topics to pull from:</label>
+            <label class="st-all">
+                <input type="checkbox" id="stAllTopics"> Check every topic
+            </label>
+        </div>
+        <div id="stTopics" class="st-topics"></div>
+    </div>
+
+    <div class="st-actions">
+        <input type="text" id="stTitle" class="st-title" placeholder="Summative Test 1" maxlength="80">
+        <button type="button" id="stLoad" class="btn btn-primary">Pull the questions</button>
+        <span id="stMsg" class="st-msg"></span>
+    </div>
+
+    <div id="stBank" class="st-bank" hidden>
+        <div class="st-toolbar">
+            <button type="button" id="stSelAll" class="btn btn-outline">Check all</button>
+            <button type="button" id="stSelNone" class="btn btn-outline">Clear checks</button>
+            <span class="st-count"><b id="stCount">0</b> question(s) in the draft</span>
+            <button type="button" id="stExport" class="btn btn-primary">Export to PDF</button>
+        </div>
+        <div id="stList" class="st-list"></div>
+    </div>
+</div>
+
+<script src="/static/export.js"></script>
+<script>
+  (function () {
+    var SPEC = {{ spec_json | safe }};
+    var grade = document.getElementById('stGrade');
+    var subject = document.getElementById('stSubject');
+    var quarter = document.getElementById('stQuarter');
+    var topicsBox = document.getElementById('stTopics');
+    var allTopics = document.getElementById('stAllTopics');
+    var loadBtn = document.getElementById('stLoad');
+    var exportBtn = document.getElementById('stExport');
+    var bank = document.getElementById('stBank');
+    var list = document.getElementById('stList');
+    var countBox = document.getElementById('stCount');
+    var title = document.getElementById('stTitle');
+    var msg = document.getElementById('stMsg');
+    var items = [];
+
+    function say(text, bad) {
+      msg.textContent = text || '';
+      msg.className = 'st-msg' + (bad ? ' st-bad' : '');
+    }
+
+    function totalOf(topics) {
+      var n = 0;
+      Object.keys(topics || {}).forEach(function (t) { n += topics[t] || 0; });
+      return n;
+    }
+
+    function selectedQuarters() {
+      var quarters = (SPEC[grade.value] || {})[subject.value] || {};
+      if (!quarter.value) return {};
+      if (quarter.value === '__all__') return quarters;
+      var picked = {};
+      picked[quarter.value] = quarters[quarter.value] || {};
+      return picked;
+    }
+
+    Object.keys(SPEC).forEach(function (level) {
+      var option = document.createElement('option');
+      option.value = level;
+      option.textContent = level;
+      grade.appendChild(option);
+    });
+
+    function fillSubjects() {
+      subject.innerHTML = '<option value="">-- Select Grade --</option>';
+      var subjects = SPEC[grade.value] || {};
+      Object.keys(subjects).forEach(function (name) {
+        var option = document.createElement('option');
+        option.value = name;
+        var total = 0;
+        Object.keys(subjects[name]).forEach(function (q) { total += totalOf(subjects[name][q]); });
+        option.textContent = total > 0 ? name + ' (' + total + ' questions)' : name;
+        subject.appendChild(option);
+      });
+      fillQuarters();
+    }
+
+    function fillQuarters() {
+      var quarters = (SPEC[grade.value] || {})[subject.value] || {};
+      quarter.innerHTML = '<option value="">-- Select Subject --</option>';
+      var all = 0;
+      Object.keys(quarters).forEach(function (q) { all += totalOf(quarters[q]); });
+      var allOption = document.createElement('option');
+      allOption.value = '__all__';
+      allOption.textContent = all > 0 ? 'All Quarters (' + all + ' questions)' : 'All Quarters';
+      allOption.disabled = all === 0;
+      quarter.appendChild(allOption);
+      Object.keys(quarters).forEach(function (name) {
+        var total = totalOf(quarters[name]);
+        var option = document.createElement('option');
+        option.value = name;
+        option.textContent = total > 0 ? name + ' (' + total + ' questions)' : name;
+        option.disabled = total === 0;
+        quarter.appendChild(option);
+      });
+      fillTopics();
+    }
+
+    function checkedTopicNames() {
+      var boxes = topicsBox.querySelectorAll('input[type=checkbox]');
+      var names = [];
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].value !== '__all__' && boxes[i].checked) names.push(boxes[i].value);
+      }
+      return names;
+    }
+
+    function fillTopics() {
+      topicsBox.innerHTML = '';
+      allTopics.checked = false;
+      var merged = {};
+      var quarters = selectedQuarters();
+      Object.keys(quarters).forEach(function (q) {
+        var topics = quarters[q];
+        Object.keys(topics).forEach(function (t) { merged[t] = (merged[t] || 0) + topics[t]; });
+      });
+      var names = Object.keys(merged).sort();
+      if (!names.length) {
+        topicsBox.innerHTML = '<span class="db-null">Pick a grade, a subject and a quarter first.</span>';
+        return;
+      }
+      names.forEach(function (name) {
+        var label = document.createElement('label');
+        label.className = 'st-topic';
+        var box = document.createElement('input');
+        box.type = 'checkbox';
+        box.value = name;
+        box.disabled = merged[name] === 0;
+        var text = document.createElement('span');
+        text.textContent = name + (merged[name] > 0 ? ' (' + merged[name] + ')' : ' (no questions yet)');
+        label.appendChild(box);
+        label.appendChild(text);
+        topicsBox.appendChild(label);
+        box.addEventListener('change', function () {
+          allTopics.checked = checkedTopicNames().length === names.length;
+        });
+      });
+    }
+
+    allTopics.addEventListener('change', function () {
+      var boxes = topicsBox.querySelectorAll('input[type=checkbox]');
+      for (var i = 0; i < boxes.length; i++) {
+        if (!boxes[i].disabled) boxes[i].checked = allTopics.checked;
+      }
+    });
+
+    function renderList() {
+      list.innerHTML = '';
+      items.forEach(function (item, index) {
+        var label = document.createElement('label');
+        label.className = 'st-q';
+        var box = document.createElement('input');
+        box.type = 'checkbox';
+        box.checked = true;
+        box.addEventListener('change', updateCount);
+        var body = document.createElement('span');
+        var head = document.createElement('b');
+        head.textContent = (index + 1) + '. ' + item.question;
+        body.appendChild(head);
+        var choices = document.createElement('small');
+        choices.textContent = (item.options || []).map(function (opt, i) {
+          return 'ABCD'[i] + '. ' + opt;
+        }).join('    ');
+        body.appendChild(choices);
+        var tag = document.createElement('em');
+        tag.textContent = item.topic || '';
+        body.appendChild(tag);
+        label.appendChild(box);
+        label.appendChild(body);
+        list.appendChild(label);
+        item.checked = true;
+      });
+      updateCount();
+    }
+
+    function updateCount() {
+      var boxes = list.querySelectorAll('input[type=checkbox]');
+      var n = 0;
+      for (var i = 0; i < boxes.length; i++) {
+        items[i].checked = boxes[i].checked;
+        if (boxes[i].checked) n++;
+      }
+      countBox.textContent = n;
+      exportBtn.disabled = n === 0;
+    }
+
+    function eachChecked(fn) {
+      var boxes = list.querySelectorAll('input[type=checkbox]');
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].checked = fn(i);
+        items[i].checked = boxes[i].checked;
+      }
+      updateCount();
+    }
+
+    loadBtn.addEventListener('click', function () {
+      var names = checkedTopicNames();
+      if (!grade.value || !subject.value || !quarter.value) {
+        say('Pick the grade, subject and quarter first.', true);
+        return;
+      }
+      if (!names.length) {
+        say('Check at least one topic to pull questions from.', true);
+        return;
+      }
+      var params = new URLSearchParams();
+      params.set('level', grade.value);
+      params.set('subject', subject.value);
+      params.set('quarter', quarter.value);
+      names.forEach(function (n) { params.append('topics', n); });
+
+      say('Pulling the questions...');
+      loadBtn.disabled = true;
+      fetch('/admin/summative/questions?' + params.toString(), { credentials: 'same-origin' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('http_' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          items = (data.items || []).map(function (q) { return Object.assign({ checked: true }, q); });
+          bank.hidden = false;
+          renderList();
+          say(items.length + ' question(s) available from ' + names.length + ' topic(s).');
+        })
+        .catch(function () { say('Could not reach the question bank. Try again.', true); })
+        .then(function () { loadBtn.disabled = false; });
+    });
+
+    document.getElementById('stSelAll').addEventListener('click', function () {
+      eachChecked(function () { return true; });
+    });
+    document.getElementById('stSelNone').addEventListener('click', function () {
+      eachChecked(function () { return false; });
+    });
+
+    exportBtn.addEventListener('click', function () {
+      var picked = items.filter(function (item) { return item.checked; });
+      if (!picked.length) { say('Check at least one question to put in the draft.', true); return; }
+      var names = checkedTopicNames();
+      exportBtn.disabled = true;
+      say('Writing the PDF...');
+      window.RHExport.exportTest({
+        title: title.value.trim() || 'Summative Test',
+        level: grade.value,
+        subject: subject.value,
+        topics: names.join(', '),
+        total: picked.length
+      }, picked).then(function (pages) {
+        say('Downloaded the draft: ' + picked.length + ' question(s) on ' + pages + ' page(s).');
+      }).catch(function (err) {
+        say('The PDF could not be made (' + (err && err.message || 'unknown') + ').', true);
+      }).then(function () {
+        exportBtn.disabled = picked.length === 0;
+      });
+    });
+
+    grade.addEventListener('change', fillSubjects);
+    subject.addEventListener('change', fillQuarters);
+    quarter.addEventListener('change', fillTopics);
+
+    fillTopics();
+  })();
+</script>
+{% endif %}
+
+<script>
+  // One subject's topics at a time, so the two lists always agree.
+  (function () {
+    var subject = document.getElementById('asSubject');
+    var topic = document.getElementById('asTopic');
+    if (!subject || !topic) return;
+
+    function filterTopics() {
+      var wanted = subject.value.toLowerCase();
+      for (var i = 0; i < topic.options.length; i++) {
+        var option = topic.options[i];
+        if (!option.getAttribute('data-subject')) continue;
+        var mine = option.getAttribute('data-subject').toLowerCase() === wanted;
+        option.hidden = !mine;
+        option.disabled = !mine;
+        if (!mine && option.selected) { topic.selectedIndex = 0; }
+      }
+    }
+    subject.addEventListener('change', filterTopics);
+    filterTopics();
+  })();
+</script>
+
+<script>
+  // Each row can move its learner to any class the main admin created, so the
+  // section list is rebuilt from the grade picked on that same row.
+  (function () {
+    var CLASSES = {{ classes | tojson }};
+
+    function wire(form) {
+      var grade = form.querySelector('.cs-grade');
+      var section = form.querySelector('.cs-section');
+      var current = (form.getAttribute('data-section') || '').toUpperCase();
+      if (!grade || !section) return;
+
+      function fill() {
+        var names = CLASSES[grade.value] || [];
+        section.innerHTML = '';
+        if (!names.length) {
+          section.appendChild(new Option('no section for this grade', ''));
+          section.disabled = true;
+          return;
+        }
+        section.disabled = false;
+        names.forEach(function (name) { section.appendChild(new Option(name, name)); });
+        section.value = names.indexOf(current) >= 0 ? current : names[0];
+      }
+
+      grade.addEventListener('change', function () { current = ''; fill(); });
+      fill();
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.cs-form'), wire);
+  })();
+</script>
+{% include "_class_picker.html" %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "etg_base.html" %}
+{% block body %}
+<section class="panel">
+  <h1>Fill the table, take the 25</h1>
+  <p>The app picks <b>{{ rows }} elements at a time</b> and prints them across the nine columns:
+    Element, Symbol, Mass Number, Proton Number, Neutron Number, Electron Count,
+    Valence Electron, Period and Group. <b>{{ blanks }} cells in every row are emptied</b> &mdash;
+    {{ rows }} &times; {{ blanks }} = <b>{{ max_points }} points</b>, one point for each cell you
+    fill in correctly.</p>
+
+  <h2>The clues are the laws themselves</h2>
+  <ul class="laws">
+    <li><b>Proton Number = Electron Count</b> &mdash; a neutral atom holds one electron for every proton.</li>
+    <li><b>Mass Number = Proton Number + Neutron Number</b> &mdash; so any two of the three give the third.</li>
+    <li><b>Period = the shell the valence electrons sit in</b>, and the row of the table.</li>
+    <li><b>Group = the valence count</b> for the main groups: 1 gives 1, 2 gives 2, and 13&ndash;18
+        give 3&ndash;8. Helium, in group 18 of period 1, holds 2.</li>
+    <li>One element per Period and Group &mdash; group 2 in period 3 can only be one element.</li>
+  </ul>
+
+  <p class="scope">{{ count }} elements may be dealt: the main groups ({{ groups }}) of
+    periods {{ periods }}. Nothing outside them is asked for, and no cell is emptied unless the
+    clues left in its own row still pin that row to a single element.</p>
+
+  {% if tiles_url %}
+  <p class="scope">Need a value you cannot work out? Open the
+    <a href="{{ tiles_url }}">element tiles</a> &mdash; every element's atomic number, mass,
+    electron configuration and metal class on one board.</p>
+  {% endif %}
+
+  <form method="POST" action="{{ url_for('etg.deal') }}" class="deal">
+    <label>Name
+      <input type="text" name="name" value="{{ student.name }}" maxlength="120"
+             placeholder="Your name (leave blank to play as Guest)">
+    </label>
+    {% if student.grade or student.section %}
+    <span class="who">{{ student.grade }}{% if student.section %} &middot; {{ student.section }}{% endif %}</span>
+    {% endif %}
+    <button type="submit" class="go">Deal me a table</button>
+  </form>
+</section>
+{% endblock %}

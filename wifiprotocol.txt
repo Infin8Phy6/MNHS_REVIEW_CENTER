@@ -1,0 +1,89 @@
+Yes — with one correction: the router broadcasts 
+the WiFi name (SSID), not the IP. 192.168.8.100 is 
+simply the address the router gives your laptop on 
+its own network. Students join the WiFi, then look 
+for the laptop at that address.
+
+Three things must all be true at the same time
+
+The modem/router is powered and broadcasting its WiFi. 
+Internet load is not needed for students to take quizzes — 
+only for syncing.
+The laptop actually has that address. 192.168.8.100 is 
+only correct if the router's network is 192.168.8.x (common on Huawei). Trust 
+the laptop's real IPv4 address from ipconfig, not the example.
+The app is running (start_local.bat window open) and 
+Windows allows port 5000. The address does nothing if the 
+server is closed or the laptop is asleep.
+Settings still left to do
+On the router
+
+Set the WiFi name and password.
+Turn off AP isolation / client isolation — this is the most 
+common reason phones connect but cannot open the page.
+Do not use a "Guest network" for students; guest networks 
+usually isolate devices from each other.
+Reserve 192.168.8.100 for the laptop's MAC 
+(or set the laptop to a static IP outside the DHCP pool, 
+e.g. 192.168.8.240). Without this, the router can hand 
+.100 to a phone and break the address.
+Confirm the LAN subnet. If the router is 192.168.1.x, 
+then the reservation and student address become 192.168.1.100, 
+not .8.100.
+On the laptop
+
+Connect by Ethernet if possible; WiFi also works.
+Set that network to Private in Windows 
+(Settings → Network → Properties). If it is Public, 
+Windows blocks incoming connections.
+Allow port 5000 once, as administrator
+code.txt
+netsh advfirewall firewall add rule name="MNHS Review Center 5000" dir=in action=allow protocol=TCP localport=5000
+Run ipconfig and confirm the IPv4 address is the one you reserved.
+Set the power plan so the laptop never sleeps and 
+closing the lid does nothing.
+Test on the laptop itself: http://127.0.0.1:5000 
+and http://192.168.8.100:5000 must both load.
+On the students' phones
+
+Join the modem's WiFi.
+On Android, turn off "Switch to mobile data" / "Smart network switch" for that WiFi, or the phone may abandon it when it sees no internet.
+Open http://192.168.8.100:5000 exactly — no https, no www.
+In the app itself
+
+sync_config.json needs the real PythonAnywhere 
+address and token, and the same token goes in the 
+WSGI file — otherwise quizzes work but Sync now 
+will report it is not set up.
+Copy the live quiz_app.db and admin.db onto the 
+laptop before the first session so existing student 
+accounts are there.
+Quick failure guide: page loads on the laptop but 
+not on a phone → AP isolation, Public network profile, 
+or firewall. Phone cannot even join → WiFi password/SSID. 
+Phone joins but times out → wrong IP 
+(router subnet or DHCP conflict) or the app is not running.
+
+IP:192.168.254.254
+wifiname: GlobeAtHome_B40C4
+PASSWORD: L8HFGYB8FJ8
+SSID:	GlobeAtHome_B40C4
+Protocol:	Wi-Fi 4 (802.11n)
+Security type:	WPA2-Personal
+Network band:	2.4 GHz
+Network channel:	8
+Link speed (Receive/Transmit):	144/144 (Mbps)
+IPv6 address:	fd50:21ec:cb40:c400:4bf3:9b78:6ac9:6a56
+Link-local IPv6 address:	fe80::766f:187e:d65e:649d%10
+IPv6 DNS servers:	fe80::5221:ecff:fecb:40c4%10
+IPv4 address:	192.168.254.115
+IPv4 DNS servers:	192.168.254.254
+Manufacturer:	Intel Corporation
+Description:	Intel(R) Dual Band Wireless-N 7260
+Driver version:	18.33.14.3
+Physical address (MAC):	80-19-34-01-A4-D7
+
+
+if we use the esp 32 as the modem
+say we have 2 esps and we want to use them simultaneously
+

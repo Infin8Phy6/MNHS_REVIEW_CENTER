@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card" style="padding: 18px;">
+        <h2>{{ student.full_name() }}</h2>
+        <p style="color: #666; margin-bottom: 6px;">
+            {{ student.grade or 'No grade yet' }} — {{ student.section|section_name or 'no section' }} ·
+            {{ attempt_count }} saved {% if attempt_count == 1 %}quiz{% else %}quizzes{% endif %}
+            {% if manual_count %}({{ manual_count }} recorded by you){% endif %} ·
+            {{ ungraded_count }} practice {% if ungraded_count == 1 %}quiz{% else %}quizzes{% endif %}
+            kept without a name
+        </p>
+        <p class="as-when"><a href="{{ url_for('admin_assessment', **back) }}">&larr; Back to Assessment</a></p>
+
+        {% if message %}<p class="res-message">{{ message }}</p>{% endif %}
+
+        <form method="POST" action="/admin/assessment/student/{{ student.id }}" class="db-form">
+            <input type="hidden" name="action" value="save">
+            <input type="hidden" name="grade" value="{{ back.grade }}">
+            <input type="hidden" name="section" value="{{ back.section }}">
+            <input type="hidden" name="subject" value="{{ back.subject }}">
+            <input type="hidden" name="topic" value="{{ back.topic }}">
+
+            <div class="db-field">
+                <label for="first_name">First Name</label>
+                <input id="first_name" name="first_name" value="{{ values.first_name }}" maxlength="80" required>
+                {% if errors.first_name %}<span class="field-error">{{ errors.first_name }}</span>{% endif %}
+            </div>
+            <div class="db-field">
+                <label for="middle_name">Middle Name</label>
+                <input id="middle_name" name="middle_name" value="{{ values.middle_name }}" maxlength="80">
+            </div>
+            <div class="db-field">
+                <label for="last_name">Last Name</label>
+                <input id="last_name" name="last_name" value="{{ values.last_name }}" maxlength="80" required>
+                {% if errors.last_name %}<span class="field-error">{{ errors.last_name }}</span>{% endif %}
+            </div>
+            <div class="db-field">
+                <label for="suffix">Suffix</label>
+                <select id="suffix" name="suffix">
+                    {% for s in suffix_choices %}
+                    <option value="{{ s }}" {% if s == values.suffix %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="db-field db-field-wide">
+                <label for="school">School</label>
+                <input id="school" name="school" value="{{ values.school }}" maxlength="200" required>
+                {% if errors.school %}<span class="field-error">{{ errors.school }}</span>{% endif %}
+            </div>
+            <div class="db-field">
+                <label for="grade">Grade Level</label>
+                <select id="grade" name="grade">
+                    {% for g in grade_choices %}
+                    <option value="{{ g }}" {% if g == values.grade %}selected{% endif %}>{{ g }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.grade %}<span class="field-error">{{ errors.grade }}</span>{% endif %}
+            </div>
+            <div class="db-field">
+                <label for="section">Section</label>
+                <select id="section" name="section" data-current="{{ values.section }}">
+                    <option value="">No section (dropped)</option>
+                </select>
+                {% if errors.section %}<span class="field-error">{{ errors.section }}</span>{% endif %}
+            </div>
+            <div class="db-field">
+                <label for="email">Email (their login)</label>
+                <input id="email" name="email" type="email" value="{{ values.email }}" maxlength="120" required>
+                {% if errors.email %}<span class="field-error">{{ errors.email }}</span>{% endif %}
+            </div>
+            <div class="db-field">
+                <label for="__new_password__">New password (leave empty to keep it)</label>
+                <input id="__new_password__" name="__new_password__" type="text" minlength="8"
+                       placeholder="at least 8 characters" autocomplete="off">
+                {% if errors.password %}<span class="field-error">{{ errors.password }}</span>{% endif %}
+            </div>
+
+            <div class="db-field db-field-wide">
+                <button type="submit" class="btn btn-primary">Save details</button>
+            </div>
+        </form>
+
+        <h3 class="admin-section-title" style="margin-top: 26px;">Move or remove</h3>
+        <p class="games-note">
+            Dropping a learner from a section keeps the account and every quiz they saved;
+            they simply see nothing under Materials until you put them in a section again.
+            Deleting takes the account and its saved quizzes out of the database for good.
+        </p>
+
+        <div class="row2" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <form method="POST" action="/admin/assessment/student/{{ student.id }}">
+                <input type="hidden" name="action" value="drop">
+                <input type="hidden" name="grade" value="{{ back.grade }}">
+                <input type="hidden" name="section" value="{{ back.section }}">
+                <input type="hidden" name="subject" value="{{ back.subject }}">
+                <input type="hidden" name="topic" value="{{ back.topic }}">
+                <button type="submit" class="btn btn-outline">Drop from {{ student.section|section_name or 'their section' }}</button>
+            </form>
+        </div>
+
+        <form method="POST" action="/admin/assessment/student/{{ student.id }}" class="res-form"
+              style="border-left: 4px solid var(--danger);">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="grade" value="{{ back.grade }}">
+            <input type="hidden" name="section" value="{{ back.section }}">
+            <input type="hidden" name="subject" value="{{ back.subject }}">
+            <input type="hidden" name="topic" value="{{ back.topic }}">
+            <label for="confirm_email">
+                Type <b>{{ student.email }}</b> to confirm deleting this account and its
+                {{ attempt_count }} saved {% if attempt_count == 1 %}quiz{% else %}quizzes{% endif %}
+            </label>
+            <input id="confirm_email" name="confirm_email" type="text" autocomplete="off"
+                   placeholder="{{ student.email }}">
+            <div style="margin-top: 10px;">
+                <button type="submit" class="btn btn-outline res-remove">Delete from the database</button>
+            </div>
+            {% if errors.delete %}<p class="field-error">{{ errors.delete }}</p>{% endif %}
+        </form>
+    </div>
+</div>
+
+<script>
+    // Only the classes on the Grades & Sections page can be picked, and the
+    // section list follows the grade, so a learner can never be filed under a
+    // section that was never created.
+    (function () {
+        const CLASSES = {{ classes | tojson }};
+        const grade = document.getElementById('grade');
+        const section = document.getElementById('section');
+        if (!grade || !section) return;
+        const current = (section.dataset.current || '').trim().toUpperCase();
+
+        function fill() {
+            const names = CLASSES[grade.value] || [];
+            section.innerHTML = '';
+            section.appendChild(new Option('No section (dropped)', ''));
+            names.forEach(function (name) { section.appendChild(new Option(name, name)); });
+            section.value = names.indexOf(current) >= 0 ? current : '';
+        }
+
+        grade.addEventListener('change', fill);
+        fill();
+    })();
+</script>
+{% endblock %}

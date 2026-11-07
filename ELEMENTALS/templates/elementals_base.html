@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}ELEMENTALS{% endblock %} — Periodic Table Symbol Sprint</title>
+<meta name="theme_color" content="#14213d">
+<link rel="manifest" href="{{ url_for('game.manifest') }}">
+<link rel="icon" href="{{ url_for('game.icon', size=192) }}">
+<link rel="apple-touch-icon" href="{{ url_for('game.icon', size=192) }}">
+<link rel="stylesheet" href="{{ url_for('game.static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <a class="brand" href="{{ url_for('game.index') }}">
+    <span class="dot">El</span>
+    <span><b>ELEMENTALS</b><i>Periodic Table &middot; Symbol Sprint</i></span>
+  </a>
+  <nav>
+    <a href="{{ url_for('game.index') }}">Play</a>
+    <a href="{{ url_for('game.table') }}">Tiles</a>
+    <a href="{{ url_for('game.results') }}">Scores</a>
+    {% if staff_allowed %}<a href="{{ url_for('game.worksheet') }}">Worksheets</a>{% endif %}
+    <a href="{{ url_for('game.install') }}">Install</a>
+    {% if back_url %}<a href="{{ back_url }}">MNHS_REVIEW_CENTER</a>{% endif %}
+  </nav>
+</header>
+
+<main>
+{% block body %}{% endblock %}
+</main>
+
+<footer>
+  {{ total_elements }} element tiles and {{ clued_elements }} clue sets are stored in {{ db_name }},
+  so the game plays with no internet connection. Symbols follow IUPAC spelling.
+</footer>
+<script src="{{ url_for('game.static', filename='app.js') }}"></script>
+<script>
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("{{ url_for('game.sw') }}").catch(function(){}); }
+</script>
+{% block script %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* PDF Studio, kept to its own names so nothing else on the site moves. */
+    .pdfs-head { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+                 padding: 6px 4px 10px; }
+    .pdfs-head h2 { margin: 0 0 4px; }
+    .pdfs-head p { margin: 0; color: #666; font-size: 0.92rem; }
+    .pdfs-back { width: auto; margin-left: auto; padding: 8px 14px; }
+    .pdfs-body { display: grid; grid-template-columns: 220px minmax(0, 1fr);
+                 gap: 14px; align-items: start; padding: 4px; }
+    .pdfs-tools { display: flex; flex-direction: column; gap: 5px;
+                  max-height: 560px; overflow: auto; padding-right: 4px; }
+    .pdfs-tools h3, .pdfs-work h3 { margin: 0 0 6px; font-size: 1rem; }
+    .pdfs-tool { width: 100%; text-align: left; padding: 8px 10px; border-radius: 9px;
+                 border: 1px solid var(--border); background: #fff; color: var(--dark);
+                 box-shadow: none; font-weight: 600; font-size: 0.92rem; }
+    .pdfs-tool:hover { border-color: var(--primary); }
+    .pdfs-tool.is-active { background: rgba(0,123,255,0.1); border-color: var(--primary);
+                           color: var(--primary); }
+    .pdfs-work { min-width: 0; }
+    .pdfs-blurb { color: #556; margin: 0 0 10px; font-size: 0.92rem; }
+    .pdfs-drop { border: 2px dashed rgba(0,123,255,0.45); border-radius: 12px;
+                 padding: 16px 12px; text-align: center; background: rgba(0,123,255,0.03);
+                 transition: background-color .15s ease, border-color .15s ease; }
+    .pdfs-drop.is-over { background: rgba(0,123,255,0.12); border-color: var(--primary); }
+    .pdfs-drop p { margin: 0 0 8px; color: #445; font-size: 0.92rem; }
+    .pdfs-pick { display: inline-block; width: auto; padding: 8px 16px; cursor: pointer;
+                 border-radius: 10px; background: var(--primary); color: #fff;
+                 font-weight: 700; }
+    .pdfs-pick:hover { background: var(--primary-hover); }
+    .pdfs-hint { color: #778; font-size: 0.85rem; margin: 6px 0 0; }
+    .pdfs-files { list-style: none; padding: 0; margin: 8px 0 0; }
+    .pdfs-files li { display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+                     border: 1px solid var(--border); border-radius: 8px; margin-bottom: 4px;
+                     background: #fbfbfd; font-size: 0.88rem; }
+    .pdfs-files .pdfs-name { flex: 1; min-width: 0; overflow: hidden;
+                             text-overflow: ellipsis; white-space: nowrap; }
+    .pdfs-files .pdfs-size { color: #778; white-space: nowrap; }
+    .pdfs-files button { width: auto; padding: 2px 8px; font-size: 0.8rem; font-weight: 700;
+                         box-shadow: none; background: #eef1f6; color: #334; border-radius: 6px; }
+    .pdfs-files button:hover { background: #dde4ee; }
+    .pdfs-empty { color: #889; font-size: 0.88rem; margin: 8px 0 0; }
+    .pdfs-fields { margin-top: 10px; display: grid; gap: 2px; }
+    .pdfs-field { display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr);
+                  gap: 8px; align-items: center; padding: 3px 0; }
+    .pdfs-field label { font-weight: 600; font-size: 0.88rem; }
+    .pdfs-field input, .pdfs-field select { margin: 0; padding: 8px 10px; }
+    .pdfs-field small { grid-column: 2; color: #778; font-size: 0.8rem; margin-top: -4px; }
+    .pdfs-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px;
+                    flex-wrap: wrap; }
+    .pdfs-run { width: auto; min-width: 150px; padding: 11px 22px; }
+    .pdfs-status { color: #445; font-size: 0.9rem; }
+    .pdfs-log { background: #0f1720; color: #d7e2ee; border-radius: 10px; padding: 10px 12px;
+                font-family: Consolas, monospace; font-size: 0.8rem; line-height: 1.35;
+                max-height: 240px; overflow: auto; white-space: pre-wrap; margin: 10px 0 0; }
+    .pdfs-error { background: #fff4f4; border: 1px solid #f3c2c2; color: #8b1f1f;
+                  border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
+    .pdfs-done { background: #f2fbf4; border: 1px solid #bfe4c8; border-radius: 10px;
+                 padding: 10px 12px; margin-top: 10px; color: #1d5c2e; }
+    .pdfs-download { display: inline-block; width: auto; margin-top: 8px; padding: 10px 18px;
+                     border-radius: 10px; background: var(--success); color: #fff;
+                     font-weight: 700; text-decoration: none; }
+    .pdfs-download:hover { filter: brightness(0.94); }
+    .pdfs-off { background: #fff8e6; border: 1px solid #f0dc9a; border-radius: 10px;
+                padding: 12px; color: #6b5300; }
+    @media (max-width: 760px) {
+        .pdfs-body { grid-template-columns: 1fr; }
+        .pdfs-tools { flex-direction: row; flex-wrap: wrap; max-height: none; }
+        .pdfs-tool { width: auto; }
+        .pdfs-field { grid-template-columns: 1fr; }
+        .pdfs-field small { grid-column: 1; }
+    }
+</style>
+
+<div class="card">
+    <div class="pdfs-head">
+        <div>
+            <h2>PDF Studio</h2>
+            <p>Merge, split, clean up, lock or convert PDFs and pictures.
+                The result downloads to this device.</p>
+        </div>
+        <a href="/staff/home" class="btn btn-outline pdfs-back">Staff Home</a>
+    </div>
+
+    {% if not ready %}
+        <div class="pdfs-off">
+            <b>PDF Studio is not installed on this server.</b>
+            <p style="margin:6px 0 0;">Ask the main admin to run
+                <code>python -m pip install -r requirements.txt</code> where the app
+                is hosted, then restart it.</p>
+        </div>
+    {% else %}
+    <div class="pdfs-body">
+        <aside>
+            <div class="pdfs-tools" id="pdfs-tools" aria-label="PDF Studio tools"></div>
+            <p class="pdfs-hint">{{ tools|length }} tools. Pick one to see its choices.</p>
+        </aside>
+
+        <section class="pdfs-work">
+            <h3 id="pdfs-title"></h3>
+            <p class="pdfs-blurb" id="pdfs-blurb"></p>
+
+            <div class="pdfs-drop" id="pdfs-drop">
+                <p>Drop files here, or</p>
+                <label class="pdfs-pick" for="pdfs-input">Choose files</label>
+                <input type="file" id="pdfs-input" multiple hidden>
+                <p class="pdfs-hint" id="pdfs-want"></p>
+            </div>
+
+            <ul class="pdfs-files" id="pdfs-files"></ul>
+            <p class="pdfs-empty" id="pdfs-empty">No files yet.</p>
+
+            <div class="pdfs-fields" id="pdfs-fields"></div>
+
+            <div class="pdfs-actions">
+                <button type="button" class="btn btn-primary pdfs-run" id="pdfs-run">Run</button>
+                <span class="pdfs-status" id="pdfs-status" aria-live="polite"></span>
+            </div>
+
+            <p class="pdfs-hint">
+                Up to {{ max_files }} files and {{ max_mb }} MB per run. Uploads and
+                results are deleted from the server after {{ keep_hours }} hours.
+            </p>
+
+            <div id="pdfs-result" aria-live="polite"></div>
+            <pre class="pdfs-log" id="pdfs-log" hidden></pre>
+        </section>
+    </div>
+    {% endif %}
+</div>
+
+{% if ready %}
+<script>
+(function () {
+    var TOOLS = {{ tools|tojson }};
+    var PICK_ACCEPT = {
+        pdf: '.pdf,application/pdf',
+        image: '.png,.jpg,.jpeg,.jfif,.bmp,.tif,.tiff,.gif,.webp'
+    };
+    var PICK_EXT = {
+        pdf: ['.pdf'],
+        image: ['.png', '.jpg', '.jpeg', '.jfif', '.bmp', '.tif', '.tiff', '.gif', '.webp']
+    };
+
+    var toolsBox = document.getElementById('pdfs-tools');
+    var titleEl = document.getElementById('pdfs-title');
+    var blurbEl = document.getElementById('pdfs-blurb');
+    var wantEl = document.getElementById('pdfs-want');
+    var dropEl = document.getElementById('pdfs-drop');
+    var inputEl = document.getElementById('pdfs-input');
+    var filesEl = document.getElementById('pdfs-files');
+    var emptyEl = document.getElementById('pdfs-empty');
+    var fieldsEl = document.getElementById('pdfs-fields');
+    var runEl = document.getElementById('pdfs-run');
+    var statusEl = document.getElementById('pdfs-status');
+    var resultEl = document.getElementById('pdfs-result');
+    var logEl = document.getElementById('pdfs-log');
+
+    var current = 0;
+    var picked = [];
+    var busy = false;
+
+    function tool() { return TOOLS[current]; }
+
+    function sizeText(bytes) {
+        if (bytes < 1024) { return bytes + ' B'; }
+        if (bytes < 1024 * 1024) { return (bytes / 1024).toFixed(0) + ' KB'; }
+        return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+    }
+
+    function extOf(name) {
+        var dot = name.lastIndexOf('.');
+        return dot < 0 ? '' : name.slice(dot).toLowerCase();
+    }
+
+    function drawTools() {
+        toolsBox.innerHTML = '';
+        TOOLS.forEach(function (item, index) {
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'pdfs-tool' + (index === current ? ' is-active' : '');
+            button.textContent = item.name;
+            button.setAttribute('aria-pressed', index === current ? 'true' : 'false');
+            button.addEventListener('click', function () {
+                if (busy || index === current) { return; }
+                current = index;
+                resetRun();
+                drawTools();
+                drawTool();
+            });
+            toolsBox.appendChild(button);
+        });
+    }
+
+    function drawTool() {
+        var item = tool();
+        titleEl.textContent = item.name;
+        blurbEl.textContent = item.blurb;
+        var wants = item.needs === 'pdf' ? 'PDF files' : 'pictures';
+        wantEl.textContent = 'This tool wants ' + wants + '.'
+            + (item.many
+                ? (item.ordered ? ' The order below is the order it uses.' : '')
+                : ' It uses the first file in the list.');
+        inputEl.accept = PICK_ACCEPT[item.needs] || '';
+        drawFields();
+        drawFiles();
+    }
+
+    function drawFields() {
+        fieldsEl.innerHTML = '';
+        tool().fields.forEach(function (field) {
+            var row = document.createElement('div');
+            row.className = 'pdfs-field';
+            var label = document.createElement('label');
+            label.textContent = field.label;
+            label.setAttribute('for', 'pdfs-f-' + field.key);
+            var control;
+            if (field.kind === 'choice') {
+                control = document.createElement('select');
+                (field.choices || []).forEach(function (choice) {
+                    var option = document.createElement('option');
+                    option.value = choice;
+                    option.textContent = choice;
+                    if (choice === field.default) { option.selected = true; }
+                    control.appendChild(option);
+                });
+            } else {
+                control = document.createElement('input');
+                control.type = ['password', 'user', 'owner'].indexOf(field.key) >= 0
+                    ? 'password' : 'text';
+                control.value = field.default || '';
+                control.autocomplete = 'new-password';
+            }
+            control.id = 'pdfs-f-' + field.key;
+            control.dataset.key = field.key;
+            row.appendChild(label);
+            row.appendChild(control);
+            if (field.help) {
+                var help = document.createElement('small');
+                help.textContent = field.help;
+                row.appendChild(help);
+            }
+            fieldsEl.appendChild(row);
+        });
+    }
+
+    function drawFiles() {
+        filesEl.innerHTML = '';
+        emptyEl.hidden = picked.length > 0;
+        picked.forEach(function (file, index) {
+            var row = document.createElement('li');
+            var name = document.createElement('span');
+            name.className = 'pdfs-name';
+            name.textContent = (index + 1) + '. ' + file.name;
+            var size = document.createElement('span');
+            size.className = 'pdfs-size';
+            size.textContent = sizeText(file.size);
+            row.appendChild(name);
+            row.appendChild(size);
+            [
+                ['\u2191', 'Move up', index > 0, function () { move(index, -1); }],
+                ['\u2193', 'Move down', index < picked.length - 1, function () { move(index, 1); }],
+                ['\u2715', 'Remove', true, function () { picked.splice(index, 1); drawFiles(); }]
+            ].forEach(function (spec) {
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = spec[0];
+                button.title = spec[1];
+                button.setAttribute('aria-label', spec[1] + ' ' + file.name);
+                button.disabled = !spec[2];
+                button.addEventListener('click', spec[3]);
+                row.appendChild(button);
+            });
+            filesEl.appendChild(row);
+        });
+    }
+
+    function move(index, delta) {
+        var next = index + delta;
+        if (next < 0 || next >= picked.length) { return; }
+        var held = picked[index];
+        picked[index] = picked[next];
+        picked[next] = held;
+        drawFiles();
+    }
+
+    function addFiles(list) {
+        var item = tool();
+        var allowed = PICK_EXT[item.needs] || [];
+        var refused = [];
+        Array.prototype.forEach.call(list, function (file) {
+            if (allowed.indexOf(extOf(file.name)) < 0) {
+                refused.push(file.name);
+                return;
+            }
+            var duplicate = picked.some(function (kept) {
+                return kept.name === file.name && kept.size === file.size
+                    && kept.lastModified === file.lastModified;
+            });
+            if (!duplicate) { picked.push(file); }
+        });
+        drawFiles();
+        if (refused.length) {
+            showStatus(item.needs === 'pdf'
+                ? 'Only PDF files work with ' + item.name + ': ' + refused.join(', ')
+                : 'Only picture files work with ' + item.name + ': ' + refused.join(', '),
+                true);
+        } else {
+            showStatus(picked.length + ' file' + (picked.length === 1 ? '' : 's') + ' ready.');
+        }
+    }
+
+    function showStatus(text, bad) {
+        statusEl.textContent = text || '';
+        statusEl.style.color = bad ? 'var(--danger)' : '#445';
+    }
+
+    function resetRun() {
+        resultEl.innerHTML = '';
+        logEl.hidden = true;
+        logEl.textContent = '';
+        showStatus('');
+    }
+
+    function showResult(data) {
+        resultEl.innerHTML = '';
+        if (data.log) {
+            logEl.hidden = false;
+            logEl.textContent = data.log;
+        }
+        if (!data.ok) {
+            var box = document.createElement('div');
+            box.className = 'pdfs-error';
+            box.textContent = data.error || 'That did not work.';
+            resultEl.appendChild(box);
+            return;
+        }
+        if (!data.download) {
+            var done = document.createElement('div');
+            done.className = 'pdfs-done';
+            done.textContent = data.message || 'Done.';
+            resultEl.appendChild(done);
+            return;
+        }
+        var link = document.createElement('a');
+        link.className = 'pdfs-download';
+        link.href = data.download;
+        link.setAttribute('download', data.filename || '');
+        link.textContent = 'Download ' + (data.filename || 'the result');
+        var note = document.createElement('div');
+        note.className = 'pdfs-done';
+        note.textContent = data.message || 'Done.';
+        resultEl.appendChild(note);
+        resultEl.appendChild(link);
+        link.click();
+    }
+
+    function run() {
+        if (busy) { return; }
+        resetRun();
+        if (!picked.length) {
+            showStatus('Add at least one file first.', true);
+            return;
+        }
+        var body = new FormData();
+        body.append('tool', tool().name);
+        picked.forEach(function (file) { body.append('files', file, file.name); });
+        Array.prototype.forEach.call(fieldsEl.querySelectorAll('[data-key]'), function (input) {
+            body.append(input.dataset.key, input.value);
+        });
+
+        busy = true;
+        runEl.disabled = true;
+        runEl.textContent = 'Working\u2026';
+        showStatus('Running ' + tool().name + '\u2026');
+
+        fetch('/staff/pdf-studio/run', { method: 'POST', body: body })
+            .then(function (response) {
+                if (response.redirected && response.url.indexOf('/admin/login') >= 0) {
+                    return { ok: false, error: 'The staff session has expired. Reload the '
+                        + 'page, sign in again, and run the tool once more.' };
+                }
+                return response.json().catch(function () {
+                    return { ok: false, error: 'The server answered with ' + response.status + '.' };
+                });
+            })
+            .then(function (data) {
+                showResult(data);
+                showStatus(data.ok ? 'Done.' : 'Stopped.', !data.ok);
+            })
+            .catch(function (error) {
+                showResult({ ok: false, error: 'The request did not reach the server. ' + error });
+                showStatus('No connection.', true);
+            })
+            .then(function () {
+                busy = false;
+                runEl.disabled = false;
+                runEl.textContent = 'Run';
+            });
+    }
+
+    inputEl.addEventListener('change', function () {
+        addFiles(inputEl.files);
+        inputEl.value = '';
+    });
+
+    ['dragenter', 'dragover'].forEach(function (name) {
+        dropEl.addEventListener(name, function (event) {
+            event.preventDefault();
+            dropEl.classList.add('is-over');
+        });
+    });
+    ['dragleave', 'drop'].forEach(function (name) {
+        dropEl.addEventListener(name, function (event) {
+            event.preventDefault();
+            dropEl.classList.remove('is-over');
+        });
+    });
+    dropEl.addEventListener('drop', function (event) {
+        if (event.dataTransfer && event.dataTransfer.files) {
+            addFiles(event.dataTransfer.files);
+        }
+    });
+
+    runEl.addEventListener('click', run);
+    drawTools();
+    drawTool();
+})();
+</script>
+{% endif %}
+{% endblock %}

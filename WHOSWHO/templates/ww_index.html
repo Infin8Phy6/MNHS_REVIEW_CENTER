@@ -1,0 +1,60 @@
+{% extends "ww_base.html" %}
+{% block title %}Activities{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Who's Who activities</h2>
+  <p class="muted">Pick an activity, then choose to play alone or open a room for your class.
+    Each person is worth up to {{ start_points }} points &mdash; every clue you reveal takes one away.</p>
+
+  {% if rows %}
+    <ul class="acts">
+      {% for act in rows %}
+        <li>
+          <a href="{{ url_for('whoswho.activity', slug=act.slug) }}">
+            <span>
+              <b>{{ act.title }}</b>
+              <span class="muted">{{ act.persons|length }}
+                person{{ '' if act.persons|length == 1 else 's' }}
+                {% if act.created %}&middot; {{ act.created[:10] }}{% endif %}</span>
+              <span class="faces">
+                {% for p in act.persons[:6] %}
+                  {% if p.photo and (p.photo.file or p.photo.drive_id) %}
+                    <img src="{{ url_for('whoswho.photo', slug=act.slug, person_id=p.id) }}"
+                         alt="" loading="lazy">
+                  {% else %}
+                    <b>?</b>
+                  {% endif %}
+                {% endfor %}
+                {% if act.persons|length > 6 %}
+                  <b>+{{ act.persons|length - 6 }}</b>
+                {% endif %}
+              </span>
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">No activity has been written yet.</p>
+    {% if admin_ok %}
+      <a class="wide-link" href="{{ url_for('whoswho.write') }}">Write the first one</a>
+    {% else %}
+      <p class="muted">Ask your teacher to add one from the Review Center admin page.</p>
+    {% endif %}
+  {% endif %}
+</section>
+
+{% if admin_ok %}
+<section class="card">
+  <h3>Teachers</h3>
+  <p class="muted">An activity is a title plus as many people as you like: a picture, the name and
+    three clues each. The letters of the name are the free clue, so no clue is needed to start.</p>
+  <div class="row">
+    <a class="btn" href="{{ url_for('whoswho.write') }}">New activity</a>
+    <span class="muted small">{{ 'Google Drive is ready, pictures go to the MNHSREVIEWCENTER folder.'
+      if drive_ok else 'Google Drive is not set up here, so pictures stay on this computer only.' }}</span>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

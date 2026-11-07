@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Build {{ element.symbol }} — Quantum Architect{% endblock %}
+{% block content %}
+<div class="game-head">
+  <h1>Orbital board</h1>
+  <p class="crumb">Place every electron in the right orbital and the right spin. The ladder reads
+     downward from 1s, so energy increases as you go down. Red marks the valence sublevel, its
+     electrons and its shell. Aufbau, Pauli and Hund are enforced as you go — the exact wording
+     matches the worksheet answer keys.</p>
+</div>
+
+<section class="picker" aria-label="Choose an element">
+  <div class="picker-controls">
+    <label>Atomic number
+      <input type="number" id="z-input" min="1" max="118" value="{{ z }}" class="num">
+    </label>
+    <button class="btn btn-quiet" id="z-prev" type="button" title="previous element">‹</button>
+    <button class="btn btn-quiet" id="z-next" type="button" title="next element">›</button>
+    <button class="btn btn-quiet" id="z-random" type="button">Random element</button>
+    <button class="btn btn-quiet" id="z-reset" type="button">Clear board</button>
+    <span class="spacer"></span>
+    <label>Practice mode
+      <input type="checkbox" id="practice">
+    </label>
+  </div>
+  <div class="ptable" role="group" aria-label="Periodic table, by period">
+    {% for period in [1, 2, 3, 4, 5, 6, 7] %}
+      <div class="pt-row" data-period="{{ period }}">
+        {% for e in table if (e.z == 2 and period == 1) or (3 <= e.z <= 10 and period == 2)
+              or (11 <= e.z <= 18 and period == 3) or (19 <= e.z <= 36 and period == 4)
+              or (37 <= e.z <= 54 and period == 5) or (55 <= e.z <= 86 and period == 6)
+              or (87 <= e.z <= 118 and period == 7) %}
+          <button type="button" class="pt-cell block-{{ e.block }}{% if e.exception %} is-exception{% endif %}{% if e.z == z %} is-current{% endif %}"
+                  data-z="{{ e.z }}" title="Z {{ e.z }}">{{ e.symbol }}</button>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="board" id="board" aria-busy="false">
+  <div class="hud">
+    <div class="hud-element">
+      <span class="sym" id="hud-symbol">{{ element.symbol }}</span>
+      <span class="meta">
+        <strong id="hud-name">{{ element.name }}</strong>
+        <span>Z = <b id="hud-z">{{ element.z }}</b> · <span id="hud-block">{{ element.block }}</span>-block
+        · period <span id="hud-period">{{ element.period }}</span>
+        {% if element.group %}· group <span id="hud-group">{{ element.group }}</span>{% endif %}
+      </span>
+    </div>
+    <div class="hud-stats">
+      <div class="stat">
+        <label for="stability">Stability</label>
+        <div class="meter"><div class="meter-fill" id="stability" role="progressbar"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" style="width:100%"></div></div>
+        <output id="stability-value">100</output>
+      </div>
+      <div class="stat"><label for="timer">Time</label><output id="timer">--:--</output></div>
+      <div class="stat"><label for="score">Score</label><output id="score">0</output></div>
+      <div class="stat"><label for="multiplier">Streak</label><output id="multiplier">×1.00</output></div>
+      <div class="stat"><label for="remaining">Electrons left</label><output id="remaining">0</output></div>
+    </div>
+  </div>
+
+  <div class="board-grid">
+    <div class="ladder-wrap">
+      <div class="ladder" id="ladder" role="group"
+           aria-label="Orbital ladder, 1s at the top, highest energy at the bottom"></div>
+      <div class="legend">
+        <span><b>Click</b> an electron, then click a box.</span>
+        <span><b>Drag</b> works too.</span>
+        <span><b>Tab</b> to a box, <b>Enter</b> to place.</span>
+        <span><b>S</b> flip spin · <b>U</b> undo · <b>H</b> hint · <b>R</b> clear · <b>1–7</b> shells</span>
+        <span><b class="valence-flag">Red</b> marks the valence sublevel, its electrons and its shell.</span>
+      </div>
+    </div>
+
+    <div class="pool" id="pool" aria-label="Electron pool">
+      <div class="pool-head">
+        <span>Electron pool</span>
+        <span class="spin-chip">
+          spin <b id="spin-label">↑</b>
+          <button class="btn btn-quiet btn-tiny" id="spin-toggle" type="button">flip (S)</button>
+        </span>
+      </div>
+      <div class="pool-tokens" id="pool-tokens"></div>
+    </div>
+
+    <aside class="readout">
+      <div class="card-pad">
+        <h2>Cloud view</h2>
+        <canvas id="cloud" width="360" height="260" role="img"
+                aria-label="Electron cloud diagram showing occupied shells"></canvas>
+        <p class="hint" id="cloud-note">Density by principal shell; the red ring is the valence shell.
+           Hover a box to see its shape.</p>
+      </div>
+      <div class="card-pad">
+        <h2>Live notation</h2>
+        <p class="notation" id="notation-full">—</p>
+        <p class="notation notation-alt" id="notation-fill">—</p>
+        <p class="notation notation-shorthand" id="notation-shorthand">—</p>
+        <p class="shells">shells: <span id="notation-shells">—</span></p>
+      </div>
+      <div class="card-pad feedback-pad">
+        <h2>Rule feedback</h2>
+        <ul class="feedback" id="feedback" aria-live="polite" aria-atomic="false"></ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<div class="modal" id="result" hidden role="dialog" aria-modal="true" aria-labelledby="result-title">
+  <div class="modal-box">
+    <h2 id="result-title">Atom stable</h2>
+    <p class="stars" id="result-stars">★★★</p>
+    <dl class="result-grid">
+      <dt>Full configuration</dt><dd id="r-full"></dd>
+      <dt>Energy order</dt><dd id="r-fill"></dd>
+      <dt>Shorthand</dt><dd id="r-shorthand"></dd>
+      <dt>Shells</dt><dd id="r-shells"></dd>
+      <dt>Valence (red)</dt><dd id="r-valence"></dd>
+      <dt>Score</dt><dd id="r-score"></dd>
+      <dt>Against par</dt><dd id="r-par"></dd>
+      <dt>Biggest streak</dt><dd id="r-mult"></dd>
+      <dt>Time left</dt><dd id="r-time"></dd>
+    </dl>
+    <h3>Rule report</h3>
+    <table class="grid compact">
+      <thead><tr><th>Rule broken</th><th>Count</th><th>Coaching</th></tr></thead>
+      <tbody id="r-report"></tbody>
+    </table>
+    <p class="teaching" id="r-note"></p>
+    <div class="modal-actions">
+      <button class="btn" id="r-next" type="button">Next element</button>
+      <button class="btn btn-quiet" id="r-retry" type="button">Try again</button>
+      <button class="btn btn-quiet" id="r-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script id="element-data" type="application/json">{{ element | tojson }}</script>
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
+{% endblock %}

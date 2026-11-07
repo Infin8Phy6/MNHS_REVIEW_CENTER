@@ -1,0 +1,176 @@
+{% extends "qa_base.html" %}
+{% block title %}Create worksheet — Quantum Architect{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Create a worksheet</h1>
+  {% if quick %}<p class="crumb">Started from preset: <strong>{{ quick_starts[quick].label }}</strong></p>{% endif %}
+</div>
+
+{% if error %}<p class="alert alert-error">{{ error }}</p>{% endif %}
+
+<form method="post" action="{{ url_for('qa.worksheet_create') }}" class="panel form-grid">
+
+  <fieldset>
+    <legend>Paper header</legend>
+    <label>Title
+      <input name="title" value="{{ s.title }}" maxlength="90" required>
+    </label>
+    <div class="row">
+      <label>Class / subject <input name="class_name" value="{{ s.class_name }}" placeholder="Grade 9 Science"></label>
+      <label>Section <input name="section" value="{{ s.section }}" placeholder="9-Bonet"></label>
+      <label>Teacher <input name="teacher" value="{{ s.teacher }}"></label>
+      <label>Date <input name="date" value="{{ s.date }}"></label>
+    </div>
+    <label>Instructions shown on the paper
+      <textarea name="instructions" rows="2">{{ s.instructions }}</textarea>
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Difficulty tier</legend>
+    <div class="radio-list">
+      {% for key, label in tier_names.items() %}
+      <label class="radio">
+        <input type="radio" name="tier" value="{{ key}}" data-tier="{{ key }}" {% if s.tier == key %}checked{% endif %}>
+        <span>{{ label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Element pool</legend>
+    <div class="radio-list">
+      <label class="radio">
+        <input type="radio" name="pool_mode" value="preset" {% if s.pool_mode == 'preset' %}checked{% endif %}>
+        <span>Named group</span>
+      </label>
+      <label class="indent">
+        <select name="preset">
+          {% for key, label in presets.items() %}
+          <option value="{{ key }}" {% if s.preset == key %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="radio">
+        <input type="radio" name="pool_mode" value="range" {% if s.pool_mode == 'range' %}checked{% endif %}>
+        <span>Atomic number range</span>
+      </label>
+      <label class="indent row">
+        <span>Z from <input type="number" name="z_min" min="1" max="118" value="{{ s.z_min }}" class="num"></span>
+        <span>to <input type="number" name="z_max" min="1" max="118" value="{{ s.z_max }}" class="num"></span>
+      </label>
+      <label class="radio">
+        <input type="radio" name="pool_mode" value="custom" {% if s.pool_mode == 'custom' %}checked{% endif %}>
+        <span>My own list of atomic numbers</span>
+      </label>
+      <label class="indent">
+        <input name="custom_pool" value="{{ s.custom_pool }}" placeholder="1, 6, 8, 17, 26, 30" class="wide">
+      </label>
+    </div>
+    <label class="check">
+      <input type="checkbox" name="avoid_heavy" {% if s.avoid_heavy %}checked{% endif %}>
+      <span>Avoid Z &gt; 54 unless the pool is deliberately small</span>
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Question types</legend>
+    <p class="hint">The tier above decides which boxes are available. Greyed-out boxes are
+       simply not offered at that tier — switch the tier to <em>Advanced</em> or
+       <em>Custom</em> for ions, quantum numbers and find-the-error items.</p>
+    <div class="type-grid">
+      {% for key, label in type_labels.items() %}
+      <label class="check type-box" data-type="{{ key }}">
+        <input type="checkbox" name="types" value="{{ key }}"
+               {% if key in s.types %}checked{% endif %}>
+        <span>{{ label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="row">
+      <label>Items on the paper
+        <input type="number" name="item_count" min="1" max="60" value="{{ s.item_count }}" class="num">
+      </label>
+      <label>Marks per configuration item
+        <input type="number" name="marks" min="1" max="10" value="{{ s.marks }}" class="num">
+      </label>
+      <label>Seed (same seed = same paper)
+        <input type="number" name="seed" min="0" value="{{ s.seed }}" class="num">
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Notation and layout</legend>
+    <div class="row">
+      <span class="stack">
+        <label class="radio">
+          <input type="radio" name="notation_order" value="shell" {% if s.notation_order == 'shell' %}checked{% endif %}>
+          <span>Answers grouped by shell — <code>1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²</code></span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="notation_order" value="fill" {% if s.notation_order == 'fill' %}checked{% endif %}>
+          <span>Answers in filling (energy) order — <code>… 3p⁶ 4s² 3d⁶</code></span>
+        </label>
+      </span>
+      <span class="stack">
+        <label class="radio">
+          <input type="radio" name="diagram_scope" value="full" {% if s.diagram_scope == 'full' %}checked{% endif %}>
+          <span>Orbital diagrams: whole configuration</span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="diagram_scope" value="valence" {% if s.diagram_scope == 'valence' %}checked{% endif %}>
+          <span>Orbital diagrams: valence electrons only</span>
+        </label>
+      </span>
+    </div>
+
+    <fieldset class="nested">
+      <legend>Which rules may find-the-error items break?</legend>
+      <label class="check"><input type="checkbox" name="error_kinds" value="aufbau"
+        {% if 'aufbau' in s.error_kinds %}checked{% endif %}><span>Aufbau (wrong energy order)</span></label>
+      <label class="check"><input type="checkbox" name="error_kinds" value="pauli"
+        {% if 'pauli' in s.error_kinds %}checked{% endif %}><span>Pauli (too many electrons in one orbital)</span></label>
+      <label class="check"><input type="checkbox" name="error_kinds" value="hund"
+        {% if 'hund' in s.error_kinds %}checked{% endif %}><span>Hund (paired before the sweep)</span></label>
+      <label class="check"><input type="checkbox" name="error_kinds" value="spin"
+        {% if 'spin' in s.error_kinds %}checked{% endif %}><span>Spin (two ↑ in one box)</span></label>
+    </fieldset>
+
+    <label class="check">
+      <input type="checkbox" name="no_repeat" {% if s.no_repeat %}checked{% endif %}>
+      <span>Never repeat the same element + question type pair</span>
+    </label>
+    <label class="check">
+      <input type="checkbox" name="shuffle" {% if s.shuffle %}checked{% endif %}>
+      <span>Shuffle the item order (uncheck to order by atomic number)</span>
+    </label>
+  </fieldset>
+
+  <div class="form-actions">
+    <button class="btn" type="submit">Generate worksheet</button>
+    <a class="btn btn-quiet" href="{{ url_for('qa.worksheets_list') }}">Cancel</a>
+  </div>
+</form>
+
+<script>
+  const TIER_TYPES = {{ tier_allowed | tojson }};
+  const boxes = Array.from(document.querySelectorAll('.type-box'));
+  const radios = Array.from(document.querySelectorAll('input[name="tier"]'));
+  function syncTypes() {
+    const tier = (radios.find(r => r.checked) || {}).value || 'standard';
+    const allowed = TIER_TYPES[tier];
+    boxes.forEach(box => {
+      const key = box.dataset.type;
+      const input = box.querySelector('input');
+      const on = !allowed || allowed.includes(key);
+      box.classList.toggle('is-off', !on);
+      input.disabled = !on;
+    });
+  }
+  radios.forEach(r => r.addEventListener('change', syncTypes));
+  syncTypes();
+</script>
+{% endblock %}

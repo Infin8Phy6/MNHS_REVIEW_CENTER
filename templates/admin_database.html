@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <h2>Database</h2>
+    <p style="color: #666; margin-top: 0;">
+        Every table the app keeps, including the ones the games make. Open a table
+        to read its rows, then open a row to correct it and save.
+    </p>
+
+    <p class="db-warning">
+        This writes straight into the live database and there is no undo. Copy
+        <code>quiz_app.db</code> somewhere safe before changing anything, and stop the
+        app while you do it if students are using it.
+    </p>
+
+    <table class="db-table">
+        <thead>
+            <tr><th>Table</th><th>Rows</th><th>Columns</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for t in tables %}
+            <tr>
+                <td class="db-name">{{ t.name }}</td>
+                <td>{{ t.count }}</td>
+                <td>{{ t.columns }}</td>
+                <td>
+                    {% if t.editable %}
+                        <a href="/admin/database/{{ t.name }}" class="btn btn-outline db-open">Open</a>
+                    {% else %}
+                        <span class="db-null">read only</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="games-note">
+        <b>user</b> holds the accounts, <b>quiz_attempt</b> the saved results,
+        <b>ungraded</b> the quizzes students chose not to save, and <b>resource</b> the
+        materials filed for each section. Game tables keep their own scores and never
+        move into a student's results.
+    </p>
+</div>
+{% endblock %}

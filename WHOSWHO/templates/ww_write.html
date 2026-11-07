@@ -1,0 +1,70 @@
+{% extends "ww_base.html" %}
+{% block title %}{{ 'Edit ' + act.title if act else 'New activity' }}{% endblock %}
+{% block body %}
+
+{% if error == 'title' %}<p class="banner bad">Give the activity a title first.</p>{% endif %}
+{% if error == 'persons' %}<p class="banner bad">At least one person needs a name.</p>{% endif %}
+{% if error == 'big' %}<p class="banner bad">One picture is too large &mdash; use a file under 8 MB.</p>{% endif %}
+{% if error == 'photo' %}
+  <p class="banner bad">Every person needs a picture. Person{{ '' if ',' not in missing else 's' }}
+    {{ missing|replace(',', ', ') }} {{ 'is' if ',' not in missing else 'are' }} still without one.</p>
+{% endif %}
+
+<section class="card">
+  <h2>{{ "Edit “" + act.title + "”" if act else "Write a Who's Who activity" }}</h2>
+  <p class="muted">Fill in the title, then one block per person: their picture, the name and the three
+    major clues. Press <b>Add new person</b> for as many as you want &mdash; a round has no limit.
+    A picture is required for every person, because it is the clue the round starts from.</p>
+  <p class="muted small">{{ 'Pictures are put in Google Drive in the MNHSREVIEWCENTER folder and a copy is kept
+    on this computer, so the round still shows offline.' if drive_ok else
+    'Google Drive is not set up on this computer, so pictures are only kept here. Set the credentials
+    file and they will be uploaded to the MNHSREVIEWCENTER folder as well.' }}</p>
+
+  <form method="post" enctype="multipart/form-data" id="actForm">
+    <label for="title">Title of the activity</label>
+    <input type="text" id="title" name="title" maxlength="90" required
+           value="{{ act.title if act else '' }}" placeholder="e.g. Filipino Heroes">
+
+    <div id="people"></div>
+
+    <button type="button" class="ghost" id="addPerson">Add new person</button>
+    <p class="banner bad hide" id="photoNotice"></p>
+    <button class="wide" type="submit">{{ 'Save the changes' if act else 'Save the activity' }}</button>
+  </form>
+</section>
+
+<template id="personRow">
+  <fieldset class="person">
+    <legend>Person <span class="n">1</span></legend>
+    <input type="hidden" name="person_id" value="">
+
+    <div class="photo">
+      <img class="thumb hide" alt="">
+      <div class="pick">
+        <label>Picture of the person</label>
+        <input type="file" accept="image/*" class="file">
+        <label class="keep hide"><input type="checkbox" class="keepBox" checked> Keep the current picture</label>
+        <span class="muted small current"></span>
+      </div>
+    </div>
+
+    <label>Name of the person</label>
+    <input type="text" name="name" maxlength="80" placeholder="e.g. Jose Rizal" required>
+
+    <label>Clue 1</label>
+    <textarea name="clue1" rows="2" maxlength="300"></textarea>
+    <label>Clue 2</label>
+    <textarea name="clue2" rows="2" maxlength="300"></textarea>
+    <label>Clue 3</label>
+    <textarea name="clue3" rows="2" maxlength="300"></textarea>
+
+    <button type="button" class="danger drop">Remove this person</button>
+  </fieldset>
+</template>
+
+<script id="seed" type="application/json">{{ rows|tojson }}</script>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('whoswho.static', filename='ww_write.js') }}"></script>
+{% endblock %}

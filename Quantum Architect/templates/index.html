@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Quantum Architect — build atoms, print worksheets{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Build the atom. Own the rules.</h1>
+  <p class="lede">Drag electrons into the orbital ladder and the three quantum rules
+     do the teaching: Aufbau rejects the wrong energy, Pauli refuses the third electron,
+     Hund refuses the early pair.</p>
+</section>
+
+<section class="cards">
+  <article class="card">
+    <h2><a href="{{ url_for('play') }}">Open the board</a></h2>
+    <p>Place electrons for any element from Z&nbsp;1 to Z&nbsp;118. Live notation,
+       stability meter, score multiplier, exact rule messages on every rejection.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('play', z=11) }}">Start at sodium</a>
+      <a class="btn btn-quiet" href="{{ url_for('play', z=24) }}">Try the chromium exception</a>
+      <a class="btn btn-quiet" href="{{ url_for('play', z=26) }}">Iron (26 electrons)</a>
+    </p>
+  </article>
+
+  <article class="card">
+    <h2><a href="{{ url_for('worksheet_new') }}">Create a worksheet</a></h2>
+    <p>Pick an element pool and question types, and the studio builds the item list:
+       full configurations, shorthand, orbital diagrams, ions, quantum numbers and
+       find-the-error items — all with answers worked out by the same engine.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('worksheet_new') }}">New worksheet</a>
+      <a class="btn btn-quiet" href="{{ url_for('worksheet_new', quick='exam-mixed') }}">Exam preset</a>
+    </p>
+  </article>
+
+  <article class="card">
+    <h2><a href="{{ url_for('worksheets_list') }}">Saved worksheets</a></h2>
+    <p>Export any saved worksheet as an editable <strong>DOCX</strong> or print-ready
+       <strong>PDF</strong>, A4 landscape, everything in tables. The answer key exports
+       separately and is visible to teachers only.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('worksheets_list') }}">Browse {{ saved_count }} saved</a>
+      {% if not teacher %}<a class="btn btn-quiet" href="{{ url_for('login') }}">Teacher login for answer keys</a>{% endif %}
+    </p>
+  </article>
+</section>
+
+<section class="quick">
+  <h2>Jump straight to a paper</h2>
+  <ul class="quick-list">
+  {% for key, quick in quick_starts.items() %}
+    <li><a href="{{ url_for('worksheet_new', quick=key) }}">{{ quick.label }}</a></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endblock %}

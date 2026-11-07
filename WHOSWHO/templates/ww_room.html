@@ -1,0 +1,121 @@
+{% extends "ww_base.html" %}
+{% block title %}{{ act.title if act else 'Round' }}{% endblock %}
+{% block body %}
+
+<div id="board"
+     data-code="{{ room.code }}"
+     data-token="{{ me.token }}"
+     data-state="{{ url_for('whoswho.api_state', code=room.code) }}"
+     data-reveal="{{ url_for('whoswho.api_reveal', code=room.code) }}"
+     data-answer="{{ url_for('whoswho.api_answer', code=room.code) }}"
+     data-next="{{ url_for('whoswho.api_next', code=room.code) }}"
+     data-reserve="{{ url_for('whoswho.api_reserve', code=room.code) }}"
+     data-start="{{ url_for('whoswho.api_start', code=room.code) }}">
+
+  <section class="card head">
+    <div>
+      <h2 id="title">{{ act.title if act else "Who's Who" }}</h2>
+      <p class="muted" id="counter">&nbsp;</p>
+    </div>
+    <div class="roomcode"><span>Room</span><b id="code">{{ room.code }}</b></div>
+  </section>
+
+  <section class="card" id="invite">
+    <h3>Invite link</h3>
+    <p class="muted">Send this to your class &mdash; up to {{ max_players }} players see the same
+      person at the same time.</p>
+    <div class="linkrow">
+      <input type="text" id="joinUrl" readonly>
+      <button type="button" class="ghost" id="copyLink">Copy</button>
+    </div>
+  </section>
+
+  <section class="card play">
+    <div id="lobby" class="hide">
+      <h2>Waiting for players</h2>
+      <p class="muted">The first person appears when the host presses Start. Here is who is in
+        this activity &mdash; the names stay hidden until the round is over.</p>
+      {% if act %}
+        <div class="strip">
+          {% for p in act.persons %}
+            {% if p.photo and (p.photo.file or p.photo.drive_id) %}
+              <img src="{{ url_for('whoswho.photo', slug=act.slug, person_id=p.id) }}"
+                   alt="Person {{ loop.index }}">
+            {% else %}
+              <b aria-label="Person {{ loop.index }} has no picture">?</b>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <button type="button" class="wide" id="startBtn">Start the round</button>
+      <p class="muted small" id="hostNote">Only the player who opened this room can start it.</p>
+    </div>
+
+    <div id="live" class="hide">
+      <div class="guess">
+        <div class="piccol">
+          <img id="photo" alt="The person to identify">
+          <p class="nophoto hide" id="noPhoto">This person has no picture yet &mdash;
+            read the letters and the clues.</p>
+          <div class="tiles" id="tiles" aria-label="The letters of the name"></div>
+          <button type="button" class="ghost small-btn" id="shuffle">Shuffle the letters</button>
+        </div>
+
+        <div class="side">
+          <ul class="clues">
+            <li id="c1"><span>Clue 1</span><p></p></li>
+            <li id="c2"><span>Clue 2</span><p></p></li>
+            <li id="c3"><span>Clue 3</span><p></p></li>
+          </ul>
+
+          <div class="reveal">
+            <button type="button" data-level="1" id="r1">Reveal Clue 1</button>
+            <button type="button" data-level="2" id="r2">Reveal Clue 2</button>
+            <button type="button" data-level="3" id="r3">Reveal Clue 3</button>
+          </div>
+          <p class="worth">This person is worth <b id="worth">5</b> points.
+            <span class="muted" id="tickNote"></span></p>
+        </div>
+      </div>
+
+      <form id="answerForm" autocomplete="off">
+        <input type="text" id="given" name="given" maxlength="120"
+               placeholder="Who is this? Type the full name">
+        <button type="submit" id="submitBtn">Submit answer</button>
+      </form>
+      <p class="muted small">Type the whole name, then press Submit answer.</p>
+      <p class="fb" id="feedback">&nbsp;</p>
+      <div class="row">
+        <button type="button" class="ghost" id="giveUp">I cannot get this one</button>
+        <button type="button" class="ghost hide" id="nextBtn">Next person</button>
+      </div>
+    </div>
+
+    <div id="closed" class="hide">
+      <h2>Round finished</h2>
+      <p class="muted" id="closedNote"></p>
+    </div>
+
+    <div id="podium" class="podium hide">
+      <div class="pod second"><span>First Place</span><b id="p2">&nbsp;</b><i id="s2"></i></div>
+      <div class="pod first"><span>Champion</span><b id="p1">&nbsp;</b><i id="s1"></i></div>
+      <div class="pod third"><span>Second Place</span><b id="p3">&nbsp;</b><i id="s3"></i></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Scores</h3>
+    <p class="muted" id="playersNote">&nbsp;</p>
+    <ol class="scores" id="scores"></ol>
+  </section>
+
+  <section class="card hide" id="revealCard">
+    <h3>Everyone in this activity</h3>
+    <ul class="past" id="past"></ul>
+  </section>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('whoswho.static', filename='whoswho.js') }}"></script>
+{% endblock %}

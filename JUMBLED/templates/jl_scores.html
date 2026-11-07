@@ -1,0 +1,33 @@
+{% extends "jl_base.html" %}
+{% block title %}Finished rooms{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Finished rooms</h2>
+  <p class="muted">Practice scores stay inside Jumbled Letters. They are never written to the
+    Review Center quiz results, so a game can never pull a grade down.</p>
+
+  {% if rows %}
+  <table class="res">
+    <thead><tr><th>Room</th><th>Topic</th><th>Players</th><th>Top score</th><th>Ended</th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><a href="{{ url_for('jumbled.room', code=r.room.code) }}">{{ r.room.code }}</a></td>
+        <td>{{ r.room.grade }} &middot; {{ r.room.subject }} &middot; {{ r.room.topic }}</td>
+        <td>{{ r.players }}</td>
+        <td><b>{{ r.top }}</b></td>
+        <td>{{ r.room.finished }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No room has finished yet.</p>
+  {% endif %}
+
+  <div class="row2" style="margin-top:16px">
+    <a class="btnlink" href="{{ url_for('jumbled.setup') }}">Start a room</a>
+  </div>
+</section>
+{% endblock %}

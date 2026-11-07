@@ -1,0 +1,719 @@
+[
+ {
+  "settings": {
+   "title": "Electron Configuration Practice",
+   "class_name": "",
+   "section": "",
+   "teacher": "",
+   "date": "November 03, 2026",
+   "tier": "standard",
+   "pool_mode": "preset",
+   "preset": "period1_3",
+   "z_min": 1,
+   "z_max": 20,
+   "custom_pool": "7,8, 9",
+   "types": [
+    "full_config"
+   ],
+   "item_count": 5,
+   "marks": 3,
+   "notation_order": "shell",
+   "diagram_scope": "full",
+   "error_kinds": [
+    "aufbau",
+    "pauli",
+    "hund",
+    "spin"
+   ],
+   "allow_shorthand": false,
+   "show_element_names": false,
+   "shuffle": true,
+   "no_repeat": true,
+   "seed": 612477,
+   "avoid_heavy": true,
+   "instructions": "Answer each item in the space provided. Use the notation discussed in class. Show your work for any orbital diagram."
+  },
+  "items": [
+   {
+    "z": 12,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Magnesium, Mg (Z = 12).",
+    "answer": "1s² 2s² 2p⁶ 3s²",
+    "answer_lines": [],
+    "answer_shorthand": "1s² 2s² 2p⁶ 3s²",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 3,
+    "workspace": 2,
+    "number": 1
+   },
+   {
+    "z": 2,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Helium, He (Z = 2).",
+    "answer": "1s²",
+    "answer_lines": [],
+    "answer_shorthand": "1s²",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 3,
+    "workspace": 2,
+    "number": 2
+   },
+   {
+    "z": 15,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Phosphorus, P (Z = 15).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p³",
+    "answer_lines": [],
+    "answer_shorthand": "[Ne] 3s² 3p³",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 3,
+    "workspace": 2,
+    "number": 3
+   },
+   {
+    "z": 17,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Chlorine, Cl (Z = 17).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p⁵",
+    "answer_lines": [],
+    "answer_shorthand": "[Ne] 3s² 3p⁵",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 3,
+    "workspace": 2,
+    "number": 4
+   },
+   {
+    "z": 9,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Fluorine, F (Z = 9).",
+    "answer": "1s² 2s² 2p⁵",
+    "answer_lines": [],
+    "answer_shorthand": "[He] 2s² 2p⁵",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 3,
+    "workspace": 2,
+    "number": 5
+   }
+  ],
+  "total_marks": 15,
+  "slug": "electron-configuration-practice",
+  "type_summary": {
+   "full_config": 5
+  },
+  "element_count": 5,
+  "generated_at": "2026-11-03T19:12:29",
+  "id": "d98370ad16ba",
+  "saved_at": "2026-11-03T19:12:29"
+ },
+ {
+  "settings": {
+   "title": "Electron Configuration Practice",
+   "class_name": "Grade 8",
+   "section": "8- Orion",
+   "teacher": "EDGARDO NABOS ANGELES",
+   "date": "November 09, 2026",
+   "tier": "grade8",
+   "pool_mode": "range",
+   "preset": "periods1_4",
+   "z_min": 1,
+   "z_max": 20,
+   "custom_pool": "",
+   "types": [
+    "full_config",
+    "block_group"
+   ],
+   "item_count": 12,
+   "marks": 5,
+   "notation_order": "shell",
+   "diagram_scope": "full",
+   "error_kinds": [
+    "aufbau",
+    "pauli",
+    "hund",
+    "spin"
+   ],
+   "allow_shorthand": false,
+   "show_element_names": false,
+   "shuffle": true,
+   "no_repeat": true,
+   "seed": 943640,
+   "avoid_heavy": true,
+   "instructions": "Answer each item in the space provided. Use the notation discussed in class. Show your work for any orbital diagram."
+  },
+  "items": [
+   {
+    "z": 5,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Boron, B (Z = 5).",
+    "answer": "1s² 2s² 2p¹",
+    "answer_lines": [],
+    "answer_shorthand": "[He] 2s² 2p¹",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 1
+   },
+   {
+    "z": 3,
+    "type": "block_group",
+    "type_label": "Block, group and period",
+    "prompt": "From the electron configuration alone, state the block, the group and the period of Lithium, Li (Z = 3).",
+    "answer": "s-block, group 1, period 2",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Configuration: 1s² 2s¹. Valence electrons: 1.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 2
+   },
+   {
+    "z": 19,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Potassium, K (Z = 19).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹",
+    "answer_lines": [],
+    "answer_shorthand": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 3
+   },
+   {
+    "z": 11,
+    "type": "block_group",
+    "type_label": "Block, group and period",
+    "prompt": "From the electron configuration alone, state the block, the group and the period of Sodium, Na (Z = 11).",
+    "answer": "s-block, group 1, period 3",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Configuration: 1s² 2s² 2p⁶ 3s¹. Valence electrons: 1.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 4
+   },
+   {
+    "z": 6,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Carbon, C (Z = 6).",
+    "answer": "1s² 2s² 2p²",
+    "answer_lines": [],
+    "answer_shorthand": "[He] 2s² 2p²",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 5
+   },
+   {
+    "z": 13,
+    "type": "block_group",
+    "type_label": "Block, group and period",
+    "prompt": "From the electron configuration alone, state the block, the group and the period of Aluminium, Al (Z = 13).",
+    "answer": "p-block, group 13, period 3",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Configuration: [Ne] 3s² 3p¹. Valence electrons: 3.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 6
+   },
+   {
+    "z": 14,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Silicon, Si (Z = 14).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p²",
+    "answer_lines": [],
+    "answer_shorthand": "[Ne] 3s² 3p²",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 7
+   },
+   {
+    "z": 18,
+    "type": "block_group",
+    "type_label": "Block, group and period",
+    "prompt": "From the electron configuration alone, state the block, the group and the period of Argon, Ar (Z = 18).",
+    "answer": "p-block, group 18, period 3",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Configuration: [Ne] 3s² 3p⁶. Valence electrons: 8.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 8
+   },
+   {
+    "z": 20,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Calcium, Ca (Z = 20).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²",
+    "answer_lines": [],
+    "answer_shorthand": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 9
+   },
+   {
+    "z": 16,
+    "type": "block_group",
+    "type_label": "Block, group and period",
+    "prompt": "From the electron configuration alone, state the block, the group and the period of Sulfur, S (Z = 16).",
+    "answer": "p-block, group 16, period 3",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Configuration: [Ne] 3s² 3p⁴. Valence electrons: 6.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 10
+   },
+   {
+    "z": 10,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Neon, Ne (Z = 10).",
+    "answer": "1s² 2s² 2p⁶",
+    "answer_lines": [],
+    "answer_shorthand": "[He] 2s² 2p⁶",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 11
+   },
+   {
+    "z": 7,
+    "type": "block_group",
+    "type_label": "Block, group and period",
+    "prompt": "From the electron configuration alone, state the block, the group and the period of Nitrogen, N (Z = 7).",
+    "answer": "p-block, group 15, period 2",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Configuration: [He] 2s² 2p³. Valence electrons: 5.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 12
+   }
+  ],
+  "total_marks": 60,
+  "slug": "electron-configuration-practice",
+  "type_summary": {
+   "full_config": 6,
+   "block_group": 6
+  },
+  "element_count": 12,
+  "generated_at": "2026-11-07T07:25:23",
+  "id": "2ff2d99a63b3",
+  "saved_at": "2026-11-07T07:25:23"
+ },
+ {
+  "settings": {
+   "title": "Electron Configuration Practice",
+   "class_name": "",
+   "section": "",
+   "teacher": "Main admin",
+   "date": "November 07, 2026",
+   "tier": "standard",
+   "pool_mode": "preset",
+   "preset": "periods1_4",
+   "z_min": 1,
+   "z_max": 20,
+   "custom_pool": "",
+   "types": [],
+   "item_count": 12,
+   "marks": 5,
+   "notation_order": "shell",
+   "diagram_scope": "full",
+   "error_kinds": [
+    "aufbau",
+    "pauli",
+    "hund",
+    "spin"
+   ],
+   "allow_shorthand": false,
+   "show_element_names": false,
+   "shuffle": true,
+   "no_repeat": true,
+   "seed": 915940,
+   "avoid_heavy": true,
+   "instructions": "Answer each item in the space provided. Use the notation discussed in class. Show your work for any orbital diagram."
+  },
+  "items": [
+   {
+    "z": 13,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Aluminium, Al (Z = 13).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p¹",
+    "answer_lines": [],
+    "answer_shorthand": "[Ne] 3s² 3p¹",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 1
+   },
+   {
+    "z": 31,
+    "type": "shorthand",
+    "type_label": "Noble-gas shorthand",
+    "prompt": "Write the noble-gas (shorthand) electron configuration of Gallium, Ga (Z = 31).",
+    "answer": "[Ar] 3d¹⁰ 4s² 4p¹",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Full form: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p¹. Core is Ar (Z = 18).",
+    "marks": 5,
+    "workspace": 1,
+    "number": 2
+   },
+   {
+    "z": 24,
+    "type": "orbital_diagram",
+    "type_label": "Orbital diagram (box form)",
+    "prompt": "Draw the orbital diagram (boxes with ↑ and ↓ arrows) for Chromium, Cr (Z = 24).",
+    "answer": " 1s [↑↓]   2s [↑↓]   2p [↑↓] [↑↓] [↑↓]   3s [↑↓]   3p [↑↓] [↑↓] [↑↓]   3d [↑ ] [↑ ] [↑ ] [↑ ] [↑ ]   4s [↑ ]",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": [
+     {
+      "sublevel": "1s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "2s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "2p",
+      "count": 6,
+      "capacity": 6,
+      "type": "p",
+      "boxes": [
+       "↑↓",
+       "↑↓",
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "3s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "3p",
+      "count": 6,
+      "capacity": 6,
+      "type": "p",
+      "boxes": [
+       "↑↓",
+       "↑↓",
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "3d",
+      "count": 5,
+      "capacity": 10,
+      "type": "d",
+      "boxes": [
+       "↑",
+       "↑",
+       "↑",
+       "↑",
+       "↑"
+      ]
+     },
+     {
+      "sublevel": "4s",
+      "count": 1,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑"
+      ]
+     }
+    ],
+    "error": null,
+    "note": "Hund's rule: single occupancy across the degenerate boxes before any pair. Pauli: a pair is always ↑↓.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 3
+   },
+   {
+    "z": 5,
+    "type": "identify_element",
+    "type_label": "Identify the element",
+    "prompt": "Identify the element described by this configuration: 1s² 2s² 2p¹\nGive its symbol, name and atomic number.",
+    "answer": "B, Boron, Z = 5",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Shorthand: [He] 2s² 2p¹. Shells: 2, 3.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 4
+   },
+   {
+    "z": 16,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Sulfur, S (Z = 16).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p⁴",
+    "answer_lines": [],
+    "answer_shorthand": "[Ne] 3s² 3p⁴",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 5
+   },
+   {
+    "z": 33,
+    "type": "shorthand",
+    "type_label": "Noble-gas shorthand",
+    "prompt": "Write the noble-gas (shorthand) electron configuration of Arsenic, As (Z = 33).",
+    "answer": "[Ar] 3d¹⁰ 4s² 4p³",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Full form: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p³. Core is Ar (Z = 18).",
+    "marks": 5,
+    "workspace": 1,
+    "number": 6
+   },
+   {
+    "z": 4,
+    "type": "orbital_diagram",
+    "type_label": "Orbital diagram (box form)",
+    "prompt": "Draw the orbital diagram (boxes with ↑ and ↓ arrows) for Beryllium, Be (Z = 4).",
+    "answer": " 1s [↑↓]   2s [↑↓]",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": [
+     {
+      "sublevel": "1s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "2s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     }
+    ],
+    "error": null,
+    "note": "Hund's rule: single occupancy across the degenerate boxes before any pair. Pauli: a pair is always ↑↓.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 7
+   },
+   {
+    "z": 20,
+    "type": "identify_element",
+    "type_label": "Identify the element",
+    "prompt": "Identify the element described by this configuration: 1s² 2s² 2p⁶ 3s² 3p⁶ 4s²\nGive its symbol, name and atomic number.",
+    "answer": "Ca, Calcium, Z = 20",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Shorthand: 1s² 2s² 2p⁶ 3s² 3p⁶ 4s². Shells: 2, 8, 8, 2.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 8
+   },
+   {
+    "z": 14,
+    "type": "full_config",
+    "type_label": "Full electron configuration",
+    "prompt": "Write the full electron configuration of Silicon, Si (Z = 14).",
+    "answer": "1s² 2s² 2p⁶ 3s² 3p²",
+    "answer_lines": [],
+    "answer_shorthand": "[Ne] 3s² 3p²",
+    "diagram": null,
+    "error": null,
+    "note": "",
+    "marks": 5,
+    "workspace": 2,
+    "number": 9
+   },
+   {
+    "z": 36,
+    "type": "shorthand",
+    "type_label": "Noble-gas shorthand",
+    "prompt": "Write the noble-gas (shorthand) electron configuration of Krypton, Kr (Z = 36).",
+    "answer": "[Ar] 3d¹⁰ 4s² 4p⁶",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Full form: 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p⁶. Core is Ar (Z = 18).",
+    "marks": 5,
+    "workspace": 1,
+    "number": 10
+   },
+   {
+    "z": 17,
+    "type": "orbital_diagram",
+    "type_label": "Orbital diagram (box form)",
+    "prompt": "Draw the orbital diagram (boxes with ↑ and ↓ arrows) for Chlorine, Cl (Z = 17).",
+    "answer": " 1s [↑↓]   2s [↑↓]   2p [↑↓] [↑↓] [↑↓]   3s [↑↓]   3p [↑↓] [↑↓] [↑ ]",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": [
+     {
+      "sublevel": "1s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "2s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "2p",
+      "count": 6,
+      "capacity": 6,
+      "type": "p",
+      "boxes": [
+       "↑↓",
+       "↑↓",
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "3s",
+      "count": 2,
+      "capacity": 2,
+      "type": "s",
+      "boxes": [
+       "↑↓"
+      ]
+     },
+     {
+      "sublevel": "3p",
+      "count": 5,
+      "capacity": 6,
+      "type": "p",
+      "boxes": [
+       "↑↓",
+       "↑↓",
+       "↑"
+      ]
+     }
+    ],
+    "error": null,
+    "note": "Hund's rule: single occupancy across the degenerate boxes before any pair. Pauli: a pair is always ↑↓.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 11
+   },
+   {
+    "z": 3,
+    "type": "identify_element",
+    "type_label": "Identify the element",
+    "prompt": "Identify the element described by this configuration: 1s² 2s¹\nGive its symbol, name and atomic number.",
+    "answer": "Li, Lithium, Z = 3",
+    "answer_lines": [],
+    "answer_shorthand": null,
+    "diagram": null,
+    "error": null,
+    "note": "Shorthand: 1s² 2s¹. Shells: 2, 1.",
+    "marks": 5,
+    "workspace": 1,
+    "number": 12
+   }
+  ],
+  "total_marks": 60,
+  "slug": "electron-configuration-practice",
+  "type_summary": {
+   "full_config": 3,
+   "shorthand": 3,
+   "orbital_diagram": 3,
+   "identify_element": 3
+  },
+  "element_count": 12,
+  "generated_at": "2026-11-07T07:26:09",
+  "id": "cb06f5cba137",
+  "saved_at": "2026-11-07T07:26:09"
+ }
+]

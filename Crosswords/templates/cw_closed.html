@@ -1,0 +1,13 @@
+{% extends "cw_base.html" %}
+{% block title %}Teachers only{% endblock %}
+{% block body %}
+<section class="card">
+  <h2>Teachers only</h2>
+  <p class="muted">Building crossword puzzles belongs to the teachers of the Review
+    Center. Log in with a teacher or admin account to write the ten words,
+    their clues and the sheet downloads.</p>
+  <p class="row">
+    <a class="btn" href="{{ back_url or url_for('crossword.index') }}">Back to the games</a>
+  </p>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "elementals_base.html" %}
+{% block title %}Play{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Guess the symbol</h2>
+  <p class="muted">{{ total }} elements are drawn from the database at random. Read the clues, then give the
+    <b>chemical symbol</b>. Choose how hard the round should be below.</p>
+
+  <form method="post" action="{{ url_for('game.start') }}" novalidate>
+    {% if account %}
+    <div class="who-card">
+      <span class="who-label">Playing as</span>
+      <b class="who-name">{{ account.name }}</b>
+      {% if account.grade or account.section %}
+      <span class="who-meta">{{ [account.grade, account.section]|select|join(' · ') }}</span>
+      {% endif %}
+      <p class="muted">This comes from your Review Center account, so there is nothing to type.
+        It is printed on your result sheet.</p>
+    </div>
+    {% else %}
+    <label for="nm">Student name (required)</label>
+    <input type="text" id="nm" name="student" maxlength="60" autocomplete="name"
+           placeholder="e.g. Juan Dela Cruz" required {% if missing %}class="oops"{% endif %}>
+    <label for="gr">Grade <span style="font-weight:400">(optional)</span></label>
+    <input type="text" id="gr" name="grade" maxlength="20" placeholder="e.g. Grade 9">
+    <label for="sec">Section <span style="font-weight:400">(optional)</span></label>
+    <input type="text" id="sec" name="section" maxlength="20" placeholder="e.g. Rizal">
+    {% endif %}
+
+    <label>Level</label>
+    <div class="levels">
+      <label class="level on">
+        <input type="radio" name="level" value="standard" checked>
+        <b>{{ levels.standard }}</b>
+        <span>The clues plus six symbol buttons at the side. You may also type the symbol, and any
+          letter case is accepted: <b>fe</b>, <b>FE</b>, <b>Fe</b> all count.</span>
+      </label>
+      <label class="level">
+        <input type="radio" name="level" value="hard">
+        <b>{{ levels.hard }}</b>
+        <span>Only the clues &mdash; no choices are shown. You must type the symbol yourself,
+          written exactly as the periodic table writes it: a capital first letter and, when there is
+          one, a lowercase second letter. <b>Fe</b> is correct, <b>fe</b> and <b>FE</b> are not.</span>
+      </label>
+    </div>
+
+    {% if missing %}<p class="fb no">Please write your name first &mdash; it goes on the result sheet.</p>{% endif %}
+    <button class="wide" type="submit">Start the activity</button>
+  </form>
+</section>
+
+<section class="card">
+  <h3>How it scores</h3>
+  <ul class="how">
+    <li>One attempt per item &mdash; on the standard level a pressed choice answers it for you.</li>
+    <li>The level is fixed when the activity starts and is printed on the result sheet.</li>
+    <li>On the hard level the capitalisation is part of the answer: right letters in the wrong case
+      are marked wrong, and the feedback tells you when that happened.</li>
+    <li>1 point per item, {{ total }} points in total, and the answer is marked on this computer.</li>
+    <li>After every try the completed element tile appears with its atomic number, symbol, name, atomic
+      mass, electron configuration, oxidation states, state of matter and metal class.</li>
+    <li>Download your result sheet as a PNG for the teacher.</li>
+    <li>This sprint is practice: its score is not filed under your Review Center
+      results, which only keep quiz attempts.</li>
+  </ul>
+  <p class="muted">Want to look at the tiles first? Open the <a href="{{ url_for('game.table') }}">periodic table</a> &mdash;
+    it works with no internet.</p>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+Array.prototype.forEach.call(document.querySelectorAll(".level input"), function (r) {
+  r.addEventListener("change", function () {
+    Array.prototype.forEach.call(document.querySelectorAll(".level"), function (l) {
+      l.classList.toggle("on", l.querySelector("input").checked);
+    });
+  });
+});
+</script>
+{% endblock %}

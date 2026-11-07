@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <h2>Educational Games</h2>
+    {% if user %}
+        <p>Playing as <b class="user-email">{{ user.full_name() }}</b>
+            {% if user.grade %}&middot; {{ user.grade }} {% if user.section %}{{ user.section }}{% endif %}{% endif %}.
+            Signed-in students never have to type their name again.</p>
+    {% endif %}
+
+    <div class="games-grid">
+        <div class="game-card">
+            <span class="game-tag">Science</span>
+            <h3>ELEMENTALS &mdash; Periodic Table Symbol Sprint</h3>
+            <p>Ten elements drawn at random, three clues each. Give the chemical symbol from the six
+                choices, or spell it out on the Hard level. A tile with the atomic number, mass,
+                electron configuration and metal class appears after every try.</p>
+            <ul class="game-facts">
+                <li>One player, self-paced</li>
+                <li>Standard and Hard levels</li>
+                <li>Result sheet downloads as a PNG</li>
+            </ul>
+            {% if elementals %}
+                <a href="/game/" class="btn btn-primary cta">Play ELEMENTALS</a>
+                {% if is_staff %}
+                    <a href="/game/worksheet" class="btn btn-outline cta">Prepare worksheets</a>
+                {% endif %}
+            {% else %}
+                <p class="games-off">This game is not installed on this copy.</p>
+            {% endif %}
+        </div>
+
+        <div class="game-card">
+            <span class="game-tag">Science</span>
+            <h3>Elemental Table Game &mdash; Fill the Table</h3>
+            <p>The app deals {{ etable_rows }} elements across Element, Symbol, Mass Number,
+                Proton Number, Neutron Number, Electron Count, Valence Electron, Period and Group,
+                and empties {{ etable_blanks }} cells in every row. Type an answer in each one: the
+                clues left standing in the row are the laws of the atom, and no cell is emptied
+                unless those clues still pin it to a single value.</p>
+            <ul class="game-facts">
+                <li>{{ etable_points }} cells to fill &middot; {{ etable_points }} points at the most</li>
+                <li>Checked and scored by the app, one point per cell</li>
+                <li>The answered table downloads as a landscape sheet with its mark</li>
+            </ul>
+            {% if etable %}
+                <a href="/games/elemental-table/" class="btn btn-primary cta">Play Elemental Table Game</a>
+                {% if is_staff %}
+                    <a href="/games/elemental-table/worksheet" class="btn btn-outline cta">Prepare worksheets</a>
+                {% endif %}
+            {% else %}
+                <p class="games-off">This game is not installed on this copy.</p>
+            {% endif %}
+        </div>
+
+        <div class="game-card">
+            <span class="game-tag">All subjects</span>
+            <h3>Jumbled Letters &mdash; Topic Word Sprint</h3>
+            <p>Pick a Grade, Subject, Quarter and Topic exactly as you would for a quiz paper. Five
+                shuffled words appear one at a time for {{ word_seconds }} seconds, and the whole room
+                sees the same word at the same moment. Unscramble the topic word for
+                {{ target_points }} points, or build any other real word from the same letters for
+                {{ valid_points }} point.</p>
+            <ul class="game-facts">
+                <li>Up to {{ max_players }} players through one link</li>
+                <li>Champion, First Place and Second Place</li>
+                <li>A one-word clincher settles any tie</li>
+            </ul>
+            {% if jumbled %}
+                <a href="/games/jumbled/" class="btn btn-primary cta">Play Jumbled Letters</a>
+                {% if is_staff %}
+                    <a href="/games/jumbled/worksheet" class="btn btn-outline cta">Prepare worksheets</a>
+                {% endif %}
+            {% else %}
+                <p class="games-off">This game is not installed on this copy.</p>
+            {% endif %}
+        </div>
+
+        <div class="game-card">
+            <span class="game-tag">Written by a teacher</span>
+            <h3>Who&rsquo;s Who &mdash; Picture and Three Clues</h3>
+            <p>The admin writes each activity: a title, and for every person a picture, the name and
+                three major clues. The letters of the name are shuffled as the free clue, so a round
+                starts without any hint at all.</p>
+            <ul class="game-facts">
+                <li>{{ act_count }} {{ 'activity' if act_count == 1 else 'activities' }} &middot;
+                    {{ act_people }} {{ 'person' if act_people == 1 else 'people' }} to guess</li>
+                <li>Reveal Clue 1, 2 or 3 and the person is worth 4, 3 or 2 points instead of 5</li>
+                <li>Play alone or open a room for up to {{ max_players }} players</li>
+            </ul>
+            {% if whoswho %}
+                <a href="/games/whoswho/" class="btn btn-primary cta">Play Who&rsquo;s Who</a>
+            {% else %}
+                <p class="games-off">This game is not installed on this copy.</p>
+            {% endif %}
+        </div>
+
+        <div class="game-card">
+            <span class="game-tag">All subjects</span>
+            <h3>Crosswords &mdash; Clue by Clue</h3>
+            <p>A teacher writes {{ crossword_words }} words with a clue each, and the app
+                interlocks them into one letter grid. Click the successive tiles that spell
+                your answer &mdash; across or down, forwards or backwards &mdash; then press
+                Check. An exact word is worth {{ crossword_points }} points; anything else
+                scores nothing. Retry as often as you like, your best attempt counts.</p>
+            <ul class="game-facts">
+                <li>{{ crossword_points }} points per exact word &middot; {{ crossword_max }} at the most</li>
+                <li>Timed board &mdash; the total is revealed the moment it ends</li>
+                <li>Download your sheet as a PNG or a PDF; teachers also get the
+                    worksheet and the answer key</li>
+            </ul>
+            {% if crossword %}
+                <a href="/games/crossword/" class="btn btn-primary cta">Play Crosswords</a>
+            {% else %}
+                <p class="games-off">This game is not installed on this copy.</p>
+            {% endif %}
+        </div>
+
+        <div class="game-card">
+            <span class="game-tag">Science</span>
+            <h3>Quantum Architect &mdash; Build the Atom</h3>
+            <p>Place electrons into the orbital ladder for any element from
+                Z&nbsp;1 to Z&nbsp;{{ quantum_max_z }}, and the three quantum rules are the
+                physics of the game: Aufbau springs back an electron put in out of energy
+                order, Pauli refuses the third electron in one box, and Hund refuses the
+                early pair. Every rejection names the rule it broke and shows the box that
+                should have had it.</p>
+            <ul class="game-facts">
+                <li>Stability meter, countdown, streak multiplier and a three-star mark</li>
+                <li>Live notation in full, shorthand and shell form, mirrored by the
+                    electron cloud view</li>
+                <li>{{ quantum_types }} worksheet question types ({{ quantum_tiers }}) &mdash;
+                    the paper downloads as an editable DOCX and a print PDF</li>
+            </ul>
+            {% if quantum %}
+                <a href="/games/quantum-architect/play" class="btn btn-primary cta">Play Quantum Architect</a>
+                {% if is_staff %}
+                    <a href="/games/quantum-architect/worksheets/new" class="btn btn-outline cta">Prepare worksheets</a>
+                {% endif %}
+            {% else %}
+                <p class="games-off">This game is not installed on this copy.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

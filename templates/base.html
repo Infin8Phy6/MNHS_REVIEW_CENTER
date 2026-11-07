@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNHS REVIEW CENTER</title>
+    <link rel="icon" href="/static/icon-192.png" sizes="192x192" type="image/png">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MNHS REVIEW CENTER">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js')
+      .then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      })
+      .catch(function(err) {
+        console.error('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+</script>
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-links">
+            {% if is_staff %}
+                {# Staff get one door only: everything else hangs off Staff Home. #}
+                <a href="/staff/home" class="nav-home">Staff Home</a>
+                {% if can('manage_teachers') or can('manage_teacher_assignment') or is_admin %}
+                <a href="/admin/staff" class="nav-staff">Staff</a>
+                {% endif %}
+            {% else %}
+                <a href="/home" class="nav-home">MNHS REVIEW CENTER</a>
+                <a href="/quiz_setup" class="nav-quiz">Take a Quiz</a>
+                {% if session['user_id'] %}
+                <a href="/materials" class="nav-resources">Materials</a>
+                {% endif %}
+                <a href="/games" class="nav-game">Educational Games</a>
+                {% if session['user_id'] %}
+                <span class="nav-drop">
+                    <button type="button" class="nav-drop-toggle nav-profile"
+                            aria-expanded="false" aria-haspopup="true">Profile<span
+                              class="nav-drop-caret" aria-hidden="true">&#9662;</span></button>
+                    <span class="nav-drop-panel" role="menu">
+                        <a href="/profile" role="menuitem" class="nav-profile">My Profile</a>
+                        <a href="/my-results" role="menuitem" class="nav-results">My Results</a>
+                    </span>
+                </span>
+                {% endif %}
+            {% endif %}
+            {% if session['user_id'] or is_staff %}
+                <a href="/logout" class="nav-logout">Logout</a>
+            {% else %}
+                <a href="/login" class="nav-login">Log In</a>
+                <a href="/signup" class="nav-signup nav-auth-btn">Sign Up</a>
+                <a href="/admin/login" class="nav-admin-login">Admin Log In</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+<script>
+  window.RH_LOGGED_IN = {{ 'true' if (session.get('user_id') or is_staff) else 'false' }};
+
+  // Offline sync worker: pushes saved quiz attempts to the server whenever
+  // the user is logged in and online. Attempts saved while offline (or while
+  // logged out) wait in localStorage until this succeeds.
+  (function () {
+    function getJSON(key, fallback) {
+      try { var v = JSON.parse(localStorage.getItem(key)); return (v === null || v === undefined) ? fallback : v; }
+      catch (e) { return fallback; }
+    }
+
+    async function syncOutbox() {
+      if (!window.RH_LOGGED_IN || !navigator.onLine) return;
+
+      var outbox = getJSON('rh_outbox', []);
+      var hadPending = false;
+
+      var pending = getJSON('rh_pending_attempt', null);
+      if (pending && pending.client_uuid) {
+        if (!outbox.some(function (a) { return a.client_uuid === pending.client_uuid; })) {
+          outbox.push(pending);
+        }
+        localStorage.removeItem('rh_pending_attempt');
+        hadPending = true;
+      }
+      if (!outbox.length) return;
+
+      try {
+        var res = await fetch('/api/attempts/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ attempts: outbox })
+        });
+        if (res.ok) {
+          localStorage.setItem('rh_outbox', JSON.stringify([]));
+          if (hadPending) showToast('Your quiz result has been saved to your account.');
+        }
+      } catch (e) { /* still offline - keep the outbox for the next try */ }
+    }
+
+    // A quiz the student answered "No Thanks" to goes to its own table: it must
+    // never reach their results, but the answers still show how an item went.
+    async function syncUngraded() {
+      if (!navigator.onLine) return;
+      var out = getJSON('rh_ungraded_outbox', []);
+      if (!out.length) return;
+      try {
+        var res = await fetch('/api/attempts/ungraded', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ attempts: out })
+        });
+        if (res.ok) localStorage.setItem('rh_ungraded_outbox', JSON.stringify([]));
+      } catch (e) { /* still offline - keep them on the device for the next try */ }
+    }
+
+    function queueUngraded(attempt) {
+      if (!attempt || !attempt.client_uuid) return;
+      var out = getJSON('rh_ungraded_outbox', []);
+      if (!out.some(function (a) { return a.client_uuid === attempt.client_uuid; })) {
+        out.push(attempt);
+      }
+      localStorage.setItem('rh_ungraded_outbox', JSON.stringify(out));
+      syncUngraded();
+    }
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'rh-toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.classList.add('show'); }, 30);
+      setTimeout(function () { t.classList.remove('show'); }, 5000);
+      setTimeout(function () { t.remove(); }, 5600);
+    }
+
+    window.RH_SYNC = syncOutbox;
+    window.RH_UNGRADED = queueUngraded;
+    syncOutbox();
+    syncUngraded();
+    window.addEventListener('online', function () { syncOutbox(); syncUngraded(); });
+  })();
+</script>
+
+<script>
+  // The cascading menus in the app bar: Profile and Assessment are the triggers,
+  // and their pages hang below them. Placement is done here rather than in CSS
+  // because the panel must be measured against the item it drops from, and the
+  // bar it sits in scrolls sideways.
+  (function () {
+    var drops = Array.prototype.slice.call(document.querySelectorAll('.nav-drop'));
+    if (!drops.length) return;
+    var hoverable = window.matchMedia('(hover: hover)').matches;
+
+    function toggleOf(drop) { return drop.querySelector('.nav-drop-toggle'); }
+
+    function close(drop) {
+      drop.classList.remove('is-open');
+      drop.removeAttribute('data-pinned');
+      toggleOf(drop).setAttribute('aria-expanded', 'false');
+    }
+
+    function place(drop) {
+      var panel = drop.querySelector('.nav-drop-panel');
+      var box = toggleOf(drop).getBoundingClientRect();
+      panel.style.visibility = 'hidden';
+      var width = panel.offsetWidth || 176;
+      var left = Math.min(box.left, window.innerWidth - width - 8);
+      panel.style.left = Math.max(8, left) + 'px';
+      panel.style.top = (drop.getBoundingClientRect().bottom + 6) + 'px';
+      panel.style.visibility = '';
+    }
+
+    function open(drop, pinned) {
+      drops.forEach(close);
+      drop.classList.add('is-open');
+      toggleOf(drop).setAttribute('aria-expanded', 'true');
+      if (pinned) drop.setAttribute('data-pinned', '1');
+      place(drop);
+    }
+
+    drops.forEach(function (drop) {
+      toggleOf(drop).addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var pinned = drop.getAttribute('data-pinned') === '1';
+        if (drop.classList.contains('is-open') && pinned) { close(drop); } else { open(drop, true); }
+      });
+      if (hoverable) {
+        // A pointer that passes over previews the menu; a click holds it open.
+        drop.addEventListener('mouseenter', function () {
+          if (!drop.classList.contains('is-open')) open(drop, false);
+        });
+        drop.addEventListener('mouseleave', function () {
+          if (drop.getAttribute('data-pinned') !== '1') close(drop);
+        });
+      }
+    });
+
+    document.addEventListener('click', function (event) {
+      drops.forEach(function (drop) {
+        if (!drop.contains(event.target)) close(drop);
+      });
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        drops.forEach(function (drop) {
+          if (drop.classList.contains('is-open')) toggleOf(drop).focus();
+          close(drop);
+        });
+      }
+    });
+    window.addEventListener('scroll', function () {
+      drops.forEach(function (drop) { if (drop.classList.contains('is-open')) place(drop); });
+    }, true);
+    window.addEventListener('resize', function () { drops.forEach(close); });
+  })();
+</script>
+{% if session['user_id'] or is_staff %}
+<script src="/static/push-reminders.js" defer></script>
+{% endif %}
+</body>
+</html>

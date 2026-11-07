@@ -1,0 +1,101 @@
+it will be in flask 
+
+i need a game about periodic table of elements
+we need the player to guess and provide the correct symbol
+ we need the element tiles 
+Atomic NumberWhat it is: The number of protons found in the nucleus of an atom of that element.Where it is: Usually located in the top-left or top-center corner of the tile. It determines the element's position and unique identity on the table.Chemical SymbolWhat it is: A one-, two-, or three-letter abbreviation representing the element (e.g., H for Hydrogen, Na for Sodium, Au for Gold). The first letter is always capitalized, and any subsequent letters are lowercase.Where it is: Centered prominently in the middle of the tile in a larger font. Many symbols are derived from Latin or Greek names.Element NameWhat it is: The full common name of the element (e.g., Carbon, Oxygen, Iron).Where it is: Usually displayed directly below the chemical symbol. (Note: Some compact or miniature periodic tables omit the full name to save space).Atomic Mass (or Atomic Weight)What it is: The weighted average mass of all the naturally occurring isotopes of that element, measured in atomic mass units (amu).Where it is: Located near the bottom of the tile, often presented as a decimal number.Additional Information (Found in Advanced Periodic Tables)Depending on the specific periodic table, tiles may also contain supplementary data:Electron Configuration: Shows how electrons are distributed across the element's atomic orbitals (e.g., $1s^2 2s^2$).Oxidation States / Common Charges: Lists the electrical charges the element typically adopts when forming chemical compounds.State of Matter / Color Coding: The text color, background color, or state indicator often shows whether the element is a solid, liquid, or gas at room temperature, as well as its classification (such as metal, nonmetal, or metalloid).
+betwer to have the database. 
+
+and can be played ofline so they should be able to download it and install the app 
+
+based on clues
+10 items  
+activity with score 
+allow the student to Fillout their names 
+ can be exported to png
+
+ we need the element tiles 
+
+say the english name is given and the player willl guess (type or click among the choices (button form at the side of the pannel))
+presentation of elements must be random 
+at the end of the game the player will know the score 
+10 items  
+activity with score 
+allow the student to Fillout their names 
+ can be exported to png
+
+
+
+
+ionization game
+there are only a number of elements that may react with one another 
+under normal condition
+the player will input the oxidation number of reactants and will try to drag one molecule
+to another and if they can be reacted and valid to react there
+will form a product and will gain a score
+
+10 items  and the 
+activity with score can be exported to png 
+
+isotope game
+there is a list of valid isotopes for a certain element
+the player shall input the correct nuclear configuration for a said isotope,
+so we spit out a random example 
+and the answer will be checked if the player is able to give the correct 
+configuration. 
+
+10 items  and the 
+activity with score can be exported to png 
+
+
+calculating 
+number of moles
+we will store chemical formula of element, compounds, substance,
+the console will give random amount in grams that the student needs to solve for the amount of moles
+the players needs to give the correct atomic mass 
+before the computation can be considered correct. 
+
+10 items  and the 
+activity with score can be exported to png 
+
+
+
+Stoich game
+the level up of ionization game
+where the player has to indicate the correct oxidation number 
+stoichiometric numerical coefficient and if correct will display the 
+chemical formula and name of the chemical produced.
+
+10 items  and the 
+activity with score can be exported to png 
+
+Balancing game
+the level up of stoic game 
+the player needs to give the correct oxidation number (reactant and product),
+ stoichiometric numerical coefficient (reactant and product), 
+ type of reactant, type of products produced 
+
+ 10 items  and the 
+activity with score can be exported to png 
+
+
+ Limiting Reactant game,
+
+ there is a  particular amount of reactant producing the theoretical maximum 
+ yield.
+ the console will display a valid chemical equation 
+ the player will guess the amount in grams that will produce the maximum yield
+ considering efficiency
+ so if they have used an excess amount of a reactant while producing 
+ only the theoretical amount, then its not efficient and its not the answer. 
+if they get the correct figure they will gain a score. 
+
+10 items  and the 
+activity with score can be exported to png 
+
+
+
+
+
+
+

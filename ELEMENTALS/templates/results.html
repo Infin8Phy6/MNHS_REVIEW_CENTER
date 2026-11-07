@@ -1,0 +1,35 @@
+{% extends "elementals_base.html" %}
+{% block title %}Saved scores{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>{% if account %}Your saved scores{% else %}Saved scores{% endif %}</h2>
+  <p class="muted">Each round is written to {{ db_name }} so an unfinished attempt can be reopened.
+    These are practice scores and are separate from the quiz results in the Review Center.</p>
+  {% if account %}<p class="muted">Signed in as {{ account.account }} &mdash; only your own rounds are listed.</p>{% endif %}
+  {% if games %}
+  <table class="res">
+    <thead><tr><th>#</th><th>Student</th><th>Class</th><th>Level</th><th>Started</th><th>Score</th><th></th></tr></thead>
+    <tbody>
+      {% for g in games %}
+      <tr>
+        <td>{{ g.id }}</td>
+        <td><b>{{ g.student }}</b></td>
+        <td>{% if g.grade or g.section %}{{ g.grade }} {{ g.section }}{% else %}&mdash;{% endif %}</td>
+        <td>{% if g.level == 'hard' %}<b>Hard</b>{% else %}Choices{% endif %}</td>
+        <td>{{ g.started }}</td>
+        <td>{% if g.finished %}<b>{{ g.score }} / {{ g.total }}</b>{% else %}{{ g.score }} / {{ g.total }} &middot; in progress{% endif %}</td>
+        <td class="c"><a href="{{ url_for('game.play', token=g.token) }}">open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">{% if account %}You have not played a sprint yet.
+    {% elif back_url %}Only the rounds started on this device are listed here, and none of them
+    is saved yet.
+    {% else %}No activity has been played yet.{% endif %}</p>
+  {% endif %}
+  <div class="row2" style="margin-top:16px"><a class="btnlink" href="{{ url_for('game.index') }}">Start a new activity</a></div>
+</section>
+{% endblock %}

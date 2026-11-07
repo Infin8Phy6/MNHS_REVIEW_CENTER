@@ -1,0 +1,85 @@
+{% extends "jl_base.html" %}
+{% block title %}Start a room{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Play Jumbled Letters</h2>
+  <p class="muted">Choose the same path you would choose for a quiz paper. Five words taken from that
+    topic are shuffled at random. Play alone, or share one link so the whole room sees the same
+    word at the same moment.</p>
+
+  <div class="modes" role="tablist">
+    <button type="button" class="mode on" id="modeSolo" aria-selected="true">Single player</button>
+    <button type="button" class="mode" id="modeRoom" aria-selected="false">Multiplayer room</button>
+  </div>
+
+  <form method="post" action="{{ url_for('jumbled.create') }}" id="setupForm">
+    <div class="grid">
+      <div>
+        <label for="grade">Grade level</label>
+        <select id="grade" name="grade" required></select>
+      </div>
+      <div>
+        <label for="subject">Subject</label>
+        <select id="subject" name="subject" required></select>
+      </div>
+      <div>
+        <label for="quarter">Quarter</label>
+        <select id="quarter" name="quarter" required></select>
+      </div>
+      <div>
+        <label for="topic">Topic</label>
+        <select id="topic" name="topic" required></select>
+      </div>
+    </div>
+
+    {% if account %}
+    <div class="who-card">
+      <span class="who-label">You play as</span>
+      <b class="who-name">{{ account.name }}</b>
+      {% if account.grade or account.section %}
+      <span class="who-meta">{{ [account.grade, account.section]|select|join(' · ') }}</span>
+      {% endif %}
+      <p class="muted">Taken from your Review Center account, so there is nothing to type.
+        Anyone without an account types their own name, and that name goes on the result sheet.</p>
+    </div>
+    {% else %}
+    <label for="nickname">Your name (required)</label>
+    <input type="text" id="nickname" name="nickname" maxlength="30" autocomplete="name"
+           placeholder="e.g. Juan Dela Cruz" value="{{ request.cookies.get('jl_nick', '') }}" required>
+    <p class="muted">Printed on your A4 result sheet, so write the name your teacher knows you by.</p>
+    {% endif %}
+
+    <input type="hidden" name="solo" id="soloField" value="1">
+    {% if missing %}<p class="fb no">That topic has no words yet &mdash; pick another one.</p>{% endif %}
+    <button class="wide" type="submit" id="goBtn">Play alone</button>
+    <p class="muted small" id="modeNote">One player, five words, {{ word_seconds }} seconds each.
+      Nothing to wait for &mdash; the first word appears as soon as you press the button.</p>
+    <p class="muted small hide" id="roomNote">Up to {{ max_players }} players share one room, and each
+      word is on the screen for {{ word_seconds }} seconds.</p>
+  </form>
+</section>
+
+<section class="card">
+  <h3>How a round scores</h3>
+  <ul class="how">
+    <li>The topic word itself is worth <b>{{ target_points }} points</b>.</li>
+    <li>Any other real word you can build from the same letters is worth
+      <b>{{ valid_points }} point</b>, up to three bonus words per jumble.</li>
+    <li>Letters must come from the jumble &mdash; you cannot add letters it does not hold.</li>
+    <li>Once you give the topic word and <b>{{ min_valid_to_pass }} more real words</b>, that jumble
+      is cleared and the next one appears without waiting for the clock.</li>
+    <li>Five words per round, {{ word_seconds }} seconds each.</li>
+    <li>In a multiplayer room the highest score is <b>Champion</b>, then <b>First Place</b> and
+      <b>Second Place</b>; if those three are not settled, one extra <b>clincher</b> word is shown
+      and only the tied players may answer it.</li>
+    <li>Single player keeps the same timer and the same points, and ends on your own result card.</li>
+  </ul>
+</section>
+
+<script id="specTree" type="application/json">{{ tree|tojson }}</script>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('jumbled.static', filename='jl_setup.js') }}"></script>
+{% endblock %}

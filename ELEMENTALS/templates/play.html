@@ -1,0 +1,89 @@
+{% extends "elementals_base.html" %}
+{% block title %}Symbol sprint{% endblock %}
+{% block body %}
+
+<section class="card screen on" id="scr-play">
+  <div class="bar">
+    <span class="who" id="who">{{ game.student }}</span>
+    <span class="sp"></span>
+    <span class="chip lvl" id="lvl">{{ "Hard level" if game.level == "hard" else "With choices" }}</span>
+    <span class="chip" id="ctr">Item 1 of {{ game.total }}</span>
+    <span class="chip score" id="sc">Score {{ game.score }}</span>
+  </div>
+  <div class="track"><i id="pk"></i></div>
+
+  <div class="play" id="playbox">
+    <div>
+      <div class="ask">
+        <div id="mtile"></div>
+        <div>
+          <p class="lead">Element name</p>
+          <h2 id="ename">&nbsp;</h2>
+          <p class="place" id="place"></p>
+          <ol class="clues" id="clues"></ol>
+          <div class="askrow">
+            <input type="text" id="ans" maxlength="6" autocomplete="off" autocapitalize="off"
+                   autocorrect="off" spellcheck="false"
+                   placeholder="Symbol" aria-label="Type the chemical symbol">
+            <button id="chk">Check</button>
+            <span class="chip letters" id="letters" hidden></span>
+          </div>
+          <div class="fb" id="fb" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="reveal" id="reveal" hidden></div>
+      <button class="wide ghost" id="nxt" hidden>Next item &rarr;</button>
+    </div>
+
+    <aside class="choices" id="choicebox">
+      <h4>Choices</h4>
+      <p class="hint">Press one to answer, or type it instead.</p>
+      <div id="opts"></div>
+    </aside>
+  </div>
+</section>
+
+<section class="card screen" id="scr-end">
+  <div class="grade">
+    <div class="big" id="fin">0<small> / {{ game.total }}</small></div>
+    <div class="msg" id="fmsg"></div>
+    <span class="chip" id="fpct"></span>
+    <span class="chip lvl" id="flvl" hidden></span>
+  </div>
+  <h3>Item by item</h3>
+  <table class="res">
+    <thead><tr><th>#</th><th>Element</th><th>Your answer</th><th>Symbol</th><th class="c">Result</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="row2" style="margin-top:16px">
+    <button id="dl">Download PNG</button>
+  </div>
+  <p class="muted" id="dlnote"></p>
+  <form method="post" action="{{ url_for('game.start') }}" style="margin-top:10px">
+    <input type="hidden" name="student" value="{{ game.student }}">
+    <input type="hidden" name="grade" value="{{ game.grade }}">
+    <input type="hidden" name="section" value="{{ game.section }}">
+    <input type="hidden" name="level" value="{{ game.level }}">
+    <div class="row2">
+      <button class="ghost" type="submit">Play again (new {{ game.total }} items)</button>
+      <a class="ghost btnlink" href="{{ url_for('game.index') }}">Change name</a>
+      <a class="btnlink" href="{{ url_for('game.table') }}">Study the tiles</a>
+    </div>
+  </form>
+</section>
+
+<section class="card screen" id="scr-sheet">
+  <h3>Your result sheet</h3>
+  <p class="muted">This is exactly what the PNG shows, so the student can print it or send the file to the teacher.</p>
+  <canvas id="sheet" width="1000" height="1100"></canvas>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.EL_TOKEN = {{ game.token|tojson }};
+  window.EL_BASE = {{ url_for('game.index')|tojson }};
+</script>
+<script src="{{ url_for('game.static', filename='game.js') }}"></script>
+{% endblock %}

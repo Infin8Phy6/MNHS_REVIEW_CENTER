@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Quantum Architect{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('qa.static', filename='css/app.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<header class="topbar">
+  <a class="brand" href="{{ url_for('qa.index') }}">
+    <span class="brand-mark">Q</span>
+    <span class="brand-text">Quantum&nbsp;Architect</span>
+  </a>
+  <nav aria-label="Main">
+    <a href="{{ url_for('qa.play') }}">Play</a>
+    {% if teacher %}
+      <a href="{{ url_for('qa.worksheets_list') }}">Worksheets</a>
+      <a href="{{ url_for('qa.atom_sheets_list') }}">Orbital sheets</a>
+      <a href="{{ url_for('qa.worksheet_new') }}">Create worksheet</a>
+      <span class="badge badge-teacher">teacher mode{% if teacher_label %} · {{ teacher_label }}{% endif %}</span>
+    {% elif login_url %}
+      <a href="{{ login_url }}">Staff sign-in</a>
+    {% endif %}
+    {% if back_url %}<a class="back-link" href="{{ back_url }}">&lsaquo; Educational Games</a>{% endif %}
+  </nav>
+</header>
+
+<main class="page">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>Quantum Architect · electron configuration board and worksheet studio ·
+     configurations verified for Z = 1–118.</p>
+</footer>
+</body>
+</html>

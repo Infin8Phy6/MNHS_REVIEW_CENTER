@@ -1,0 +1,82 @@
+{% extends "jl_base.html" %}
+{% block title %}Prepare a worksheet{% endblock %}
+{% block body %}
+
+<section class="card no-print">
+  <h2>Prepare a worksheet</h2>
+  <p class="muted">Choose the same path you would choose for a quiz paper. The app draws that
+    many words at random from the topic, shuffles the letters of each, and hands you the
+    <b>worksheet</b> &mdash; every jumble printed in letter boxes with a blank answer line
+    under it &mdash; and the <b>answer key</b> with the topic word written on each line.
+    Print either from this page, or download the two separate PDFs.</p>
+
+  <form method="post" action="{{ url_for('jumbled.worksheet_new') }}">
+    <div class="grid">
+      <div>
+        <label for="grade">Grade level</label>
+        <select id="grade" name="grade" required></select>
+      </div>
+      <div>
+        <label for="subject">Subject</label>
+        <select id="subject" name="subject" required></select>
+      </div>
+      <div>
+        <label for="quarter">Quarter</label>
+        <select id="quarter" name="quarter" required></select>
+      </div>
+      <div>
+        <label for="topic">Topic</label>
+        <select id="topic" name="topic" required></select>
+      </div>
+    </div>
+    <label for="count">Words on the sheet (5&ndash;20)</label>
+    <input type="number" id="count" name="count" min="5" max="20" step="1" value="10">
+    {% if missing %}<p class="fb no">That topic has no words yet &mdash; pick another one.</p>{% endif %}
+    <button class="wide" type="submit">Prepare the worksheet</button>
+  </form>
+</section>
+
+{% if token %}
+<section class="card">
+  <h3 class="no-print">This sheet &mdash; {{ path|select|join(' · ') }}</h3>
+  <div class="toolbar no-print">
+    <a class="wide" href="{{ url_for('jumbled.worksheet_pdf', token=token) }}">Download the worksheet (PDF)</a>
+    <a href="{{ url_for('jumbled.worksheet_key_pdf', token=token) }}">Download the answer key (PDF)</a>
+    {% if answers %}
+    <a href="{{ url_for('jumbled.worksheet_show', token=token) }}">Show the blank worksheet</a>
+    {% else %}
+    <a href="{{ url_for('jumbled.worksheet_show', token=token, answers=1) }}">Print with answers</a>
+    {% endif %}
+    <button type="button" onclick="window.print()">Print this page</button>
+  </div>
+
+  <div class="sheet">
+    <div class="sheet-title">Jumbled Letters &mdash; Topic Word Sprint
+      {% if answers %}<span class="sheet-tag">ANSWER KEY (staff)</span>{% endif %}</div>
+    <div class="sheet-line">Name __________________   Grade ____________   Section ____________</div>
+    {% if path|select %}<div class="sheet-note">Words taken from: {{ path|select|join(' · ') }}</div>{% endif %}
+    {% if not answers %}<div class="sheet-note">Unscramble the letters in the boxes and write the word on the line.</div>{% endif %}
+
+    <div class="jl-items">
+      {% for item in items %}
+      <div class="jl-item">
+        <span class="jl-no">{{ item.n }}.</span>
+        <span class="jl-boxes">
+          {% for ch in item.jumble %}<span class="jl-box">{{ ch }}</span>{% endfor %}
+        </span>
+        <span class="jl-answer">Answer:
+          {% if answers %}<b>{{ item.word }}</b>{% else %}<span class="jl-rule"></span>{% endif %}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<script id="specTree" type="application/json">{{ tree|tojson }}</script>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('jumbled.static', filename='jl_setup.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "cw_base.html" %}
+{% block title %}Your result{% endblock %}
+{% block body %}
+{% set numbers = {} %}
+{% for p in puzzle.placements %}{% if numbers.update({(p.at[0]|string) + ',' + (p.at[1]|string): p.n}) %}{% endif %}{% endfor %}
+
+<section class="card result">
+  <h2>#{{ puzzle.id }} &middot; {{ puzzle.title }}</h2>
+  <p class="total">
+    <b>{{ attempt.score }}</b> / {{ max_points }}
+    <span class="muted">
+      {% if attempt.reason == 'timeout' %}&middot; the clock ran out
+      {% elif attempt.reason == 'closed' %}&middot; the teacher closed this puzzle
+      {% else %}&middot; finished by you{% endif %}
+      {% if attempt.student %}&middot; {{ attempt.student }}
+        {% if attempt.grade %}{{ attempt.grade }}{% if attempt.section %} {{ attempt.section }}{% endif %}{% endif %}
+      {% endif %}
+    </span>
+  </p>
+
+  <div class="grid revealed" role="img" aria-label="the solved grid"
+       style="grid-template-columns:repeat({{ puzzle.cols }}, minmax(0, 1fr))">
+    {% for r in range(puzzle.rows) %}
+      {% for c in range(puzzle.cols) %}
+        <div class="cell has"><span class="num">{{ numbers.get(r ~ ',' ~ c, '') }}</span>{{ puzzle.grid[r][c] }}</div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <div class="marks">
+    {% for clue in data.clues|sort(attribute='n') %}
+      <p class="{{ 'hit' if clue.solved else 'miss' }}">
+        {{ clue.n }} {{ 'Across' if clue.dir == 'H' else 'Down' }}:
+        <b>{{ clue.word }}</b>
+        {% if clue.solved %}&mdash; +3 points{% else %}&mdash; 0 points{% endif %}
+      </p>
+    {% endfor %}
+  </div>
+
+  <div class="row wrap">
+    <button id="dl" class="btn primary" type="button">Download PNG</button>
+    <a class="btn" href="{{ url_for('crossword.pdf_attempt', token=attempt.token) }}">Download PDF</a>
+    <form method="post" action="{{ url_for('crossword.start', pid=puzzle.id) }}" style="display:inline">
+      <button class="btn" type="submit" {% if puzzle.status != 'open' %}disabled{% endif %}>Try again</button>
+    </form>
+    <a class="btn" href="{{ url_for('crossword.index') }}">All puzzles</a>
+  </div>
+  <p id="note" class="say"></p>
+</section>
+
+<script type="application/json" id="sheetData">{{ sheet | safe }}</script>
+{% endblock %}
+{% block script %}
+<script src="{{ url_for('crossword.static', filename='cw_export.js') }}"></script>
+{% endblock %}

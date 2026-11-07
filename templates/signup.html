@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card" style="padding: 22px; max-width: 560px; margin: 0 auto;">
+        <h2 style="text-align: center;">Create a Free Account</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 24px;">
+            An account is only needed to save your quiz results and download your answered quizzes.
+        </p>
+
+        <form method="POST" autocomplete="on">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1 1 140px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">First Name *</label>
+                    <input type="text" name="first_name" value="{{ form.get('first_name','') }}" required
+                           autocomplete="given-name" placeholder="Juan">
+                    {% if errors.get('first_name') %}<p class="field-error">{{ errors['first_name'] }}</p>{% endif %}
+                </div>
+                <div style="flex: 1 1 140px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Middle Name</label>
+                    <input type="text" name="middle_name" value="{{ form.get('middle_name','') }}"
+                           autocomplete="additional-name" placeholder="Reyes">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1 1 160px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Last Name *</label>
+                    <input type="text" name="last_name" value="{{ form.get('last_name','') }}" required
+                           autocomplete="family-name" placeholder="Dela Cruz">
+                    {% if errors.get('last_name') %}<p class="field-error">{{ errors['last_name'] }}</p>{% endif %}
+                </div>
+                <div style="flex: 0 1 120px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Suffix</label>
+                    <select name="suffix">
+                        {% for s in suffix_choices %}
+                            <option value="{{ s }}" {% if form.get('suffix','N/A') == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <label style="font-weight: bold; font-size: 0.9rem;">School *</label>
+            <input type="text" name="school" value="{{ form.get('school','') }}" required
+                   autocomplete="organization" placeholder="MNHS">
+            {% if errors.get('school') %}<p class="field-error">{{ errors['school'] }}</p>{% endif %}
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1 1 140px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Grade *</label>
+                    <select name="grade" required>
+                        <option value="" disabled {% if not form.get('grade') %}selected{% endif %}>-- Grade --</option>
+                        {% for g in grade_choices %}
+                            <option value="{{ g }}" {% if form.get('grade') == g %}selected{% endif %}>{{ g }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if errors.get('grade') %}<p class="field-error">{{ errors['grade'] }}</p>{% endif %}
+                </div>
+                <div style="flex: 1 1 140px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Section *</label>
+                    <select name="section" id="section-pick" required></select>
+                    <p class="field-error" id="section-empty" style="display: none;">
+                        That grade level has no section yet. Ask your teacher to have the main admin
+                        create it on the Classes page.</p>
+                    {% if errors.get('section') %}<p class="field-error">{{ errors['section'] }}</p>{% endif %}
+                </div>
+            </div>
+
+            <label style="font-weight: bold; font-size: 0.9rem;">Email *</label>
+            <input type="email" name="email" value="{{ form.get('email','') }}" required
+                   autocomplete="email" placeholder="you@example.com">
+            {% if errors.get('email') %}<p class="field-error">{{ errors['email'] }}</p>{% endif %}
+
+            <label style="font-weight: bold; font-size: 0.9rem;">Password * <span style="font-weight: normal; color: #888;">(at least 8 characters)</span></label>
+            <input type="password" name="password" required minlength="8" autocomplete="new-password">
+            {% if errors.get('password') %}<p class="field-error">{{ errors['password'] }}</p>{% endif %}
+
+            <label style="font-weight: bold; font-size: 0.9rem;">Confirm Password *</label>
+            <input type="password" name="confirm_password" required autocomplete="new-password">
+            {% if errors.get('confirm_password') %}<p class="field-error">{{ errors['confirm_password'] }}</p>{% endif %}
+
+            {% if errors.get('database') %}<p class="field-error">{{ errors['database'] }}</p>{% endif %}
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary cta">Sign Up</button>
+            </div>
+        </form>
+
+        <p style="text-align: center; margin-top: 16px;">
+            Already have an account?
+            <a href="/login" style="color: var(--primary); font-weight: bold;">Log in here</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    // A learner may only choose a section the main admin created, which is what
+    // keeps the section list from growing on its own.
+    (function () {
+        const SECTIONS = {{ section_choices | tojson }};
+        const PICKED = '{{ form.get("section", "") | e }}';
+        const grade = document.querySelector('select[name="grade"]');
+        const pick = document.getElementById('section-pick');
+        const empty = document.getElementById('section-empty');
+
+        function sync() {
+            const names = SECTIONS[grade.value] || [];
+            pick.innerHTML = '';
+            if (!names.length) {
+                pick.disabled = true;
+                pick.required = false;
+                pick.appendChild(new Option('-- none yet --', ''));
+                empty.style.display = '';
+                return;
+            }
+            pick.disabled = false;
+            pick.required = true;
+            empty.style.display = 'none';
+            pick.appendChild(new Option('-- Section --', ''));
+            names.forEach(function (name) { pick.appendChild(new Option(name, name)); });
+            pick.value = names.indexOf(PICKED) >= 0 ? PICKED : '';
+        }
+
+        grade.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+<script src="/static/auth.js" defer></script>
+{% endblock %}

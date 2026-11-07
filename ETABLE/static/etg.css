@@ -1,0 +1,147 @@
+/* Elemental Table Game — the school's navy and amber, one page wide. */
+:root {
+  --navy: #14213d;
+  --amber: #fca311;
+  --ink: #222;
+  --mute: #667;
+  --line: #d9e0ea;
+  --ok: #1e7e34;
+  --no: #c82333;
+  --paper: #f4f6fa;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 14px 40px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.45;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 4px;
+  border-bottom: 3px solid var(--amber);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--navy); }
+.brand .dot {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--navy); color: #fff;
+  display: grid; place-items: center; font-weight: 700;
+}
+.brand b { display: block; letter-spacing: .04em; }
+.brand i { display: block; font-size: 12px; color: var(--mute); font-style: normal; }
+
+nav { display: flex; gap: 8px; flex-wrap: wrap; }
+nav a {
+  color: var(--navy); text-decoration: none; font-size: 14px;
+  padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff;
+}
+nav a:hover { border-color: var(--amber); }
+
+main { max-width: 1080px; margin: 18px auto 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px 22px;
+  box-shadow: 0 8px 22px rgba(20, 33, 61, .07);
+}
+
+h1 { margin: 0 0 6px; color: var(--navy); font-size: 25px; }
+h2 { margin: 22px 0 4px; color: var(--navy); font-size: 18px; }
+p { margin: 8px 0; }
+.help, .scope, .key { color: var(--mute); font-size: 14px; }
+.scope a { color: var(--navy); font-weight: 600; }
+
+.laws { margin: 8px 0 0; padding-left: 20px; }
+.laws li { margin-bottom: 5px; }
+
+.warn { color: var(--no); font-weight: 600; }
+
+.deal { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-top: 18px; }
+.deal label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--navy); }
+.deal input {
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  font-size: 16px; min-width: 240px;
+}
+.deal .who { font-size: 14px; color: var(--mute); padding-bottom: 12px; }
+
+button.go, a.go, button.quiet, a.quiet {
+  font: inherit; cursor: pointer; text-decoration: none;
+  padding: 10px 16px; border-radius: 10px; display: inline-block;
+}
+button.go, a.go { background: var(--navy); color: #fff; border: 1px solid var(--navy); }
+button.go:hover, a.go:hover { background: #1d2f57; }
+button.quiet, a.quiet { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+button[disabled] { opacity: .45; cursor: not-allowed; }
+
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 10px; }
+
+.score {
+  margin: 6px 0 12px; padding: 12px 16px; border-radius: 12px;
+  background: #fff8e8; border: 1px solid var(--amber); color: var(--navy);
+  font-size: 17px;
+}
+.score b { font-size: 22px; }
+
+.table-scroll { overflow-x: auto; }
+
+table.etg { border-collapse: collapse; width: 100%; min-width: 900px; background: #fff; }
+table.etg th, table.etg td {
+  border: 1px solid var(--line); padding: 8px 6px; text-align: center; font-size: 15px;
+}
+table.etg thead th {
+  background: var(--navy); color: #fff; font-weight: 600; font-size: 13.5px;
+  position: sticky; top: 0;
+}
+table.etg .row-no { background: #eef1f7; color: var(--mute); font-size: 13px; width: 30px; }
+table.etg td.given { font-weight: 600; color: var(--navy); background: #f7f9fc; }
+table.etg td.blank { background: #fffdf5; }
+table.etg td.blank input {
+  width: 100%; min-width: 62px; padding: 8px 6px; text-align: center;
+  border: 1px dashed var(--amber); border-radius: 8px; font-size: 15px; background: #fffdf5;
+}
+table.etg td.blank input:focus { outline: 2px solid var(--navy); background: #fff; }
+table.etg td.is-ok { background: #eaf7ee; }
+table.etg td.is-ok input { border: 1px solid var(--ok); background: #eaf7ee; color: var(--ok); font-weight: 600; }
+table.etg td.is-no { background: #fdecee; }
+table.etg td.is-no input { border: 1px solid var(--no); background: #fdecee; color: var(--no); font-weight: 600; }
+td.blank .fix { display: block; font-size: 11.5px; color: var(--no); margin-top: 2px; }
+
+.yes { color: var(--ok); }
+.no { color: var(--no); }
+
+footer {
+  max-width: 1080px; margin: 18px auto 0; color: var(--mute); font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .deal input { min-width: 180px; }
+  h1 { font-size: 21px; }
+}
+
+/* ---------------- printable worksheet ---------------- */
+.sheet { background: #fff; border: 1px solid var(--line, #d9e0ea); border-radius: 12px; padding: 12px 14px; }
+.sheet-line { font-size: 15px; margin-bottom: 10px; }
+.sheet-tag { font-size: 12.5px; color: var(--navy); font-weight: 700; margin-bottom: 8px; }
+table.etg td.blank.answered { background: #fff3c4; }
+table.etg td.blank.answered b { color: var(--navy); }
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  header, footer, nav, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { max-width: none; margin: 0; padding: 0; }
+  .sheet { border: 0; border-radius: 0; padding: 0; }
+  .table-scroll { overflow: visible; }
+  table.etg { min-width: 0; width: 100%; }
+}

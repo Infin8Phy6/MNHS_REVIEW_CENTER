@@ -1,0 +1,2279 @@
+/* --- Root Variables & Reset --- */
+:root {
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+    --success: #28a745;
+    --danger: #dc3545;
+    --dark: #333;
+    --light-bg: #f8f9fa;
+    --border: #e6e6e6;
+    --shadow: 0 8px 22px rgba(0,0,0,0.08);
+
+    /* App layout */
+    --app-maxw: 860px;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+
+    /* Top app bar height */
+    --nav-h: 35px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+}
+
+/* Responsive typography base (good for ~6x4 inch physical screens and up) */
+html {
+    /* Scales with viewport width; stays readable on desktop and shrinks on very narrow screens */
+    font-size: clamp(14px, 1.2vw, 16.5px);
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.23;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light-bg);
+    color: var(--dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent “300ms delay” feel + improve tap */
+a, button {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+:focus-visible {
+    outline: 3px solid rgba(0,123,255,0.35);
+    outline-offset: 2px;
+}
+
+/* --- Navigation (app-bar) --- */
+nav.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+/* Keep existing markup working even if inner classes aren't present */
+.nav-container,
+.nav-links {
+    width: 100%;
+    max-width: var(--app-maxw);
+    margin: 0 auto;
+    padding: 0 8px;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.nav-logo {
+    font-weight: 800;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    /* horizontal scrolling for small screens */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbar (Chrome/Safari/Edge) */
+.nav-links::-webkit-scrollbar {
+    display: none;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 8px;
+    border-radius: 12px;
+    background: transparent;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+    line-height: 1;
+    font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+}
+
+nav a:active {
+    transform: scale(0.98);
+}
+
+nav a:hover {
+    background: rgba(0,123,255,0.08);
+}
+
+/* Highlights used in base.html */
+.nav-highlight {
+    background: rgba(0,123,255,0.10);
+    color: var(--primary);
+}
+
+.nav-upgrade {
+    background: rgba(40,167,69,0.10);
+    color: var(--success);
+}
+
+.nav-logout {
+    color: #555;
+}
+
+.nav-auth-btn {
+    background: rgba(0,123,255,0.08);
+}
+
+/* --- Layout Containers --- */
+.container {
+    width: 95%;
+    max-width: var(--app-maxw);
+    /* App-bar offset; keep content close so PC/tablet maximizes vertical space */
+    margin: calc(var(--nav-h) + 1px) auto 1px auto;
+    padding: 2px;
+}
+
+/* Keep generic div spacing tight so pages sit closer to the nav */
+div { margin: 0; }
+
+/* App-like surfaces */
+.card {
+    background: #ffffff;
+    padding: 2px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+}
+
+.center-box {
+    max-width: 450px;
+    margin: 3rem auto;
+}
+
+/* --- Forms & Inputs --- */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    /* Prevents auto-zoom on iPhone while still scaling across small screens */
+    font-size: clamp(0.98rem, 1.35vw, 1rem);
+}
+
+button, .btn {
+    width: 100%;
+    padding: 12px;
+    max-width: 100%;
+
+    border: none;
+    border-radius: 12px;
+    /* Keeps buttons readable on 6x4 inch screens and scales down on tiny widths */
+    font-size: clamp(0.98rem, 1.6vw, 1rem);
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.05s ease, background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    -webkit-user-select: none;
+    user-select: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+
+    /* Make button label color uniform unless explicitly overridden */
+    color: #ffffff;
+}
+
+button:active,
+.btn:active {
+    transform: translateY(1px) scale(0.99);
+}
+
+.btn:focus-visible,
+button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0,123,255,0.22), 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    /* Keep outline buttons consistent with overall theme */
+    color: var(--primary);
+}
+
+.btn-outline:hover { background: var(--primary); color: white; }
+
+button.btn-outline[disabled],
+.btn-outline[aria-disabled="true"],
+.btn-outline:disabled {
+    border-color: rgba(0,123,255,0.35);
+    color: rgba(0,123,255,0.35);
+    background: rgba(0,123,255,0.06);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* --- Quiz Specifics --- */
+.q-block { text-align: center; }
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* --- Flash Messages --- */
+.flash {
+    padding: 10px;
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+/* --- Countdown Timer --- */
+#trial-timer-box {
+    position: fixed;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    right: 16px;
+    left: auto;
+    background: rgba(24,24,24,0.92);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 14px;
+    z-index: 1000;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    max-width: 92vw;
+}
+
+/* Prevent quiz content from hiding under the fixed timer on small screens */
+@media (max-width: 600px) {
+    body {
+        padding-bottom: 64px; /* room for bottom timer */
+    }
+    #trial-timer-box {
+        bottom: env(safe-area-inset-bottom);
+        right: 0;
+        left: 0;
+        border-radius: 0;
+    }
+}
+
+/* --- RESPONSIVE BREAKPOINTS --- */
+
+/* Make CTAs reliably responsive from ~6-inch phones up */
+.cta {
+    width: 100%;
+    max-width: 100%;
+    /* Consistent tap height */
+    min-height: 48px;
+}
+
+@media (min-width: 681px) {
+    .cta {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+/* Tablets (iPad, etc) */
+@media (max-width: 768px) {
+    .container { width: 90%; }
+}
+
+/* Mobile Phones (6 inch screens / phone-first) */
+@media (max-width: 680px) {
+    nav.navbar { height: 56px; }
+    nav a { padding: 10px 8px; }
+
+    /* Ensure container doesn't cause side overflow on very narrow devices */
+    body { overflow-x: hidden; }
+
+
+    /* Hide text labels and show icon-only buttons */
+    .nav-links a { position: relative; }
+
+.nav-links .nav-home,
+    .nav-links .nav-reviewhub,
+    .nav-links .nav-full,
+    .nav-links .nav-trial,
+    .nav-links .nav-quiz,
+    .nav-links .nav-game,
+    .nav-links .nav-results,
+    .nav-links .nav-profile,
+    .nav-links .nav-admin,
+    .nav-links .nav-assessment,
+    .nav-links .nav-resources,
+    .nav-links .nav-admin-resources,
+    .nav-links .nav-db,
+    .nav-links .nav-login,
+    .nav-links .nav-payment,
+    .nav-links .nav-economy,
+    .nav-links .nav-logout,
+    .nav-links .nav-signup {
+        padding: 10px 12px;
+        width: 44px;
+        min-width: 44px;
+    }
+
+    .nav-links .nav-home::after,
+    .nav-links .nav-reviewhub::after,
+    .nav-links .nav-full::after,
+    .nav-links .nav-trial::after,
+    .nav-links .nav-quiz::after,
+    .nav-links .nav-game::after,
+    .nav-links .nav-results::after,
+    .nav-links .nav-admin::after,
+    .nav-links .nav-login::after,
+    .nav-links .nav-payment::after,
+    .nav-links .nav-economy::after,
+    .nav-links .nav-logout::after,
+    .nav-links .nav-signup::after {
+        content: '';
+    }
+
+    .nav-links .nav-home,
+    .nav-links .nav-reviewhub,
+    .nav-links .nav-full,
+    .nav-links .nav-trial,
+    .nav-links .nav-quiz,
+    .nav-links .nav-game,
+    .nav-links .nav-results,
+    .nav-links .nav-profile,
+    .nav-links .nav-admin,
+    .nav-links .nav-assessment,
+    .nav-links .nav-resources,
+    .nav-links .nav-admin-resources,
+    .nav-links .nav-db,
+    .nav-links .nav-login,
+    .nav-links .nav-payment,
+    .nav-links .nav-economy,
+    .nav-links .nav-logout,
+    .nav-links .nav-signup {
+        font-size: 0; /* hide label text */
+    }
+
+    /* Icon glyphs */
+    .nav-links .nav-home::before { content: '🏠'; font-size: 18px; }
+    .nav-links .nav-reviewhub::before { content: '🏠'; font-size: 18px; }
+    .nav-links .nav-full::before { content: '★'; font-size: 18px; }
+    .nav-links .nav-trial::before { content: '✓'; font-size: 18px; }
+    .nav-links .nav-quiz::before { content: '✎'; font-size: 18px; }
+    .nav-links .nav-game::before { content: '🎲'; font-size: 18px; }
+    .nav-links .nav-results::before { content: '📄'; font-size: 18px; }
+    .nav-links .nav-admin::before { content: '📊'; font-size: 18px; }
+    .nav-links .nav-assessment::before { content: '\1F5D2'; font-size: 18px; }
+    .nav-links .nav-profile::before { content: '👤'; font-size: 18px; }
+    .nav-links .nav-resources::before { content: '📁'; font-size: 18px; }
+    .nav-links .nav-admin-resources::before { content: '🗂'; font-size: 18px; }
+    .nav-links .nav-db::before { content: '🗄'; font-size: 18px; }
+    .nav-links .nav-login::before { content: '⇥'; font-size: 18px; }
+    .nav-links .nav-payment::before { content: '⤴'; font-size: 18px; }
+    .nav-links .nav-economy::before { content: '⧉'; font-size: 18px; }
+    .nav-links .nav-logout::before { content: '↩'; font-size: 18px; }
+    .nav-links .nav-signup::before { content: '＋'; font-size: 18px; }
+
+
+    .container { width: 94%; padding: 14px; margin-top: 12px; }
+    .card { padding: 16px; border-radius: 14px; }
+    h2 { font-size: clamp(1.15rem, 2.2vw, 1.35rem); }
+
+    .btn { padding: 16px 14px; }
+    .quiz-question { font-size: clamp(1.0rem, 2.0vw, 1.08rem); }
+}
+
+.quiz-question {
+    margin-bottom: 30px;
+    font-size: clamp(1.0rem, 2.2vw, 1.25rem);
+    color: var(--dark);
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.quiz-opt {
+    width: 100% !important;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+    .card {
+        padding: 20px 15px;
+        border-radius: 10px;
+    }
+    .quiz-question {
+        font-size: 1.1rem;
+    }
+}
+
+/* --- Save-result prompt (quiz results) --- */
+.rh-save-box {
+    margin: 24px auto 0;
+    padding: 18px;
+    max-width: 420px;
+    background: #f6faff;
+    border: 2px solid rgba(0, 123, 255, 0.25);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+/* --- Toast (offline sync notifications) --- */
+.rh-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-50%, 20px);
+    background: rgba(24, 24, 24, 0.92);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    z-index: 1000;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    max-width: 92vw;
+    font-size: 0.92rem;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.rh-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* --- Form field errors (signup) --- */
+.field-error {
+    color: var(--danger);
+    font-size: 0.82rem;
+    margin: 4px 0 0 0;
+    font-weight: 600;
+}
+
+/* --- My results table --- */
+.rh-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 0.92rem;
+}
+
+.rh-results-table th,
+.rh-results-table td {
+    text-align: left;
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.rh-results-table th {
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.rh-export-btn {
+    width: auto;
+    display: inline-block;
+    padding: 8px 14px;
+    box-shadow: none;
+    font-size: 0.85rem;
+}
+
+.rh-results-table td:nth-child(2),
+.rh-results-table td:nth-child(3) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.earnings-display {
+    margin-top: 15px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.earnings-display .amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--success);
+}
+
+.earnings-display small {
+    display: block;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Responsive media (prevents overflow on small screens) */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+iframe {
+    max-width: 100%;
+}
+
+/* Responsive YouTube iframe */
+.video-responsive {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* Prevent overflow / weird scaling on small phones */
+img, iframe, video {
+    max-width: 100%;
+}
+
+/* Improve overall responsiveness for wide numbers/long words */
+h1, h2, h3, p, li, span, div {
+    overflow-wrap:anywhere;
+    word-break: break-word;
+}
+
+/* home.html: prevent email overflow on very narrow screens */
+.user-email {
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+    vertical-align: top;
+}
+
+@media (max-width: 320px) {
+    .user-email {
+        font-size: 0.92em;
+    }
+}
+
+/* --- Layout helpers for pages that rely on plain divs --- */
+.container{
+    box-sizing: border-box;
+}
+
+/* --- Admin results dashboard (item analysis) --- */
+.admin-filters {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.admin-filter-field {
+    flex: 1 1 170px;
+    min-width: 140px;
+}
+
+.admin-filter-field label {
+    font-weight: 600;
+    color: #495057;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.admin-filter-field select {
+    margin: 0;
+}
+
+.admin-filter-btn {
+    flex: 0 0 auto;
+}
+
+.admin-filter-btn .btn {
+    width: auto;
+    padding: 12px 24px;
+    margin: 0;
+}
+
+.admin-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.admin-stat {
+    background: #f6faff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    text-align: center;
+}
+
+.admin-stat small {
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    font-size: 0.68rem;
+}
+
+.admin-stat-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.admin-section-title {
+    margin-top: 28px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+}
+
+.admin-subject-title {
+    margin: 18px 0 8px 0;
+    color: var(--primary);
+}
+
+.res-class-title {
+    margin: 4px 0 10px 0;
+    font-size: 1.02rem;
+    color: var(--primary);
+}
+
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-students-table {
+    min-width: 540px;
+}
+
+.admin-difficult-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.admin-difficult-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff5f5;
+    border: 1px solid #f5c6cb;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.admin-difficult-q {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.admin-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.admin-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    background: #fff;
+}
+
+.admin-item-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.admin-item-num {
+    color: #999;
+    font-weight: 700;
+    flex: 0 0 auto;
+}
+
+.admin-item-q {
+    flex: 1 1 auto;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.admin-item-meta {
+    color: #777;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    overflow-wrap: anywhere;
+}
+
+.diff-badge {
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.diff-easy { background: #d1f4dd; color: #0b5d2c; }
+.diff-moderate { background: #dbeafe; color: #1e4b8f; }
+.diff-difficult { background: #fff0d4; color: #8a5a00; }
+.diff-very-difficult { background: #fde2e4; color: #9d1c2c; }
+
+.admin-opts {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-opt-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-opt-label {
+    flex: 1 1 40%;
+    min-width: 120px;
+    font-size: 0.88rem;
+    overflow-wrap: anywhere;
+}
+
+.admin-correct-mark {
+    color: var(--success);
+    font-weight: 800;
+    margin-right: 4px;
+}
+
+.admin-opt-bar {
+    flex: 1 1 30%;
+    min-width: 70px;
+    height: 14px;
+    background: #eef1f5;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.admin-opt-fill {
+    display: block;
+    height: 100%;
+    background: #9db2c7;
+    border-radius: 999px;
+}
+
+.admin-opt-fill-correct {
+    background: var(--success);
+}
+
+.admin-opt-count {
+    flex: 0 0 auto;
+    font-size: 0.82rem;
+    color: #555;
+    white-space: nowrap;
+}
+
+/* Phones (6-inch class): stack filter and option rows vertically */
+@media (max-width: 560px) {
+    .admin-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-filter-btn .btn {
+        width: 100%;
+    }
+
+    .admin-stat-num {
+        font-size: 1.35rem;
+    }
+
+    .admin-opt-row {
+        flex-wrap: wrap;
+    }
+
+    .admin-opt-label {
+        flex: 1 1 100%;
+    }
+
+    .admin-opt-bar {
+        flex: 1 1 60%;
+    }
+}
+
+/* --- Educational Games hub (/games) --- */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.game-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    padding: 14px 16px;
+}
+
+.game-tag {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: #eaf3ff;
+    border-radius: 999px;
+    padding: 3px 10px;
+}
+
+.game-card h3 {
+    margin: 8px 0 6px;
+    color: var(--dark);
+    font-size: 1rem;
+}
+
+.game-card p {
+    margin: 0 0 8px;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.game-facts {
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0;
+    color: #555;
+    font-size: 0.85rem;
+}
+
+.game-facts li {
+    margin-bottom: 4px;
+    padding-left: 16px;
+    position: relative;
+}
+
+.game-facts li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--success);
+}
+
+.game-card .btn {
+    margin-top: auto;
+    align-self: stretch;
+    text-align: center;
+}
+
+.games-off {
+    color: var(--danger);
+    font-size: 0.85rem;
+}
+
+.games-note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-left: 4px solid var(--primary);
+    background: #f8fafc;
+    border-radius: 10px;
+    color: #555;
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+/* --- Section Resources (/resources) and admin materials --- */
+.res-list {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.res-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    padding: 12px 14px;
+}
+
+.res-kind {
+    flex: 0 0 auto;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: #eaf3ff;
+    border-radius: 999px;
+    padding: 3px 9px;
+    margin-top: 2px;
+}
+
+.res-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.res-title {
+    display: inline-flex;
+    align-items: baseline;
+    max-width: 100%;
+    color: var(--dark);
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.res-note {
+    margin: 4px 0 0;
+    color: #555;
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.res-meta {
+    margin: 4px 0 0;
+    color: #888;
+    font-size: 0.76rem;
+    overflow-wrap: anywhere;
+}
+
+.res-open {
+    flex: 0 0 auto;
+    align-self: center;
+    white-space: nowrap;
+}
+
+.res-remove {
+    color: var(--danger);
+    border-color: var(--danger);
+    font-size: 0.8rem;
+    padding: 6px 12px;
+}
+
+.res-message {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-left: 4px solid var(--success);
+    background: #f0fdf4;
+    border-radius: 8px;
+    color: #14532d;
+    font-size: 0.88rem;
+}
+
+.res-form {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+}
+
+.res-own {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+@media (max-width: 480px) {
+    .res-row {
+        flex-wrap: wrap;
+    }
+
+    .res-open {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+}
+
+/* --- Student profile (/profile) --- */
+.profile-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.profile-grid > div {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.profile-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+.profile-list span {
+    color: #777;
+    flex: 0 0 auto;
+}
+
+.profile-list b {
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+/* --- Admin database browser (/admin/database) --- */
+.db-warning {
+    margin: 14px 0;
+    padding: 10px 12px;
+    border-left: 4px solid var(--danger);
+    background: #fff5f5;
+    border-radius: 8px;
+    color: #7a1f1f;
+    font-size: 0.86rem;
+}
+
+.db-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+}
+
+.db-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.db-table th {
+    text-align: left;
+    padding: 9px 10px;
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+}
+
+.db-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    overflow-wrap: anywhere;
+    max-width: 260px;
+}
+
+.db-table tr:last-child td {
+    border-bottom: none;
+}
+
+tr.staff-group td {
+    background: #e2e8f0;
+    color: #14213d;
+    font-size: 0.8rem;
+    padding: 7px 10px;
+    max-width: none;
+    border-bottom: 1px solid var(--border);
+}
+
+.db-name {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.db-null,
+.db-null-cell {
+    color: #999;
+    font-style: italic;
+}
+
+.db-open {
+    font-size: 0.78rem;
+    padding: 6px 12px;
+    white-space: nowrap;
+}
+
+.db-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.db-page-num {
+    color: #666;
+    font-size: 0.84rem;
+}
+
+.db-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.db-field {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.db-field-wide {
+    flex: 1 1 100%;
+}
+
+.db-field label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.86rem;
+    margin-bottom: 4px;
+}
+
+.db-field input,
+.db-field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 0.88rem;
+    background: #fff;
+}
+
+.db-field textarea {
+    min-height: 120px;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    resize: vertical;
+}
+
+.db-type {
+    color: #999;
+    font-weight: 400;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.db-help {
+    margin: 4px 0 0;
+    color: #777;
+    font-size: 0.76rem;
+    line-height: 1.4;
+}
+
+.db-actions {
+    flex: 1 1 100%;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+/* --- Admin Assessment page --- */
+.db-field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 0.88rem;
+    background: #fff;
+}
+
+.as-table td,
+.as-table th {
+    vertical-align: top;
+    font-size: 0.85rem;
+}
+
+.as-scores {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.as-scores li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.as-pct,
+.as-src,
+.as-dropped {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(0, 123, 255, 0.10);
+    color: var(--primary);
+}
+
+.as-src {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.as-dropped {
+    background: rgba(220, 53, 69, 0.10);
+    color: var(--danger);
+}
+
+.as-when {
+    color: #777;
+    font-size: 0.76rem;
+}
+
+.as-del {
+    display: inline;
+    margin: 0;
+}
+
+.as-del button {
+    margin: 0;
+}
+
+.as-record {
+    margin-top: 8px;
+    font-size: 0.8rem;
+}
+
+/* The adjust box sits in the same line as one score, not under the list. */
+.as-adjust {
+    margin-top: 0;
+}
+
+.as-record summary {
+    cursor: pointer;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.as-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.as-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #555;
+}
+
+.as-form input {
+    width: 92px;
+    padding: 7px 9px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font: inherit;
+    font-size: 0.85rem;
+}
+
+.as-form input[type="date"] {
+    width: 140px;
+}
+
+/* --- Summative test builder (Assessment page) --- */
+.st-pick { margin: 14px 0 0; }
+
+.st-pick-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.st-pick-head > label:first-child {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.st-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #495057;
+    cursor: pointer;
+}
+
+.st-topics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 7px 14px;
+    max-height: 230px;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 11px;
+    background: #f8fbff;
+}
+
+.st-topics .db-null { grid-column: 1 / -1; }
+
+.st-topic {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 0.86rem;
+    color: var(--dark);
+    cursor: pointer;
+}
+
+.st-topic input[type="checkbox"] {
+    width: auto;
+    margin: 2px 0 0;
+    flex: 0 0 auto;
+}
+
+.st-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.st-title {
+    flex: 1 1 220px;
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.st-actions .btn {
+    width: auto;
+    margin: 0;
+    padding: 11px 20px;
+}
+
+.st-msg { font-size: 0.85rem; color: #1c6b4a; }
+.st-msg.st-bad { color: var(--danger); }
+
+.st-bank {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.st-toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.st-toolbar .btn {
+    width: auto;
+    margin: 0;
+    padding: 9px 16px;
+    font-size: 0.85rem;
+}
+
+.st-count { flex: 1 1 auto; font-size: 0.88rem; color: #495057; }
+
+.st-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 460px;
+    overflow: auto;
+}
+
+.st-q {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 11px 12px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.st-q:hover { border-color: var(--primary); background: #f8fbff; }
+
+.st-q input[type="checkbox"] {
+    width: auto;
+    margin: 3px 0 0;
+    flex: 0 0 auto;
+}
+
+.st-q b {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #222;
+}
+
+.st-q small {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.st-q em {
+    display: inline-block;
+    margin-top: 6px;
+    font-style: normal;
+    font-size: 0.72rem;
+    color: #1c6b4a;
+    background: #eaf5ef;
+    border-radius: 999px;
+    padding: 2px 9px;
+}
+
+@media (max-width: 480px) {
+    .db-table td,
+    .db-table th {
+        padding: 7px 8px;
+    }
+
+    .db-table td {
+        max-width: 180px;
+    }
+
+    .db-field {
+        flex: 1 1 100%;
+    }
+
+    .as-form input,
+    .as-form input[type="date"] {
+        width: 100%;
+    }
+
+    .st-topics { grid-template-columns: 1fr; }
+
+    .st-actions .btn,
+    .st-toolbar .btn { width: 100%; }
+}
+
+/* Grades & Sections: one row per class, with the small forms inline. */
+.cs-grade-row td {
+    background: #f6f8fb;
+}
+
+.cs-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 8px 2px 0;
+}
+
+.cs-inline input[type="text"] {
+    width: 150px;
+    padding: 4px 8px;
+}
+
+/* One teacher's own schedule in a class row: the label reads at a glance and
+   the editor hides behind a details toggle so the roster stays narrow. */
+.cs-teacher {
+    margin-bottom: 12px;
+}
+
+.cs-teacher .cs-inline { margin-bottom: 0; }
+
+.cs-tsched summary {
+    cursor: pointer;
+    color: #555;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.cs-tsched .cs-sched { margin-top: 6px; }
+
+/* The subjects an admin ticks for one teacher in one class. Plain checkboxes:
+   the list is as long as the grade is wide, so it wraps instead of turning into
+   a row of pills nobody can read. */
+.cs-subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin: 12px 0;
+    font-size: 0.85rem;
+}
+
+.cs-subjects label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cs-form select {
+    min-width: 130px;
+}
+
+/* The schedule box in a class row: weekday toggles plus a start and end time.
+   The real checkbox stays in the tab order but invisible, so the pill reads as
+   a switch while a keyboard and a screen reader still get a checkbox. */
+.cs-sched-cell { min-width: 330px; }
+
+/* One room box stands ahead of the slot rows: the whole schedule meets in it. */
+.as-form .cs-room input { width: 118px; }
+
+.as-form .cs-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.as-form .cs-day {
+    flex-direction: row;
+    padding: 0;
+}
+
+.as-form .cs-day input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+.as-form .cs-day span {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #555;
+    background: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.as-form .cs-day input:checked + span {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.as-form .cs-day input:focus-visible + span {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.as-form .cs-time {
+    display: flex;
+    gap: 6px;
+}
+
+.as-form .cs-time input { width: 106px; }
+
+/* One schedule can hold several time slots for double periods. Each slot is a
+   row of day pills plus its own start and end, with a small remove cross that
+   only appears once there is more than one slot to choose from. */
+.cs-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cs-slot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+}
+
+.cs-del-slot {
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: #fff;
+    color: #b0413e;
+    font-weight: 700;
+    line-height: 1;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.cs-del-slot:hover { background: #b0413e; color: #fff; }
+
+.cs-add-slot {
+    width: auto;
+    padding: 5px 10px;
+    font-size: 0.72rem;
+    margin-top: 6px;
+}
+
+.as-form .cs-save {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+/* Sub-links hanging off an app-bar item. The link row scrolls sideways and
+   clips what sticks out, so the panel is fixed to the viewport and placed by
+   script instead of sitting under its parent. */
+.nav-drop {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.nav-drop-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+    line-height: 1;
+    padding: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.nav-drop-toggle:hover {
+    background: rgba(0, 123, 255, 0.08);
+}
+
+.nav-drop.is-open .nav-drop-toggle {
+    background: rgba(0, 123, 255, 0.12);
+}
+
+.nav-drop-caret {
+    font-size: 0.6rem;
+}
+
+.nav-drop-panel {
+    display: none;
+    position: fixed;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 176px;
+    padding: 6px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+    z-index: 60;
+}
+
+.nav-drop.is-open .nav-drop-panel {
+    display: flex;
+}
+
+.nav-drop-panel a {
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+
+    .nav-drop-panel a:hover {
+        background: rgba(0, 123, 255, 0.08);
+    }
+
+/* Inside the panel the labels stay words: the app bar above turns into icons
+   on a phone, and a menu of two mystery glyphs helps nobody. */
+.nav-links .nav-drop-panel a {
+    width: auto;
+    min-width: 0;
+    font-size: 0.95rem;
+    padding: 8px 10px;
+}
+
+.nav-links .nav-drop-panel a::before {
+    content: none;
+}
+
+/* On a phone the app bar turns to icons, so a menu trigger keeps its glyph and
+   loses its word; the caret stays small so the box remains tappable. */
+@media (max-width: 680px) {
+    .nav-links .nav-drop-toggle {
+        width: 44px;
+        min-width: 44px;
+        padding: 10px 12px;
+        font-size: 0;
+    }
+
+    .nav-links .nav-drop-caret {
+        font-size: 10px;
+    }
+}
+
+/* The one-learner pick under the Assessment filters stands on its own row. */
+.as-learner-field {
+    max-width: 420px;
+    margin-top: 10px;
+}
+
+/* The one-learner pick above a database table, with its note on a row of its own. */
+.db-learner-filter {
+    margin: 14px 0 18px;
+}
+
+.db-learner-filter .admin-filter-field {
+    flex: 0 1 420px;
+}
+
+.db-learner-filter .db-help {
+    flex-basis: 100%;
+}
+
+/* The sections checklist on the Classes assign form: a dropdown that keeps
+   every ticked class in one submit. */
+.cs-dd {
+    position: relative;
+}
+
+.cs-dd-btn {
+    width: 100%;
+    min-width: 200px;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid #cfd6dd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cs-dd-btn:hover { border-color: #2e5f8a; }
+
+.cs-dd-panel {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 220px;
+    max-height: 260px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #cfd6dd;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+    padding: 8px 10px;
+}
+
+.cs-dd-all {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.cs-dd-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cs-dd-list .cs-day {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cs-dd-list .cs-day:hover { background: #f0f4f8; }
+
+.cs-dd-error {
+    border-color: #b0413e !important;
+    color: #b0413e;
+    font-weight: 600;
+}
+
+/* The teacher's classes plotted on the weekday boxes of the profile. */
+.sched-grid {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.sched-grid th {
+    padding: 6px 8px;
+    background: #f0f4f8;
+    border: 1px solid #d7dee5;
+    font-size: 13px;
+    text-align: left;
+}
+
+.sched-grid td {
+    border: 1px solid #d7dee5;
+    vertical-align: top;
+    padding: 6px;
+    min-width: 110px;
+}
+
+.sched-block {
+    border: 1px solid #cfd6dd;
+    border-left: 3px solid #2e5f8a;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    background: #f8fafc;
+    font-size: 13px;
+}
+
+.sched-block .sched-time,
+.sched-block .sched-subj,
+.sched-block .sched-room {
+    color: #555;
+}
+
+/* Two classes of the same teacher at one time: red cell, both named. */
+.sched-clash {
+    border-color: #b0413e;
+    border-left-color: #b0413e;
+    background: #fbeceb;
+    color: #7c1d1d;
+}
+
+.sched-clash .sched-time,
+.sched-clash .sched-subj {
+    color: #7c1d1d;
+}
+
+.sched-clash-note {
+    margin-top: 4px;
+    font-weight: 600;
+    color: #b0413e;
+}
+
+/* The class that is about to start, found by the reminder script. */
+.sched-soon {
+    animation: sched-pulse 1s infinite;
+}
+
+@keyframes sched-pulse {
+    50% { background: #fff3cd; border-color: #d4a017; }
+}
+
+/* The alarm flashed 3 minutes before a class. */
+.sched-alarm {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: #b0413e;
+    color: #fff;
+    padding: 12px 40px 12px 16px;
+    border-radius: 10px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+    max-width: 92vw;
+    animation: sched-flash 1s infinite;
+}
+
+.sched-alarm-text {
+    font-weight: 600;
+}
+
+.sched-alarm-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@keyframes sched-flash {
+    50% { background: #7c1d1d; }
+}
+
+/* --- Show/Hide password icon (static/auth.js wraps each password input) --- */
+.pw-wrap {
+    position: relative;
+    display: block;
+    margin: 10px 0;
+}
+
+.pw-wrap > input {
+    margin: 0;
+    width: 100%;
+    padding-right: 38px;
+}
+
+.pw-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    padding: 0;
+    color: #9aa1ab;
+    cursor: pointer;
+}
+
+.pw-toggle:hover,
+.pw-toggle:focus-visible {
+    color: var(--primary);
+}
+
+.pw-toggle svg {
+    display: block;
+}
+
+.as-form .pw-wrap {
+    margin: 10px 0;
+    width: 168px;
+}
+
+.as-form .pw-wrap > input {
+    width: 100%;
+    margin: 0;
+}
+
+.db-field .pw-wrap > input {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.88rem;
+}
+
+/* --- Staff home: today's classes --- */
+.staff-today-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+}
+
+.staff-today-list li {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 0.92rem;
+    background: #fff;
+}
+
+/* --- One-time class-reminder card (static/push-reminders.js) --- */
+#rh-push-bar {
+    position: fixed;
+    right: 18px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    z-index: 1200;
+    width: min(360px, calc(100vw - 36px));
+    margin: 0;
+    padding: 14px 16px 16px;
+    background: #ffffff;
+    color: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.06);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    animation: rh-push-in 0.2s ease-out;
+}
+
+#rh-push-bar.rh-push-gone {
+    animation: rh-push-out 0.15s ease-in forwards;
+}
+
+@keyframes rh-push-in {
+    from { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes rh-push-out {
+    to { opacity: 0; transform: translateY(10px); }
+}
+
+.rh-push-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.rh-push-bell {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: rgba(0, 123, 255, 0.12);
+    color: var(--primary);
+}
+
+.rh-push-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.rh-push-title {
+    margin: 0;
+    color: #12263f;
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.rh-push-text {
+    margin: 2px 0 0;
+    color: #556;
+    font-size: 0.84rem;
+}
+
+#rh-push-bar .rh-push-close {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    margin: -2px -4px 0 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    color: #778;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#rh-push-bar .rh-push-close:hover {
+    color: #12263f;
+    background: rgba(15, 23, 42, 0.06);
+}
+
+.rh-push-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+#rh-push-bar button {
+    width: auto;
+    max-width: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    border-radius: 10px;
+    box-shadow: none;
+    font-size: 0.84rem;
+    padding: 9px 14px;
+}
+
+#rh-push-bar .rh-push-notnow {
+    background: transparent;
+    border: 0;
+    color: #556;
+    font-weight: 700;
+}
+
+#rh-push-bar .rh-push-notnow:hover {
+    background: rgba(15, 23, 42, 0.05);
+    color: #12263f;
+}
+
+#rh-push-bar .rh-push-enable {
+    background: var(--primary);
+    border: 0;
+    color: #ffffff;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+#rh-push-bar .rh-push-enable:hover {
+    background: var(--primary-hover);
+}
+
+#rh-push-bar .rh-push-enable:disabled,
+#rh-push-bar .rh-push-notnow:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+@media (max-width: 560px) {
+    #rh-push-bar {
+        left: 10px;
+        right: 10px;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        width: auto;
+    }
+
+    .rh-push-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #rh-push-bar .rh-push-notnow,
+    #rh-push-bar .rh-push-enable {
+        width: 100%;
+    }
+}
+
+/* --- Class reminders setting on the profile pages --- */
+.remind-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: #fbfdff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.remind-setting-copy {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.remind-setting-copy .admin-section-title {
+    margin: 0 0 6px;
+    padding-bottom: 0;
+    border-bottom: 0;
+    font-size: 1rem;
+}
+
+.remind-setting-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #12263f;
+    font-size: 0.9rem;
+}
+
+.remind-setting-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #b0b7c3;
+    box-shadow: 0 0 0 3px rgba(176, 183, 195, 0.18);
+}
+
+.remind-setting.is-on .remind-setting-dot {
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.18);
+}
+
+.remind-setting-note {
+    margin: 6px 0 0;
+    color: #667;
+    font-size: 0.84rem;
+}
+
+.remind-setting-btn {
+    width: auto;
+    max-width: none;
+    flex: none;
+    padding: 10px 16px;
+    font-size: 0.86rem;
+}
+
+.remind-setting-btn:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+@media (max-width: 560px) {
+    .remind-setting {
+        align-items: stretch;
+    }
+
+    .remind-setting-btn {
+        width: 100%;
+    }
+}

@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="loading-box" class="container card" style="text-align: center;">
+    <p style="color: #666;">Loading questions…</p>
+</div>
+
+<div id="error-box" class="container card" style="display: none; text-align: center;">
+    <h3>Could not load this quiz</h3>
+    <p style="color: #666;">
+        You may be offline and this subject has not been saved for offline use yet.
+        Open it once while online so it can be saved on your device.
+    </p>
+    <a href="/quiz_setup" class="btn btn-primary" style="max-width: 320px; margin: 0 auto;">Back to Quiz Setup</a>
+</div>
+
+<div id="quiz-box" class="container"></div>
+
+<div id="results" class="container card" style="display: none;">
+    <h2 style="color: var(--success);">Quiz Finished!</h2>
+
+    <div class="earnings-display" style="max-width: 300px; margin: 20px auto;">
+        <small>Your Score</small>
+        <div class="amount"><span id="score">0</span> / <span id="total">0</span></div>
+        <small id="score-pct" style="color: #888;"></small>
+    </div>
+
+    <div id="save-box" class="rh-save-box">
+        <h3 style="margin-top: 0;">Save your result?</h3>
+        <p style="color: #666; font-size: 0.92rem;" id="save-help">
+            Keep a record of this quiz in your account.
+        </p>
+        <div id="save-actions" style="display: flex; flex-direction: column; gap: 10px;">
+            <button type="button" class="btn btn-primary" id="btn-save">Save My Result</button>
+            <button type="button" class="btn btn-outline" id="btn-skip">No Thanks</button>
+        </div>
+    </div>
+
+    <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" class="btn btn-outline" id="btn-export-pdf" style="border-color: var(--success); color: var(--success);">
+            Download Answered Quiz (PDF)
+        </button>
+        <button type="button" class="btn btn-outline" id="btn-export" style="border-color: var(--success); color: var(--success);">
+            Download Answered Quiz (A4 PNG)
+        </button>
+        <p style="font-size: 0.8rem; color: #999;" id="export-note">The PDF is one file; each PNG page is saved on its own.</p>
+    </div>
+
+    <div id="review-section" style="text-align: left; margin-top: 30px;">
+        <h3 style="color: var(--danger); border-bottom: 2px solid var(--danger); padding-bottom: 5px;">
+            Items to Revisit:
+        </h3>
+        <div id="missed-list"></div>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px;">
+        <a href="/quiz_setup" class="btn btn-primary" id="btn-another">Take Another Quiz</a>
+        <a href="/home" class="btn btn-outline" id="btn-home">Back to Home</a>
+    </div>
+</div>
+
+<script src="/static/export.js"></script>
+<script>
+    const LEVEL = {{ level | tojson }};
+    const SUBJECT = {{ subject | tojson }};
+    const QUARTER = {{ quarter | tojson }};
+    const TOPIC = {{ topic | tojson }};
+    const LOGGED_IN = {{ 'true' if user else 'false' }};
+    const USER = {{ user_json | tojson }};
+
+    const QUIZ_LENGTH = 10;
+    let quizItems = [];
+    let answers = [];
+    let current = 0;
+    let score = 0;
+    let savedAttempt = null;
+    let decided = false;
+
+    function getJSON(key, fallback) {
+        try { var v = JSON.parse(localStorage.getItem(key)); return (v === null || v === undefined) ? fallback : v; }
+        catch (e) { return fallback; }
+    }
+    function setJSON(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    async function loadQuestions() {
+        if (!LEVEL || !SUBJECT) {
+            location.replace('/quiz_setup');
+            return;
+        }
+
+        const url = '/api/questions/' + encodeURIComponent(LEVEL) + '/' + encodeURIComponent(SUBJECT);
+        let items = null;
+        try {
+            const res = await fetch(url);
+            if (res.ok) items = await res.json();
+        } catch (e) { items = null; }
+
+        if (!Array.isArray(items)) {
+            document.getElementById('loading-box').style.display = 'none';
+            document.getElementById('error-box').style.display = 'block';
+            return;
+        }
+
+        let pool = items;
+        if (QUARTER && QUARTER !== 'All Quarters') {
+            pool = pool.filter(function (q) { return q.quarter === QUARTER; });
+        }
+        if (TOPIC && TOPIC !== 'All Topics') {
+            pool = pool.filter(function (q) { return q.topic === TOPIC; });
+        }
+        if (!pool.length) {
+            document.getElementById('loading-box').style.display = 'none';
+            document.getElementById('error-box').style.display = 'block';
+            document.querySelector('#error-box p').textContent = 'No questions found for this selection.';
+            return;
+        }
+
+        const selected = shuffle(pool).slice(0, QUIZ_LENGTH);
+        quizItems = selected.map(function (q) {
+            return {
+                id: q.id,
+                question: q.question,
+                options: shuffle(q.options || []),
+                correct: q.correct,
+                topic: q.topic,
+                quarter: q.quarter || ''
+            };
+        });
+        answers = new Array(quizItems.length).fill(null);
+
+        document.getElementById('loading-box').style.display = 'none';
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = '';
+        const q = quizItems[current];
+
+        const block = document.createElement('div');
+        block.className = 'card q-block';
+        block.style.padding = '18px';
+
+        const meta = document.createElement('p');
+        meta.style.cssText = 'color: #888; font-size: 0.9rem; margin-top: 0;';
+        meta.textContent = 'Question ' + (current + 1) + ' of ' + quizItems.length + ' — ' + SUBJECT +
+            (QUARTER && QUARTER !== 'All Quarters' ? ' · ' + QUARTER : '') +
+            (TOPIC && TOPIC !== 'All Topics' ? ' · ' + TOPIC : '');
+        block.appendChild(meta);
+
+        const heading = document.createElement('h3');
+        heading.className = 'quiz-question';
+        heading.textContent = q.question;
+        block.appendChild(heading);
+
+        const opts = document.createElement('div');
+        opts.className = 'options-container';
+        q.options.forEach(function (opt) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-outline quiz-opt';
+            btn.textContent = opt;
+            btn.addEventListener('click', function () { selectAnswer(opt); });
+            opts.appendChild(btn);
+        });
+        block.appendChild(opts);
+
+        box.appendChild(block);
+        window.scrollTo(0, 0);
+    }
+
+    function selectAnswer(selected) {
+        if (current >= quizItems.length) return;
+        answers[current] = selected;
+        current++;
+        if (current < quizItems.length) {
+            renderQuestion();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    function showFinalResults() {
+        if (document.getElementById('results').style.display === 'block') return;
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('quiz-box').innerHTML = '';
+        const results = document.getElementById('results');
+        results.style.display = 'block';
+
+        score = quizItems.reduce(function (sum, q, i) {
+            return sum + (answers[i] === q.correct ? 1 : 0);
+        }, 0);
+
+        document.getElementById('score').textContent = score;
+        document.getElementById('total').textContent = quizItems.length;
+        const pct = Math.round((score / quizItems.length) * 100);
+        document.getElementById('score-pct').textContent = pct + '% correct';
+
+        const reviewSection = document.getElementById('review-section');
+        const list = document.getElementById('missed-list');
+        list.innerHTML = '';
+        const missed = quizItems
+            .map(function (q, i) { return { q: q, your: answers[i] }; })
+            .filter(function (x) { return x.your !== x.q.correct; });
+
+        if (!missed.length) {
+            reviewSection.style.display = 'none';
+        } else {
+            missed.forEach(function (item) {
+                const row = document.createElement('div');
+                row.style.cssText = 'padding: 15px 0; border-bottom: 1px solid var(--border);';
+
+                const qEl = document.createElement('p');
+                qEl.style.cssText = 'margin: 0; font-weight: 600; color: var(--dark);';
+                qEl.textContent = item.q.question;
+                row.appendChild(qEl);
+
+                const yours = document.createElement('p');
+                yours.style.cssText = 'margin: 5px 0 0 0; color: var(--danger); font-size: 0.9rem;';
+                yours.textContent = 'Your Answer: ' + item.your;
+                row.appendChild(yours);
+
+                const correct = document.createElement('p');
+                correct.style.cssText = 'margin: 0; color: var(--success); font-size: 0.9rem;';
+                correct.textContent = 'Correct Answer: ' + item.q.correct;
+                row.appendChild(correct);
+
+                list.appendChild(row);
+            });
+        }
+
+        setupSaveBox();
+        window.scrollTo(0, 0);
+    }
+
+    function buildAttempt() {
+        return {
+            client_uuid: (window.crypto && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+            level: LEVEL,
+            subject: SUBJECT,
+            topic: TOPIC,
+            quiz_set_info: quizItems.map(function (q, i) {
+                return {
+                    id: q.id,
+                    question: q.question,
+                    options: q.options,
+                    your_answer: answers[i],
+                    correct: q.correct,
+                    topic: q.topic,
+                    subject: SUBJECT,
+                    quarter: q.quarter
+                };
+            }),
+            score: score,
+            total: quizItems.length,
+            date_taken: new Date().toISOString()
+        };
+    }
+
+    function setupSaveBox() {
+        const box = document.getElementById('save-box');
+        const actions = document.getElementById('save-actions');
+
+        function decline() {
+            decided = true;
+            savedAttempt = savedAttempt || buildAttempt();
+            if (typeof window.RH_UNGRADED === 'function') window.RH_UNGRADED(savedAttempt);
+            box.innerHTML = '<h3 style="margin-top:0;">Not saved as a grade</h3>' +
+                '<p style="color:#666; font-size:0.92rem;">This quiz will not appear in your results. ' +
+                'It is kept on its own as an ungraded attempt so we can still see how each question went.</p>';
+        }
+
+        document.getElementById('btn-skip').addEventListener('click', decline);
+
+        document.getElementById('btn-save').addEventListener('click', function () {
+            decided = true;
+            savedAttempt = buildAttempt();
+            if (LOGGED_IN) {
+                const outbox = getJSON('rh_outbox', []);
+                outbox.push(savedAttempt);
+                setJSON('rh_outbox', outbox);
+                if (navigator.onLine) {
+                    if (typeof window.RH_SYNC === 'function') window.RH_SYNC();
+                }
+                const onlineMsg = navigator.onLine
+                    ? 'Your result has been saved to your account.'
+                    : 'You are offline. Your result is saved on this device and will upload automatically once you are online.';
+                box.innerHTML = '<h3 style="margin-top:0; color: var(--success);">Result saved ✓</h3>' +
+                    '<p style="color:#666; font-size:0.92rem;">' + onlineMsg + '</p>';
+            } else {
+                setJSON('rh_pending_attempt', savedAttempt);
+                box.innerHTML = '<h3 style="margin-top:0;">Almost done!</h3>' +
+                    '<p style="color:#666; font-size:0.92rem;">Create a free account (or log in) to save this result. ' +
+                    'Your answers are kept on this device and will be saved to your account right after you sign up.</p>' +
+                    '<div style="display:flex; flex-direction:column; gap:10px;">' +
+                    '<a href="/signup" class="btn btn-primary">Sign Up</a>' +
+                    '<a href="/login" class="btn btn-outline">Log In</a>' +
+                    '<button type="button" class="btn btn-outline" id="btn-skip-late">No Thanks</button>' +
+                    '</div>';
+                document.getElementById('btn-skip-late').addEventListener('click', function () {
+                    localStorage.removeItem('rh_pending_attempt');
+                    decline();
+                });
+            }
+        });
+
+        const exportNote = document.getElementById('export-note');
+        [['btn-export-pdf', window.RHExport.exportPdf, 'PDF'],
+         ['btn-export', window.RHExport.exportAttempt, 'PNG']].forEach(function (cfg) {
+            const btn = document.getElementById(cfg[0]);
+            const run = cfg[1];
+            if (!btn) return;
+            btn.addEventListener('click', async function () {
+                const attempt = savedAttempt || buildAttempt();
+                btn.disabled = true;
+                exportNote.textContent = 'Preparing the ' + cfg[2] + '…';
+                try {
+                    const pages = await run(attempt, USER);
+                    exportNote.textContent = cfg[2] === 'PDF'
+                        ? 'The PDF (' + pages + (pages === 1 ? ' page)' : ' pages)') + ' is in your Downloads.'
+                        : pages + (pages === 1 ? ' PNG page is in your Downloads.' : ' PNG pages are in your Downloads.');
+                } catch (err) {
+                    exportNote.textContent = 'This device could not make the ' + cfg[2] + '. Close other apps or tabs and try again.';
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        });
+
+        // Leaving without choosing Save or No Thanks still counts: the quiz goes
+        // to the ungraded table first, then the button works as normal.
+        ['btn-another', 'btn-home'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('click', function () {
+                if (decided) return;
+                decided = true;
+                savedAttempt = savedAttempt || buildAttempt();
+                if (typeof window.RH_UNGRADED === 'function') window.RH_UNGRADED(savedAttempt);
+            });
+        });
+    }
+
+    loadQuestions();
+</script>
+{% endblock %}

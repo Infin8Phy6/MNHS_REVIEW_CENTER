@@ -1,0 +1,34 @@
+{% extends "cw_base.html" %}
+{% block title %}{{ puzzle.title }}{% endblock %}
+{% block body %}
+<section class="board"
+         data-state="{{ url_for('crossword.api_state', token=attempt.token) }}"
+         data-check="{{ url_for('crossword.api_check', token=attempt.token) }}"
+         data-finish="{{ url_for('crossword.api_finish', token=attempt.token) }}"
+         data-result="{{ url_for('crossword.result', token=attempt.token) }}">
+  <div class="board-head">
+    <h2>#{{ puzzle.id }} &middot; {{ puzzle.title }}</h2>
+    <div id="clock" class="clock">--:--</div>
+  </div>
+
+  <div class="layout">
+    <div id="grid" class="grid" aria-label="crossword grid"></div>
+    <div class="side">
+      <div class="score-line">Score <b id="score">0</b> / {{ max_points }}</div>
+      <h3>Across</h3>
+      <ol id="across" class="clues"></ol>
+      <h3>Down</h3>
+      <ol id="down" class="clues"></ol>
+      <div class="controls">
+        <button id="check" class="btn primary">Check</button>
+        <button id="clear" class="btn">Clear</button>
+        <button id="done" class="btn">Finish now</button>
+      </div>
+      <p id="say" class="say"></p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block script %}
+<script src="{{ url_for('crossword.static', filename='crossword.js') }}"></script>
+{% endblock %}

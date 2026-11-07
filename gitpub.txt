@@ -1,0 +1,27 @@
+cd C:\Users\ADMIN\Documents\starbiz
+cd Documents
+cd MNHS Review Ceter
+rmdir /s /q .git 
+git init
+git add .
+git status
+git commit -m "with pdf studio"
+gh repo create MNHS_REVIEW_CENTER --private --source=. --push
+
+
+# 1. Link your local repo to the existing remote repository (if not already linked)
+git remote add origin https://github.com/Infin8Phy6/MNHS_REVIEW_CENTER.git
+
+# 2. Push your commits to the master branch
+git push -u origin master
+
+cloning git https://github.com/Infin8Phy6/MNHS_REVIEW_CENTER
+git clone https://github.com/Infin8Phy6/MNHS_REVIEW_CENTER
+python3.13 -m pip install --user -r requirements.txt
+/home/Technogeekph/MNHS_REVIEW_CENTER/app.py
+/home/Technogeekph/MNHS_REVIEW_CENTER/static/style.css
+/home/Technogeekph/MNHS_REVIEW_CENTER/static/icon-192.png
+/home/Technogeekph/MNHS_REVIEW_CENTER/static/icon-512.png
+https://technogeekph.pythonanywhere.com/home
+https://www.pythonanywhere.com/user/Technogeekph/files/home/Technogeekph/MNHS_REVIEW_CENTER/templates
+.\venv\Scripts\Activate.ps1

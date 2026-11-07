@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ worksheet.settings.title }}{% endblock %}
+{% block content %}
+{% set s = worksheet.settings %}
+<div class="page-head">
+  <div>
+    <h1>{{ s.title }}</h1>
+    <p class="crumb">{{ s.class_name or 'Class not set' }}{% if s.section %} · {{ s.section }}{% endif %}
+       · {{ s.date }} · {{ worksheet['items']|length }} items · {{ worksheet.total_marks }} marks
+       · tier <span class="tag">{{ s.tier }}</span> · seed {{ s.seed }}</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn" href="{{ url_for('worksheet_export', worksheet_id=worksheet.id, kind='docx') }}">Download DOCX</a>
+    <a class="btn" href="{{ url_for('worksheet_export', worksheet_id=worksheet.id, kind='pdf') }}">Download PDF</a>
+    <button class="btn btn-quiet" type="button" onclick="window.print()">Print this page</button>
+    {% if teacher %}
+      <a class="btn btn-key" href="{{ url_for('worksheet_answer_key', worksheet_id=worksheet.id) }}">Answer key</a>
+      <a class="btn btn-quiet btn-key" href="{{ url_for('worksheet_answer_key_export', worksheet_id=worksheet.id, kind='docx') }}">Key DOCX</a>
+      <a class="btn btn-quiet btn-key" href="{{ url_for('worksheet_answer_key_export', worksheet_id=worksheet.id, kind='pdf') }}">Key PDF</a>
+    {% else %}
+      <a class="btn btn-quiet" href="{{ url_for('login', next=url_for('worksheet_answer_key', worksheet_id=worksheet.id)) }}">Answer key (teacher login)</a>
+    {% endif %}
+  </div>
+</div>
+
+<p class="notice">Both downloads are A4 landscape with everything in tables. The DOCX is
+   editable in Word or Google Docs; the PDF is ready for the photocopier. Answers appear
+   only in the teacher exports.</p>
+
+<div class="paper">
+  <table class="grid paper-table">
+    <thead>
+      <tr>
+        <th scope="col">#</th><th scope="col">Question</th>
+        <th scope="col">Answer space</th><th scope="col">Marks</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in worksheet['items'] %}
+      <tr>
+        <td class="num-col">{{ item.number }}</td>
+        <td class="pre-line">{{ item.prompt }}</td>
+        <td class="rule-col">
+          {% for _ in range(3 if item.type == 'orbital_diagram' else item.workspace) %}
+            <span class="write-line"></span>
+          {% endfor %}
+        </td>
+        <td class="num-col">{{ item.marks }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="item-meta table-wrap">
+  <table class="grid compact">
+    <thead><tr><th>Mix</th><th>Pool</th><th>Notation</th><th>Diagrams</th><th>Rules tested</th></tr></thead>
+    <tbody><tr>
+      <td>{% for label, count in worksheet.type_summary.items() if count %}{{ count }} × {{ type_labels[label] }}<br>{% endfor %}</td>
+      <td>{{ s.pool_mode }}{% if s.pool_mode == 'preset' %}: {{ presets[s.preset] }}{% elif s.pool_mode == 'range' %}: Z {{ s.z_min }}–{{ s.z_max }}{% else %}: {{ s.custom_pool }}{% endif %}</td>
+      <td>{{ 'grouped by shell (n)' if s.notation_order == 'shell' else 'energy (filling) order' }}</td>
+      <td>{{ 'whole configuration' if s.diagram_scope == 'full' else 'valence only' }}</td>
+      <td>{{ s.error_kinds | join(', ') }}</td>
+    </tr></tbody>
+  </table>
+</div>
+
+<form method="post" action="{{ url_for('worksheet_regenerate', worksheet_id=worksheet.id) }}" class="inline-form">
+  <button class="btn btn-quiet" type="submit">Regenerate with the next seed</button>
+</form>
+<form method="post" action="{{ url_for('worksheet_delete', worksheet_id=worksheet.id) }}"
+      class="inline-form" onsubmit="return confirm('Delete this saved worksheet? The file cannot be recovered.');">
+  <button class="btn btn-danger" type="submit">Delete worksheet</button>
+</form>
+{% endblock %}

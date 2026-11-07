@@ -1,0 +1,46 @@
+{% extends "qa_base.html" %}
+{% block title %}Saved orbital sheets{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Saved orbital box worksheets</h1>
+    <p class="crumb">Two small elements to an A4 page, one large element to a page,
+       each with its Bohr model in the upper right.</p>
+  </div>
+  <a class="btn" href="{{ url_for('qa.atom_sheet_new') }}">New orbital sheet</a>
+</div>
+
+{% if records %}
+<div class="table-wrap">
+<table class="grid">
+  <thead>
+    <tr>
+      <th scope="col">Title</th><th scope="col">Class</th><th scope="col">Elements</th>
+      <th scope="col">Range</th><th scope="col">Pages</th><th scope="col">Saved</th>
+      <th scope="col">Export</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in records %}
+    <tr>
+      <td scope="row"><a href="{{ url_for('qa.atom_sheet_view', sheet_id=r.id) }}">{{ r.title }}</a></td>
+      <td>{{ r.class_name or '—' }}{% if r.section %} / {{ r.section }}{% endif %}</td>
+      <td>{{ r.element_count }}</td>
+      <td>{{ r.range_label }}</td>
+      <td>{{ r.page_count }}</td>
+      <td>{{ r.saved_at.replace('T', ' ') }}</td>
+      <td class="actions">
+        <a href="{{ url_for('qa.atom_sheet_export', sheet_id=r.id, kind='student') }}">Student PDF</a>
+        <a class="key-link" href="{{ url_for('qa.atom_sheet_export', sheet_id=r.id, kind='key') }}">Key PDF</a>
+        <a class="key-link" href="{{ url_for('qa.atom_sheet_export', sheet_id=r.id, kind='both') }}">PDF + key</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">No orbital sheets saved yet.
+   <a href="{{ url_for('qa.atom_sheet_new') }}">Create the first one</a>.</p>
+{% endif %}
+{% endblock %}

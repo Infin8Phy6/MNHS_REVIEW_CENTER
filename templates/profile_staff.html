@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>{{ 'My Profile' if own else profile.name }}</h2>
+        <p style="color: #666; margin-top: 0;">
+            This is what MNHSRC has on you as staff: the level <b>admin.db</b> gives your address,
+            what that level may reach, who you answer to, and every class the
+            <a href="/admin/classes">Classes</a> page handed out to you.
+        </p>
+
+        <div class="profile-grid">
+            <div>
+                <h3 class="admin-section-title">Account</h3>
+                <ul class="profile-list">
+                    <li><span>Name</span><b>{{ profile.name }}</b></li>
+                    <li><span>Email</span><b>{{ profile.email }}</b></li>
+                    <li><span>Level</span><b>{{ profile.level.replace('_', ' ') }}</b></li>
+                    <li><span>Answers to</span><b>{{ profile.boss_name if profile.boss else 'the main admin' }}</b></li>
+                    <li><span>Joined</span><b>{{ profile.joined.strftime('%b %d, %Y') if profile.joined else '--' }}</b></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="admin-section-title">What I may do</h3>
+                <ul class="profile-list">
+                    {% for cap in profile.caps %}
+                    <li><span>Role</span><b>{{ cap }}</b></li>
+                    {% else %}
+                    <li><span>Role</span><b>nothing yet</b></li>
+                    {% endfor %}
+                </ul>
+                <p class="games-note">These come from the <b>roles</b> table in admin.db. Only the main
+                    admin changes them.</p>
+            </div>
+        </div>
+
+        {% if own %}
+        <div class="remind-setting" data-reminder-card>
+            <div class="remind-setting-copy">
+                <h3 class="admin-section-title">Class reminders</h3>
+                <p class="remind-setting-status">
+                    <span class="remind-setting-dot" aria-hidden="true"></span>
+                    <b data-reminder-status>Checking this device&hellip;</b>
+                </p>
+                <p class="remind-setting-note" data-reminder-note>
+                    The reminder bar appears only once. Whatever you choose is
+                    saved for your account until you change it here.
+                </p>
+            </div>
+            <button type="button" class="btn btn-outline remind-setting-btn"
+                    data-reminder-toggle disabled>Turn on this device</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card" style="margin-top: 18px;">
+        <h3 class="admin-section-title">Classes</h3>
+        {% if profile.classes %}
+        <div class="table-scroll">
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Section</th>
+                        <th>Subjects</th>
+                        <th>Schedule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in profile.classes %}
+                    <tr>
+                        <td class="db-name">{{ row.grade }}</td>
+                        <td>{{ row.section }}</td>
+                        <td>{{ row.subjects | join(', ') if row.subjects else 'every subject of this grade' }}</td>
+                        <td>{{ row.schedule or 'no schedule yet' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="games-note">These are the only classes you may open on the
+            <a href="/admin/assessment">Assessment</a> page.</p>
+
+        {% if profile.week %}
+        <h3 class="admin-section-title" style="margin-top: 18px;">This week&apos;s schedule</h3>
+        <p style="color: #666;">Every class plotted on the weekday it meets, in time order.
+            A cell turns <b style="color: #b0413e;">red</b> when two of your classes overlap -
+            it names the section and subject you would be in two rooms for.</p>
+        <div class="table-scroll">
+            <table class="sched-grid">
+                <thead>
+                    <tr>
+                        {% for day in days %}<th>{{ day }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for day in days %}
+                        <td>
+                            {% for block in profile.week[day] %}
+                            <div class="sched-block{% if block.clash %} sched-clash{% endif %}"
+                                 data-day="{{ day }}" data-section="{{ block.section }}"
+                                 data-start="{{ block.start }}">
+                                <b>{{ block.section }}</b>
+                                <div class="sched-subj">{{ block.subjects | join(', ') if block.subjects else 'every subject' }}</div>
+                                {% if block.room %}
+                                <div class="sched-room">{{ block.room }}</div>
+                                {% endif %}
+                                <div class="sched-time">
+                                    {% if block.start and block.end %}{{ block.start }}&ndash;{{ block.end }}
+                                    {% elif block.start %}from {{ block.start }}{% else %}no time set{% endif %}
+                                </div>
+                                {% if block.clash %}
+                                <div class="sched-clash-note">Clashes with:
+                                    {% for other in block.clash %}{{ other.grade }}
+                                        {{ other.section }} ({{ other.subjects | join(', ') if other.subjects else 'every subject' }}
+                                        {{ other.start }}-{{ other.end }}){{ ', ' if not loop.last }}{% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <span class="db-null">--</span>
+                            {% endfor %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% else %}
+        <p class="games-note">No class has been handed to you yet. The main admin assigns a grade,
+            section, subject and schedule on the <a href="/admin/classes">Classes</a> page.</p>
+        {% endif %}
+    </div>
+
+    {% if halt %}
+    <p class="res-message">No classes today &mdash; {{ halt }}. Reminders for today are halted
+        for the whole school.</p>
+    {% endif %}
+
+    {% if own and profile.classes %}
+    {# The 3-minutes-before alarm reads its meetings from this block. #}
+    <script id="sched-meetings" type="application/json">{{ meetings_json | safe }}</script>
+    <script src="/static/schedule-reminder.js" defer></script>
+    {% endif %}
+
+    {% if profile.teachers %}
+    <div class="card" style="margin-top: 18px;">
+        <h3 class="admin-section-title">Teachers under me</h3>
+        <p style="color: #666;">
+            {% if profile.level == 'main_admin' %}
+            Every staff login the main admin holds, and the class each of them was handed.
+            {% else %}
+            The teachers placed under your supervision in admin.db. You may give one of them a
+            login on the <a href="/admin/staff">Staff</a> page and hand them a class, subject and
+            schedule on the <a href="/admin/classes">Classes</a> page.
+            {% endif %}
+        </p>
+        <div class="table-scroll">
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Email</th>
+                        <th>Level</th>
+                        <th>Classes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in profile.teachers %}
+                    <tr>
+                        <td class="db-name"><a href="/profile/account/{{ row.member.id }}">{{ row.member.name }}</a></td>
+                        <td>{{ row.member.email }}</td>
+                        <td>{{ row.level.replace('_', ' ') }}</td>
+                        <td>
+                            {% for entry in row.classes %}{{ entry.grade }} {{ entry.section }}{% if entry.subjects %}
+                                ({{ entry.subjects | join(', ') }}){% endif %}{{ ', ' if not loop.last }}{% endfor %}
+                            {% if not row.classes %}<span class="db-null">none yet</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% elif own and profile.level == 'admin' %}
+    <div class="card" style="margin-top: 18px;">
+        <h3 class="admin-section-title">Teachers under me</h3>
+        <p class="games-note">No teacher answers to you yet. Ask the main admin to place one under
+            you, or add a teacher login of your own on the <a href="/admin/staff">Staff</a> page.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

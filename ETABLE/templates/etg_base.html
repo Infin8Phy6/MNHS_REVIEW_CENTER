@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Elemental Table Game{% endblock %} &mdash; MNHS Review Center</title>
+<meta name="theme_color" content="#14213d">
+<link rel="icon" href="/static/icon-192.png">
+<link rel="stylesheet" href="{{ url_for('etg.static', filename='etg.css') }}">
+</head>
+<body>
+<header>
+  <a class="brand" href="{{ url_for('etg.index') }}">
+    <span class="dot">Et</span>
+    <span><b>ELEMENTAL TABLE GAME</b><i>Five rows &middot; Nine columns &middot; 25 points</i></span>
+  </a>
+  <nav>
+    <a href="{{ url_for('etg.index') }}">How to play</a>
+    {% if staff_allowed %}<a href="{{ url_for('etg.worksheet') }}">Worksheets</a>{% endif %}
+    {% if tiles_url %}<a href="{{ tiles_url }}">Element tiles</a>{% endif %}
+    {% if back_url %}<a href="{{ back_url }}">MNHS_REVIEW_CENTER</a>{% endif %}
+  </nav>
+</header>
+
+<main>
+{% block body %}{% endblock %}
+</main>
+
+<footer>
+  Five elements at a time, five cells emptied in every row, so the table is worth
+  {{ max_points }} points. A cell is only left empty when the clues standing in its
+  row still pin the element to one answer &mdash; mass number = protons + neutrons,
+  protons = electrons in a neutral atom, and the group tells the valence count.
+</footer>
+{% block script %}{% endblock %}
+</body>
+</html>

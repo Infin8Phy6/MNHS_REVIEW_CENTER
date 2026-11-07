@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Quantum Architect{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{ url_for('index') }}">
+    <span class="brand-mark">Q</span>
+    <span class="brand-text">Quantum&nbsp;Architect</span>
+  </a>
+  <nav aria-label="Main">
+    <a href="{{ url_for('play') }}">Play</a>
+    <a href="{{ url_for('worksheets_list') }}">Worksheets</a>
+    <a href="{{ url_for('worksheet_new') }}">Create worksheet</a>
+    {% if teacher %}
+      <span class="badge badge-teacher">teacher mode</span>
+      <form method="post" action="{{ url_for('logout') }}" class="inline-form">
+        <button type="submit" class="link-btn">exit teacher</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('login') }}">Teacher login</a>
+    {% endif %}
+  </nav>
+</header>
+
+<main class="page">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>Quantum Architect · electron configuration board and worksheet studio ·
+     configurations verified for Z = 1–118.</p>
+</footer>
+</body>
+</html>

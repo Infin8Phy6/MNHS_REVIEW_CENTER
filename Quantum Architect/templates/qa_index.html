@@ -1,0 +1,71 @@
+{% extends "qa_base.html" %}
+{% block title %}Quantum Architect — build atoms, print worksheets{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Build the atom. Own the rules.</h1>
+  <p class="lede">Drag electrons into the orbital ladder and the three quantum rules
+     do the teaching: Aufbau rejects the wrong energy, Pauli refuses the third electron,
+     Hund refuses the early pair.</p>
+</section>
+
+<section class="cards">
+  <article class="card">
+    <h2><a href="{{ url_for('qa.play') }}">Open the board</a></h2>
+    <p>Place electrons for any element from Z&nbsp;1 to Z&nbsp;118. Live notation,
+       stability meter, score multiplier, exact rule messages on every rejection.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('qa.play', z=11) }}">Start at sodium</a>
+      <a class="btn btn-quiet" href="{{ url_for('qa.play', z=24) }}">Try the chromium exception</a>
+      <a class="btn btn-quiet" href="{{ url_for('qa.play', z=26) }}">Iron (26 electrons)</a>
+    </p>
+  </article>
+
+  {% if teacher %}
+  <article class="card">
+    <h2><a href="{{ url_for('qa.atom_sheet_new') }}">Orbital box worksheet</a></h2>
+    <p>Print the sublevel boxes for a run of elements — two small elements on one A4
+       page, one large element on a page — with the Bohr model in the upper right.
+       Students write ↑ and ↓ in the boxes; the answer key prints the same sheet filled in.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('qa.atom_sheet_new') }}">New orbital sheet</a>
+      <a class="btn btn-quiet" href="{{ url_for('qa.atom_sheets_list') }}">Saved sheets</a>
+    </p>
+  </article>
+
+  <article class="card">
+    <h2><a href="{{ url_for('qa.worksheet_new') }}">Create a worksheet</a></h2>
+    <p>Pick an element pool and question types, and the studio builds the item list:
+       full configurations, shorthand, orbital diagrams, ions, quantum numbers and
+       find-the-error items — all with answers worked out by the same engine.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('qa.worksheet_new') }}">New worksheet</a>
+      <a class="btn btn-quiet" href="{{ url_for('qa.worksheet_new', quick='exam-mixed') }}">Exam preset</a>
+    </p>
+  </article>
+
+  <article class="card">
+    <h2><a href="{{ url_for('qa.worksheets_list') }}">Saved worksheets</a></h2>
+    <p>Export any saved worksheet as an editable <strong>DOCX</strong> or print-ready
+       <strong>PDF</strong>, A4 landscape, everything in tables. The answer key exports
+       separately and are for staff sign-ins only.</p>
+    <p class="card-actions">
+      <a class="btn" href="{{ url_for('qa.worksheets_list') }}">Browse {{ saved_count }} saved</a>
+    </p>
+  </article>
+  {% endif %}
+</section>
+
+{% if teacher %}
+<section class="quick">
+  <h2>Jump straight to a paper</h2>
+  <ul class="quick-list">
+  {% for key, quick in quick_starts.items() %}
+    <li><a href="{{ url_for('qa.worksheet_new', quick=key) }}">{{ quick.label }}</a></li>
+  {% endfor %}
+  </ul>
+</section>
+{% elif login_url %}
+<p class="staff-note">The worksheet studio and its answer keys are for teachers.
+   <a href="{{ login_url }}">Sign in to the Review Center</a> with a staff account to open them.</p>
+{% endif %}
+{% endblock %}

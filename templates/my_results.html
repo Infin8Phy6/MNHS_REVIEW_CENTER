@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card" style="padding: 18px;">
+        <h2>My Saved Results</h2>
+        <p style="color: #666;">{{ user.full_name() }} — {{ user.school }} · {{ user.grade }} · {{ user.section }}</p>
+
+        {% if not attempts %}
+            <p style="color: #666; margin-top: 24px;">
+                No saved results yet. Take a quiz and choose "Save My Result" at the end.
+            </p>
+            <a href="/quiz_setup" class="btn btn-primary" style="max-width: 320px; margin: 12px auto 0;">Take a Quiz</a>
+        {% else %}
+            <div style="overflow-x: auto;">
+                <table class="rh-results-table">
+                    <thead>
+                        <tr>
+                            <th>Date Taken</th>
+                            <th>Subject</th>
+                            <th>Topic</th>
+                            <th>Score</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in attempts %}
+                        <tr>
+                            <td>{{ a.date_taken }}</td>
+                            <td>{{ a.subject }}</td>
+                            <td>{{ a.topic }}</td>
+                            <td><b>{{ a.score }} / {{ a.total }}</b></td>
+                            <td>
+                                {% if a.recorded %}
+                                <span class="as-src">recorded by your teacher</span>
+                                {% else %}
+                                <button type="button" class="btn btn-outline rh-export-btn"
+                                        data-index="{{ loop.index0 }}" data-format="pdf">
+                                    Download PDF
+                                </button>
+                                <button type="button" class="btn btn-outline rh-export-btn"
+                                        data-index="{{ loop.index0 }}" data-format="png">
+                                    Download PNG
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="/static/export.js"></script>
+<script>
+    const ATTEMPTS = {{ attempts | tojson }};
+    const USER = {{ user_json | tojson }};
+
+    document.querySelectorAll('.rh-export-btn').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+            const attempt = ATTEMPTS[parseInt(btn.dataset.index, 10)];
+            if (!attempt || !window.RHExport) return;
+            const asPdf = btn.dataset.format === 'pdf';
+            const label = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Preparing ' + (asPdf ? 'PDF…' : 'PNG…');
+            try {
+                await (asPdf ? window.RHExport.exportPdf : window.RHExport.exportAttempt)(attempt, USER);
+                btn.textContent = asPdf ? 'PDF downloaded' : 'PNG downloaded';
+            } catch (err) {
+                btn.textContent = 'Could not export on this device';
+            }
+            setTimeout(function () { btn.disabled = false; btn.textContent = label; }, 2500);
+        });
+    });
+</script>
+{% endblock %}

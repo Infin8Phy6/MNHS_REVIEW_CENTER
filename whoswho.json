@@ -1,0 +1,24 @@
+{
+ "activities": [
+  {
+   "slug": "developers-of-the-periodic-table",
+   "title": "Developers of the Periodic Table",
+   "created": "2026-10-24 11:30:59",
+   "persons": [
+    {
+     "id": "7770a010ce7e",
+     "name": "Dmitri Mendeleev",
+     "clues": [
+      "Born on February 8, 1834 – live until February 2, 1907 was a renowned Russian chemist and inventor",
+      "He is best remembered for formulating the Periodic Law and creating the first comprehensive Periodic Table of Elements, revolutionizing the field of chemistry",
+      "He arranged all known chemical elements in order of increasing atomic weight."
+     ],
+     "photo": {
+      "drive_id": "",
+      "file": "e4f81b3445e85be7.webp"
+     }
+    }
+   ]
+  }
+ ]
+}

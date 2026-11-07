@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% macro staff_row(row, owner, levels, admins) %}
+<tr>
+    <td class="db-name"><a href="/profile/account/{{ row.member.id }}">{{ row.member.name }}</a></td>
+    <td>{{ row.member.email }}</td>
+    <td>
+        {% if owner %}
+        <form method="POST" class="as-form">
+            <input type="hidden" name="action" value="level">
+            <input type="hidden" name="id" value="{{ row.member.id }}">
+            <select name="level">
+                {% for level in levels %}
+                <option value="{{ level }}" {% if row.level == level %}selected{% endif %}>
+                    {{ level.replace('_', ' ') }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-outline res-remove">Save</button>
+        </form>
+        {% else %}
+        <span class="as-when">{{ row.level.replace('_', ' ') }}</span>
+        {% endif %}
+    </td>
+    <td class="db-null">{{ row.caps }}</td>
+    {% if owner %}
+    <td>
+        <form method="POST" class="as-form">
+            <input type="hidden" name="action" value="supervisor">
+            <input type="hidden" name="id" value="{{ row.member.id }}">
+            <select name="supervisor" {% if row.level != 'teacher' %}disabled{% endif %}>
+                <option value="">Main admin</option>
+                {% for admin in admins %}
+                <option value="{{ admin.email }}" {% if row.boss == admin.email %}selected{% endif %}>
+                    {{ admin.name }}</option>
+                {% endfor %}
+            </select>
+            {% if row.level == 'teacher' %}
+            <button type="submit" class="btn btn-outline res-remove">Save</button>
+            {% else %}
+            <div class="db-null">only a teacher is supervised</div>
+            {% endif %}
+        </form>
+    </td>
+    {% endif %}
+    <td>
+        <span class="as-when">{{ row.member.created_at.strftime('%b %d, %Y') if row.member.created_at else '--' }}</span>
+        {% if row.member.created_by %}<div class="db-null">by {{ row.member.created_by }}</div>{% endif %}
+    </td>
+    <td>
+        <form method="POST" class="as-form">
+            <input type="hidden" name="action" value="password">
+            <input type="hidden" name="id" value="{{ row.member.id }}">
+            <input type="password" name="password" minlength="8" required placeholder="new password">
+            <button type="submit" class="btn btn-outline res-remove">Set</button>
+        </form>
+    </td>
+    {% if owner %}
+    <td>
+        <form method="POST" onsubmit="return confirm('Take away the login for {{ row.member.name }}? They lose access straight away.');">
+            <input type="hidden" name="action" value="remove">
+            <input type="hidden" name="id" value="{{ row.member.id }}">
+            <button type="submit" class="btn btn-outline res-remove">Remove</button>
+        </form>
+    </td>
+    {% endif %}
+</tr>
+{% endmacro %}
+{% block content %}
+<div class="container card">
+    <h2>Staff</h2>
+    <p style="color: #666;">
+        Every login here is a row in <b>admin.db</b>, the file that decides who may sign in at
+        <a href="/admin/login">/admin/login</a> and what each level may reach. A <b>teacher</b> may
+        create quizzes and summative tests and record marks. An <b>admin</b> may also manage classes,
+        assign teachers and read assessment results.
+        {% if owner %}
+        You are the main admin: you see every admin under you with the teachers answering to
+        each of them, and the teachers you hold yourself. You change a role, place a teacher
+        under one of your admins, and take a login away. Each admin may only see, assign and
+        manage <b>their own</b> teachers &mdash; on the <a href="/admin/classes">Classes</a>
+        page and here alike.
+        {% else %}
+        You are an admin: the teachers listed here are yours. Give one of them a login, or set a new
+        password for one. Only the main admin changes a role, moves a teacher to another admin, or
+        removes a login.
+        {% endif %}
+    </p>
+
+    {% if message %}<p class="res-message">{{ message }}</p>{% endif %}
+
+    <form method="POST" class="as-form" style="margin-bottom: 20px;">
+        <input type="hidden" name="action" value="add">
+        <label>Name
+            <input type="text" name="name" value="{{ form.name }}" maxlength="120" required placeholder="Teacher full name"></label>
+        <label>Email
+            <input type="email" name="email" value="{{ form.email }}" required placeholder="teacher@example.com"></label>
+        <label>Password
+            <input type="password" name="password" minlength="8" required placeholder="at least 8 characters"></label>
+        <label>Level
+            <select name="level">
+                {% for level in levels %}
+                <option value="{{ level }}" {% if form.level == level %}selected{% endif %}>
+                    {{ level.replace('_', ' ') }}</option>
+                {% endfor %}
+            </select></label>
+        {% if owner %}
+        <label>Under the supervision of
+            <select name="supervisor">
+                <option value="">Main admin (you)</option>
+                {% for admin in admins %}
+                <option value="{{ admin.email }}" {% if form.supervisor == admin.email %}selected{% endif %}>
+                    {{ admin.name }}</option>
+                {% endfor %}
+            </select></label>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Assign a login</button>
+    </form>
+
+    {% if errors %}
+        <p class="field-error">
+            {% for key, text in errors.items() %}{{ text }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+        </p>
+    {% endif %}
+
+    {% if members %}
+    <div class="table-scroll">
+        <table class="db-table">
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Email</th>
+                    <th>Level</th>
+                    <th>May do</th>
+                    {% if owner %}<th>Supervision</th>{% endif %}
+                    <th>Assigned</th>
+                    <th>New password</th>
+                    {% if owner %}<th></th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if owner and groups %}
+                    {% for group in groups %}
+                    <tr class="staff-group">
+                        <td colspan="8">
+                            {% if group.admin %}
+                                <b>Admin &mdash; {{ group.admin.member.name }}</b>
+                                ({{ group.admin.member.email }}) &middot;
+                                {{ group.teachers|length }}
+                                {{ 'teacher' if group.teachers|length == 1 else 'teachers' }} under them
+                            {% else %}
+                                <b>Main admin&rsquo;s own teachers</b> &middot;
+                                answering to you directly &middot;
+                                {{ group.teachers|length }}
+                                {{ 'teacher' if group.teachers|length == 1 else 'teachers' }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if group.admin %}{{ staff_row(group.admin, owner, levels, admins) }}{% endif %}
+                    {% for row in group.teachers %}{{ staff_row(row, owner, levels, admins) }}{% endfor %}
+                    {% endfor %}
+                {% else %}
+                    {% for row in members %}{{ staff_row(row, owner, levels, admins) }}{% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="games-note">{% if owner %}No teacher has a login yet. Add one above and tell them to use
+        <b>Admin Log In</b> in the top bar.{% else %}No teacher answers to you yet. Ask the main admin to
+        place one under you, or add a teacher login of your own above.{% endif %}</p>
+    {% endif %}
+</div>
+<script src="/static/auth.js" defer></script>
+{% endblock %}

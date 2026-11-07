@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Teacher login — Quantum Architect{% endblock %}
+{% block content %}
+<section class="panel panel-narrow">
+  <h1>Teacher mode</h1>
+  <p>Teacher mode unlocks the answer-key pages and answer-key exports. It is a PIN gate
+     for a shared classroom machine, not an account system — students who know the PIN
+     can get in, so keep the PIN out of the class chat.</p>
+  {% if error %}<p class="alert alert-error">{{ error }}</p>{% endif %}
+  <form method="post" action="{{ url_for('login') }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>PIN
+      <input type="password" name="pin" autocomplete="off" inputmode="numeric" autofocus required>
+    </label>
+    <p class="hint">Default PIN is <code>1234</code>. Change it by setting the environment
+       variable <code>QA_TEACHER_PIN</code> before starting the app.</p>
+    <button class="btn" type="submit">Enter teacher mode</button>
+  </form>
+</section>
+{% endblock %}

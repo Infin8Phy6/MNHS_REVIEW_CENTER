@@ -1,0 +1,112 @@
+{% extends "qa_base.html" %}
+{% block title %}{{ sheet.settings.title }}{% endblock %}
+{% block body_class %}atom-sheet{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('qa.static', filename='css/atom_sheet.css') }}">
+{% endblock %}
+{% block content %}
+{% set s = sheet.settings %}
+<div class="page-head">
+  <div>
+    <h1>{{ s.title }}</h1>
+    <p class="crumb">{{ s.class_name or 'Class not set' }}{% if s.section %} · {{ s.section }}{% endif %}
+       · {{ s.date }} · {{ sheet.element_count }} elements · {{ sheet.page_count }} A4 page{{ '' if sheet.page_count == 1 else 's' }}
+       · {{ 'answer key' if key else 'student copy' }}</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn" href="{{ url_for('qa.atom_sheet_export', sheet_id=record.id, kind='student') }}">Student PDF</a>
+    <a class="btn btn-key" href="{{ url_for('qa.atom_sheet_export', sheet_id=record.id, kind='key') }}">Answer key PDF</a>
+    <a class="btn btn-quiet" href="{{ url_for('qa.atom_sheet_export', sheet_id=record.id, kind='both') }}">PDF + key in one file</a>
+    <button class="btn btn-quiet" type="button" onclick="window.print()">Print this page</button>
+    {% if key %}
+      <a class="btn btn-quiet" href="{{ url_for('qa.atom_sheet_view', sheet_id=record.id) }}">Preview student copy</a>
+    {% else %}
+      <a class="btn btn-quiet btn-key" href="{{ url_for('qa.atom_sheet_view', sheet_id=record.id, key='1') }}">Preview answer key</a>
+    {% endif %}
+  </div>
+</div>
+
+<p class="notice">A4 portrait. Small elements print two to a page — one in the top half,
+   one in the bottom half, cut along the dashed line. Elements whose configuration needs
+   more rows take a whole page. The answer key fills the same boxes; the student copy
+   leaves them blank.</p>
+
+<div class="sheet-scroll{% if key %} is-key{% endif %}">
+  {% for page in sheet.pages %}
+  {% set page_no = loop.index %}
+  <div class="a4-sheet" data-page="{{ page_no }}">
+    {% for block in page %}
+    <article class="sheet-block{% if page|length == 2 %} is-half{% else %} is-full{% endif %}">
+      <header class="blk-head">
+        <div>
+          <h2 class="blk-title"><span class="blk-z">Z = {{ block.z }}</span>
+            {{ block.symbol }} · {{ block.name }}</h2>
+          <p class="blk-meta">Period {{ block.period }} · Group {{ block.group_label }}
+            · {{ block.block }}-block · {{ block.valence }} valence electron{{ '' if block.valence == 1 else 's' }}</p>
+        </div>
+        {% if key %}<span class="blk-key-tag">ANSWER KEY</span>{% endif %}
+      </header>
+
+      <div class="blk-body">
+        <div class="blk-boxes">
+          {% for row in block.rows %}
+          <div class="sub-row">
+            <span class="sub-name">{{ row.sublevel }}</span>
+            <span class="sub-boxes">
+              {% for box in row.boxes %}
+              <span class="sub-box" data-ml="{{ row.ml[loop.index0] }}">
+                {% if key and box %}<span class="sub-arrow">{{ box }}</span>{% endif %}
+              </span>
+              {% endfor %}
+            </span>
+            <span class="sub-count">{% if key %}{{ row.count }}e⁻{% endif %}</span>
+          </div>
+          {% endfor %}
+
+          {% if key %}
+          <div class="blk-answers">
+            <p><strong>Configuration:</strong> <span class="mono">{{ block.config }}</span></p>
+            <p><strong>Energy order:</strong> <span class="mono">{{ block.config_fill }}</span></p>
+            <p><strong>Shells:</strong> {{ block.shell_text }} ·
+               <strong>Valence:</strong> {{ block.valence }}</p>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if s.show_bohr %}
+        <div class="blk-bohr">
+          <h3>Bohr model</h3>
+          <svg viewBox="0 0 200 200" role="img"
+               aria-label="Bohr model of {{ block.name }} with {{ block.z }} electrons">
+            <circle cx="100" cy="100" r="11" class="bohr-nucleus"/>
+            <text x="100" y="104" class="bohr-symbol" text-anchor="middle">{{ block.symbol }}</text>
+            {% for ring in block.bohr.rings %}
+            <circle cx="100" cy="100" r="{{ ring.r }}"
+                    class="bohr-ring{% if ring.valence %} is-valence{% endif %}"/>
+            {% for dot in ring.dots %}
+            <circle cx="{{ dot.x }}" cy="{{ dot.y }}" r="2.6"
+                    class="bohr-dot{% if ring.valence %} is-valence{% endif %}"/>
+            {% endfor %}
+            <text x="100" y="{{ 100 - ring.r - 2 }}" text-anchor="middle"
+                  class="bohr-label{% if ring.valence %} is-valence{% endif %}">{{ ring.letter }}{{ ring.count }}</text>
+            {% endfor %}
+          </svg>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% if not loop.last and page|length == 2 %}<div class="cut-line" aria-hidden="true"></div>{% endif %}
+    {% endfor %}
+    <p class="sheet-foot">{{ s.title }} · page {{ page_no }} of {{ sheet.page_count }}
+      {% if key %} · answer key{% endif %}</p>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="head-actions sheet-actions">
+  <form method="post" action="{{ url_for('qa.atom_sheet_delete', sheet_id=record.id) }}"
+        class="inline-form" onsubmit="return confirm('Delete this saved sheet? The file cannot be recovered.');">
+    <button class="btn btn-danger" type="submit">Delete sheet</button>
+  </form>
+</div>
+{% endblock %}

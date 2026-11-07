@@ -1,0 +1,62 @@
+{% extends "ww_base.html" %}
+{% block title %}{{ act.title }}{% endblock %}
+{% block body %}
+
+{% if notice %}<p class="banner ok">The activity is saved.</p>{% endif %}
+
+<section class="card">
+  <h2>{{ act.title }}</h2>
+  <p class="muted">{{ act.persons|length }} person{{ '' if act.persons|length == 1 else 's' }} in
+    this round. Play alone, or open a room and send the link &mdash; up to {{ max_players }}
+    players see the same person at the same time.</p>
+
+  <div class="who-grid">
+    {% for p in act.persons %}
+      <figure class="who">
+        {% if p.photo and (p.photo.file or p.photo.drive_id) %}
+          <img src="{{ url_for('whoswho.photo', slug=act.slug, person_id=p.id) }}"
+               alt="Person {{ loop.index }}">
+        {% else %}
+          <span class="miss">?</span>
+        {% endif %}
+        <figcaption>Person {{ loop.index }}</figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+
+  <form method="post" action="{{ url_for('whoswho.play', slug=act.slug) }}">
+    <input type="hidden" name="solo" value="1">
+    <button class="wide" type="submit">Play alone</button>
+  </form>
+  <form method="post" action="{{ url_for('whoswho.play', slug=act.slug) }}">
+    <button class="wide ghost" type="submit">Open a multiplayer room</button>
+  </form>
+
+  {% if admin_ok %}
+  <div class="row">
+    <a class="btn ghost" href="{{ url_for('whoswho.write', slug=act.slug) }}">Edit this activity</a>
+    <form method="post" action="{{ url_for('whoswho.delete', slug=act.slug) }}"
+          onsubmit="return confirm('Delete {{ act.title }}?');">
+      <button type="submit" class="danger">Delete</button>
+    </form>
+  </div>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h3>How the round scores</h3>
+  <ul class="how">
+    <li>The free clue is always the <b>letters of the name, shuffled</b>. They are dealt again
+      every ten seconds, or press <b>Shuffle the letters</b> yourself.</li>
+    <li>Type the whole name in the answer box, then press <b>Submit answer</b>.</li>
+    <li>Give it with no clue shown and the person is worth <b>{{ start_points }} points</b>.</li>
+    <li><b>Reveal Clue 1</b> and it becomes {{ start_points - 1 }} points, <b>Clue 2</b>
+      {{ start_points - 2 }}, <b>Clue 3</b> {{ start_points - 3 }}.</li>
+    <li>Once the third clue is shown there is a <b>{{ clue_seconds }} second</b> count, then the round
+      moves to the next person.</li>
+    <li>A person you cannot answer still leaves you with <b>1 point</b>, so nobody loses everything.</li>
+    <li>Everything is added up at the end of the round &mdash; there is no limit to how many people
+      one activity holds.</li>
+  </ul>
+</section>
+{% endblock %}

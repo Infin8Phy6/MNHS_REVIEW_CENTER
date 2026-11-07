@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card" style="padding: 18px;">
+        <h2>Results Dashboard</h2>
+        <p style="color: #666; margin-bottom: 18px;">
+            Item analysis of saved quiz results. Choose a grade level and section.
+        </p>
+
+        <form method="GET" action="/admin" class="admin-filters">
+            <div class="admin-filter-field">
+                <label>Grade Level:</label>
+                <select id="rsGrade" name="grade" data-grade-pick>
+                    <option value="">-- Choose Grade --</option>
+                    {% for g in grade_choices %}
+                    <option value="{{ g }}" {% if g == grade %}selected{% endif %}>{{ g }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field">
+                <label>Section:</label>
+                <select id="rsSection" name="section" data-section-pick data-from="rsGrade"
+                        data-current="{{ section }}" {% if not grade %}disabled{% endif %}>
+                    <option value="">All Sections</option>
+                    {% for s in sections %}
+                    <option value="{{ s }}" {% if s == section %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field admin-filter-btn">
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+        </form>
+
+        {% if not grade %}
+            <p style="color: #666; margin-top: 24px;">
+                Choose a grade level to view the results analysis.
+            </p>
+        {% elif not view %}
+            <p style="color: #666; margin-top: 24px;">No results yet.</p>
+        {% elif view.attempt_count == 0 %}
+            <p style="color: #666; margin-top: 24px;">
+                No saved quiz results yet for {{ grade }}{% if section %} — {{ section }}{% endif %}.
+                Results appear here once students finish and save a quiz.
+            </p>
+        {% else %}
+            <div class="admin-summary">
+                <div class="admin-stat">
+                    <small>Students</small>
+                    <div class="admin-stat-num">{{ view.student_count }}</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Quiz Attempts</small>
+                    <div class="admin-stat-num">{{ view.attempt_count }}</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Not Saved (Ungraded)</small>
+                    <div class="admin-stat-num">{{ view.ungraded_count }}</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Average Score</small>
+                    <div class="admin-stat-num">{{ view.avg_pct }}%</div>
+                </div>
+                <div class="admin-stat">
+                    <small>Items Analyzed</small>
+                    <div class="admin-stat-num">{{ view.item_count }}</div>
+                </div>
+            </div>
+
+            <h3 class="admin-section-title">Students</h3>
+            <div class="table-scroll">
+                <table class="rh-results-table admin-students-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Section</th>
+                            <th>Attempts</th>
+                            <th>Average Score</th>
+                            <th>Latest Attempt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in view.students %}
+                        <tr>
+                            <td>{{ s.name }}{% if s.ungraded %}
+                                <small style="color:#888;">· not saved</small>{% endif %}</td>
+                            <td>{{ s.section }}</td>
+                            <td>{{ s.attempts }}</td>
+                            <td><b>{{ s.avg_pct }}%</b></td>
+                            <td>{{ s.latest_str }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="admin-section-title">Most Difficult Questions</h3>
+            {% if view.most_difficult %}
+            <div class="admin-difficult-list">
+                {% for it in view.most_difficult %}
+                <div class="admin-difficult-item">
+                    <span class="diff-badge diff-{{ it.diff_class }}">{{ it.pct }}% correct</span>
+                    <span class="admin-difficult-q">{{ it.question }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: #666;">No items yet.</p>
+            {% endif %}
+
+            <h3 class="admin-section-title">Item Analysis</h3>
+            {% for subject, stats in view.subjects.items() %}
+            <h4 class="admin-subject-title">{{ subject }}</h4>
+            <div class="admin-items">
+                {% for it in stats %}
+                <div class="admin-item">
+                    <div class="admin-item-head">
+                        <span class="admin-item-num">#{{ loop.index }}</span>
+                        <span class="admin-item-q">{{ it.question }}</span>
+                        <span class="diff-badge diff-{{ it.diff_class }}">{{ it.diff_label }}</span>
+                    </div>
+                    <div class="admin-item-meta">
+                        {{ it.topic }}{% if it.quarter %} · {{ it.quarter }}{% endif %}
+                        — answered {{ it.shown }} time{{ '' if it.shown == 1 else 's' }},
+                        <b>{{ it.correct_count }} correct ({{ it.pct }}%)</b>
+                    </div>
+                    <div class="admin-opts">
+                        {% for row in it.option_rows %}
+                        <div class="admin-opt-row">
+                            <div class="admin-opt-label">
+                                {% if row.is_correct %}<span class="admin-correct-mark">✓</span>{% endif %}
+                                {% if row.text %}{{ row.text }}{% else %}No answer{% endif %}
+                            </div>
+                            <div class="admin-opt-bar">
+                                <span class="admin-opt-fill{% if row.is_correct %} admin-opt-fill-correct{% endif %}" style="width: {{ row.pct }}%;"></span>
+                            </div>
+                            <div class="admin-opt-count">{{ row.count }} ({{ row.pct }}%)</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% include "_class_picker.html" %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "qa_base.html" %}
+{% block title %}{{ code }} — Quantum Architect{% endblock %}
+{% block content %}
+<section class="panel panel-narrow">
+  <h1>{{ code }}</h1>
+  <p>{{ message }}</p>
+  <p><a class="btn" href="{{ url_for('qa.index') }}">Back to the start</a></p>
+</section>
+{% endblock %}

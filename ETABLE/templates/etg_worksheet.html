@@ -1,0 +1,66 @@
+{% extends "etg_base.html" %}
+{% block title %}Prepare worksheets{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>Prepare an empty table</h1>
+  <p class="help">The button deals one table under the game&rsquo;s own rules &mdash; {{ rows }}
+    elements, {{ blanks }} cells emptied in every row, every blank still solvable from its row
+    &mdash; and offers the <b>worksheet</b>, printable from this page or as a PDF, with the
+    {{ max_points }} cells left empty for the student, and the <b>answer key</b>, the same table
+    every cell filled, printed or downloaded separately. Print the worksheet for the class and
+    keep the key.</p>
+
+  <div class="toolbar">
+    <form method="POST" action="{{ url_for('etg.worksheet_new') }}">
+      <button type="submit" class="go">Prepare an empty table</button>
+    </form>
+  </div>
+
+  {% if table %}
+  <div class="toolbar no-print">
+    <a class="go" href="{{ url_for('etg.worksheet_pdf', token=token) }}">Download the worksheet (PDF)</a>
+    <a class="quiet" href="{{ url_for('etg.worksheet_key_pdf', token=token) }}">Download the answer key (PDF)</a>
+    {% if answers %}
+    <a class="quiet" href="{{ url_for('etg.worksheet_sheet', token=token) }}">Show the blank worksheet</a>
+    {% else %}
+    <a class="quiet" href="{{ url_for('etg.worksheet_sheet', token=token, answers=1) }}">Print with answers</a>
+    {% endif %}
+    <button class="quiet" type="button" onclick="window.print()">Print this page</button>
+  </div>
+
+  <div class="sheet">
+    <div class="sheet-line">Name __________________   Grade ____________   Section ____________</div>
+    {% if answers %}<div class="sheet-tag">ANSWER KEY (staff) &mdash; every dealt blank is printed in bold.</div>{% endif %}
+
+    <div class="table-scroll">
+      <table class="etg">
+        <thead>
+          <tr>
+            <th class="row-no">#</th>
+            {% for column in columns %}<th>{{ heads[column] }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in table %}
+          <tr>
+            <td class="row-no">{{ loop.index }}</td>
+            {% for column in columns %}
+              {% if column in row.blanks %}
+              <td class="blank{% if answers %} answered{% endif %}">
+                {% if answers %}<b>{{ row.truth[column] }}</b>{% endif %}
+              </td>
+              {% else %}
+              <td class="given">{{ row.given[column] }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <p class="key no-print">This is the table exactly as the two PDFs print it: shaded cells are the
+    {{ max_points }} the student fills in.</p>
+  {% endif %}
+</section>
+{% endblock %}

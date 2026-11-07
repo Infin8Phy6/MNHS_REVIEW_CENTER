@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Saved worksheets{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Saved worksheets</h1>
+  <a class="btn" href="{{ url_for('worksheet_new') }}">Create worksheet</a>
+</div>
+
+{% if records %}
+<div class="table-wrap">
+<table class="grid">
+  <thead>
+    <tr>
+      <th scope="col">Title</th><th scope="col">Class</th><th scope="col">Tier</th>
+      <th scope="col">Items</th><th scope="col">Elements</th><th scope="col">Marks</th>
+      <th scope="col">Saved</th><th scope="col">Export</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in records %}
+    <tr>
+      <td scope="row"><a href="{{ url_for('worksheet_view', worksheet_id=r.id) }}">{{ r.title }}</a></td>
+      <td>{{ r.class_name or '—' }}{% if r.section %} / {{ r.section }}{% endif %}</td>
+      <td><span class="tag">{{ r.tier }}</span></td>
+      <td>{{ r.item_count }}</td>
+      <td>{{ r.elements }}</td>
+      <td>{{ r.total_marks }}</td>
+      <td>{{ r.saved_at.replace('T', ' ') }}</td>
+      <td class="actions">
+        <a href="{{ url_for('worksheet_export', worksheet_id=r.id, kind='docx') }}">DOCX</a>
+        <a href="{{ url_for('worksheet_export', worksheet_id=r.id, kind='pdf') }}">PDF</a>
+        {% if teacher %}
+          <a class="key-link" href="{{ url_for('worksheet_answer_key', worksheet_id=r.id) }}">Answer key</a>
+          <a class="key-link" href="{{ url_for('worksheet_answer_key_export', worksheet_id=r.id, kind='docx') }}">Key DOCX</a>
+          <a class="key-link" href="{{ url_for('worksheet_answer_key_export', worksheet_id=r.id, kind='pdf') }}">Key PDF</a>
+        {% else %}
+          <a href="{{ url_for('login', next=url_for('worksheet_answer_key', worksheet_id=r.id)) }}">Answer key (teacher)</a>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">No worksheets saved yet.
+   <a href="{{ url_for('worksheet_new') }}">Create the first one</a>.</p>
+{% endif %}
+
+<section class="quick">
+  <h2>Quick starts</h2>
+  <ul class="quick-list">
+  {% for key, quick in quick_starts.items() %}
+    <li><a href="{{ url_for('worksheet_new', quick=key) }}">{{ quick.label }}</a></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <p style="margin: 0;">
+        <a href="/admin/database" style="color: #888;">All tables</a> &rsaquo;
+        <a href="/admin/database/{{ table }}" style="color: #888;">{{ table }}</a>
+    </p>
+    <h2>Edit {{ table }} row {{ identity }}</h2>
+    <p style="color: #666; margin-top: 0;">
+        Change only what needs changing. An empty box saves no value at all, so leave a
+        box alone unless you mean to clear it.
+    </p>
+
+    {% if message %}<p class="res-message">{{ message }}</p>{% endif %}
+    {% if problem %}<p class="field-error">{{ problem }}</p>{% endif %}
+
+    <form method="POST" class="db-form">
+        {% for f in fields %}
+            {% if f.kind == 'hash' %}
+                <div class="db-field">
+                    <label>Password</label>
+                    <p class="db-help">
+                        The stored password is hidden and stays as it is unless you type a new
+                        one here. This is how you let a student back into an account.
+                    </p>
+                    <input type="password" name="__new_password__" minlength="8"
+                           autocomplete="new-password" placeholder="Leave empty to keep it">
+                </div>
+            {% elif f.multi %}
+                <div class="db-field db-field-wide">
+                    <label>{{ f.name }} <span class="db-type">{{ f.type or 'text' }}</span></label>
+                    <textarea name="{{ f.name }}" rows="8" spellcheck="false">{{ f.value }}</textarea>
+                </div>
+            {% elif f.kind == 'grade' or f.kind == 'section' %}
+                <div class="db-field">
+                    <label>{{ f.name }}{% if f.notnull %} *{% endif %}
+                        <span class="db-type">{{ f.type }}</span></label>
+                    <select name="{{ f.name }}"
+                            {% if f.kind == 'grade' %}id="dbGrade" data-grade-pick
+                            {% else %}id="dbSection" data-section-pick data-from="dbGrade"
+                                  data-current="{{ f.value }}"{% endif %}>
+                        <option value="">-- Choose {{ 'grade level' if f.kind == 'grade' else 'section' }} --</option>
+                        {% for choice in f.options %}
+                        <option value="{{ choice }}" {% if choice == f.value %}selected{% endif %}>{{ choice }}</option>
+                        {% endfor %}
+                        {% if f.extra %}
+                        <option value="{{ f.extra }}" selected>{{ f.extra }} (not on the Classes page)</option>
+                        {% endif %}
+                    </select>
+                    <p class="db-help">
+                        {% if f.kind == 'grade' %}Grades are created on the
+                            <a href="/admin/classes">Classes</a> page.
+                        {% else %}This list follows the grade level above.
+                        {% endif %}
+                    </p>
+                </div>
+            {% elif f.kind == 'user' %}
+                <div class="db-field db-field-wide">
+                    <label>{{ f.name }}{% if f.notnull %} *{% endif %}
+                        <span class="db-type">{{ f.type }}</span></label>
+                    <select name="{{ f.name }}">
+                        {% if not f.notnull %}<option value="">-- no learner --</option>{% endif %}
+                        {% for value, label in f.options %}
+                        <option value="{{ value }}" {% if value|string == f.value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                        {% if f.extra %}
+                        <option value="{{ f.extra }}" selected>{{ f.extra }} (no registered account matches this)</option>
+                        {% endif %}
+                    </select>
+                    <p class="db-help">Every account registered in the review center, by last name.</p>
+                </div>
+            {% elif f.kind == 'number' %}
+                <div class="db-field">
+                    <label>{{ f.name }}{% if f.notnull %} *{% endif %}
+                        <span class="db-type">{{ f.type }}</span></label>
+                    <input type="number" step="1" name="{{ f.name }}" value="{{ f.value }}">
+                </div>
+            {% elif f.kind == 'datetime' %}
+                <div class="db-field">
+                    <label>{{ f.name }}{% if f.notnull %} *{% endif %}
+                        <span class="db-type">{{ f.type }}</span></label>
+                    <input type="text" name="{{ f.name }}" value="{{ f.value }}"
+                           placeholder="2026-10-27 15:30:00">
+                    <p class="db-help">Year-Month-Day Hour:Minute:Second</p>
+                </div>
+            {% else %}
+                <div class="db-field">
+                    <label>{{ f.name }}{% if f.notnull %} *{% endif %}
+                        <span class="db-type">{{ f.type }}</span></label>
+                    <input type="text" name="{{ f.name }}" value="{{ f.value }}">
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="db-actions">
+            <button type="submit" class="btn btn-primary cta">Save changes</button>
+            <a href="/admin/database/{{ table }}" class="btn btn-outline cta">Back to the rows</a>
+        </div>
+    </form>
+</div>
+{% include "_class_picker.html" %}
+<script src="/static/auth.js" defer></script>
+{% endblock %}

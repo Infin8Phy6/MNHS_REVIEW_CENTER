@@ -1,0 +1,49 @@
+{% extends "elementals_base.html" %}
+{% block title %}Activity sheet{% endblock %}
+{% block body %}
+
+<div class="sheet-tools no-print">
+  <div>
+    <b>{{ items|length }} tiles</b> &mdash; twenty tiles print on one A4 page, two columns of
+    ten, and the answer space sits inside each tile.
+  </div>
+  <div class="sheet-tools-btns">
+    {% if answers %}
+      <a class="wide" href="{{ url_for('game.activity', token=token) }}">Show the blank sheet</a>
+      <a class="quiet" href="{{ url_for('game.worksheet_key_pdf', token=token) }}">Answer key PDF</a>
+    {% else %}
+      <a class="wide" href="{{ url_for('game.activity_key', token=token) }}">Print with answers</a>
+      <a class="quiet" href="{{ url_for('game.worksheet_pdf', token=token) }}">Worksheet PDF</a>
+    {% endif %}
+    <button class="quiet" type="button" onclick="window.print()">Print this page</button>
+    <a class="quiet" href="{{ url_for('game.worksheet_sheet', token=token) }}">Back to the sheet</a>
+  </div>
+</div>
+
+<div class="sheet">
+  <div class="sheet-title">ELEMENTALS &mdash; Periodic Table Symbol Sprint
+    {% if answers %}<span class="sheet-tag">ANSWER KEY (staff)</span>{% endif %}</div>
+  <div class="sheet-line">Name __________________   Grade ____________   Section ____________</div>
+  {% if not answers %}
+  <div class="sheet-note">Read the clues in each tile and write the chemical symbol in the
+    Symbol space inside the tile.</div>
+  {% endif %}
+
+  <div class="tiles">
+    {% for item in items %}
+    <div class="tile">
+      <div class="tile-head">{{ item.n }}.
+        {% if answers %}<b>{{ item.name }}</b>{% else %}<span class="tile-blank">________________________</span>{% endif %}
+      </div>
+      <ul class="tile-clues">
+        {% for clue in item.clues %}<li>{{ clue }}</li>{% endfor %}
+      </ul>
+      <div class="tile-answer">Symbol:
+        {% if answers %}<b class="tile-symbol">{{ item.symbol }}</b>
+        {% else %}<span class="rule"></span>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

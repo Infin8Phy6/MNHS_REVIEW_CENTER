@@ -1,0 +1,166 @@
+/* Who's Who — same navy and amber as the other Review Center games.
+   Sizes are in clamp() and the grids collapse at 620px, so a 6-inch phone and a
+   16-inch laptop both get the whole board without sideways scrolling. */
+:root{
+  --ink:#14213d; --ink2:#41506b; --line:#d9e0ea; --paper:#fff; --bg:#eef3f8;
+  --navy:#14213d; --amber:#fca311; --good:#2a9d8f; --bad:#e76f51; --chip:#eaf2ff;
+  --shadow:0 1px 2px rgba(20,33,61,.08), 0 8px 24px rgba(20,33,61,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--navy)}
+header{background:var(--navy);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:#fff}
+header b{font-size:1.05rem;letter-spacing:.06em;display:block}
+header i{font-style:normal;color:#c8d6ee;font-size:.78rem;display:block}
+header .dot{width:30px;height:30px;border-radius:8px;background:var(--amber);color:var(--navy);
+  font-weight:800;display:grid;place-items:center;font-size:.9rem}
+nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+nav a{color:#dbe6f6;text-decoration:none;font-size:.88rem;font-weight:700;padding:7px 12px;border-radius:9px}
+nav a:hover{background:#22314f;color:#fff}
+main{max-width:1060px;margin:0 auto;padding:16px}
+footer{max-width:1060px;margin:0 auto;padding:6px 16px 30px;color:var(--ink2);font-size:.82rem}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:18px;margin-bottom:16px}
+h2{margin:0 0 6px;font-size:1.22rem}
+h3{margin:0 0 8px;font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2)}
+p{margin:.5em 0}
+.muted{color:var(--ink2);font-size:.9rem}
+.small{font-size:.82rem}
+.hide{display:none !important}
+.empty{color:var(--ink2);font-style:italic}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+label{display:block;font-size:.85rem;font-weight:700;margin:12px 0 4px;color:var(--ink2)}
+input[type=text],textarea,select{width:100%;padding:12px 13px;font-size:1rem;font-family:inherit;color:var(--ink);
+  border:1.5px solid var(--line);border-radius:11px;background:#fff}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--navy)}
+textarea{resize:vertical}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:11px;border:1.5px solid var(--navy);
+  background:var(--navy);color:#fff;padding:11px 16px}
+button:hover{border-color:var(--amber);background:var(--amber);color:var(--navy)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:#fff;color:var(--navy)}
+button.danger{background:#fff;border-color:var(--bad);color:var(--bad)}
+button.wide{width:100%;margin-top:14px;padding:13px}
+button.small-btn{font-size:.82rem;padding:7px 11px}
+.btn{display:inline-block;text-decoration:none;font-weight:700;border-radius:11px;padding:11px 16px;
+  border:1.5px solid var(--navy);background:var(--navy);color:#fff}
+.btn.ghost{background:#fff;color:var(--navy)}
+.wide-link{display:inline-block;margin-top:8px;font-weight:700}
+.head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.roomcode{text-align:right;background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.roomcode span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.linkrow{display:flex;gap:8px}
+.who-card{background:#f7fafd;border:1.5px solid var(--navy);border-radius:12px;padding:12px 14px;margin:16px 0 6px}
+.who-label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.who-name{font-size:1.05rem}
+.who-meta{display:block;color:var(--ink2);font-size:.85rem}
+.acts{list-style:none;margin:10px 0 0;padding:0}
+.acts li{border-bottom:1px solid var(--line)}
+.acts a{display:flex;justify-content:space-between;gap:12px;padding:12px 4px;text-decoration:none;font-weight:700}
+.acts a:hover{color:var(--amber)}
+.who-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin:14px 0}
+.who-grid .who{margin:0;text-align:center}
+.who-grid img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--line);
+  background:var(--navy)}
+.who-grid figcaption{font-size:.78rem;color:var(--ink2)}
+.who-grid .miss{display:grid;place-items:center;width:100%;aspect-ratio:1/1;border-radius:12px;
+  border:1px solid var(--line);background:var(--chip);color:var(--ink2);font-size:1.4rem;font-weight:800}
+
+/* faces shown before a round starts: the activity list, the join page, the lobby */
+.faces{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.faces img{width:54px;height:54px;object-fit:cover;border-radius:10px;
+  border:1px solid var(--line);background:var(--navy)}
+.faces b,.strip b{display:grid;place-items:center;background:var(--chip);color:var(--ink2);
+  font-size:.9rem;font-weight:800;border:1px solid var(--line)}
+.faces b{width:54px;height:54px;border-radius:10px}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin:14px 0 0}
+.strip img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:11px;
+  border:1px solid var(--line);background:var(--navy)}
+.strip b{aspect-ratio:1/1;border-radius:11px;font-size:1.3rem}
+
+/* the board — the picture sits upper left at roughly 2 to 4 inches wide
+   (192 to 384 CSS px), the letters fall straight under it and the clues read
+   down the right. The frame follows the photo's own ratio so nothing is
+   cropped and a landscape picture is not banded. */
+.guess{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:18px;align-items:start}
+.piccol{display:flex;flex-direction:column;gap:9px;width:clamp(192px,26vw,384px);max-width:100%}
+#photo{display:block;width:100%;height:auto;max-height:384px;object-fit:contain;
+  border-radius:14px;border:2px solid var(--navy);background:#0f172a}
+.nophoto{aspect-ratio:4/3;display:grid;place-items:center;padding:16px;text-align:center;
+  font-weight:700;color:var(--ink2);border:2px dashed var(--line);border-radius:14px;
+  background:#f7fafd}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}
+.tiles span{width:clamp(24px,4.6vw,34px);height:clamp(24px,4.6vw,34px);display:grid;place-items:center;
+  border:1.5px solid var(--navy);border-radius:9px;background:#fff;font-weight:800;
+  font-size:clamp(.8rem,2.1vw,1rem)}
+.clues{list-style:none;margin:12px 0 0;padding:0}
+.clues li{border:1px solid var(--line);border-radius:12px;padding:8px 11px;margin-bottom:7px;background:#f7fafd;
+  opacity:.45}
+.clues li.on{opacity:1;border-color:var(--navy);background:#fff}
+.clues span{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.clues p{margin:2px 0 0;font-size:.95rem}
+.reveal{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.reveal button{flex:1;min-width:110px;font-size:.86rem;padding:9px 10px}
+.worth{margin:10px 0 0;font-size:.9rem;color:var(--ink2)}
+.worth b{color:var(--navy);font-size:1.05rem}
+#answerForm{display:flex;gap:8px;margin-top:14px}
+#answerForm input{flex:1}
+.fb{min-height:1.5em;font-weight:700;font-size:.92rem;margin:8px 0 0}
+.fb.ok{color:var(--good)}
+.fb.no{color:var(--bad)}
+.banner{border-radius:12px;padding:10px 14px;font-weight:700;margin:0 0 12px}
+.banner.ok{background:#e7f5f2;color:var(--good);border:1px solid var(--good)}
+.banner.bad{background:#fdeeea;color:var(--bad);border:1px solid var(--bad)}
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;text-align:center}
+.pod{border:1.5px solid var(--navy);border-radius:14px;padding:12px 8px;background:#fff}
+.pod span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.pod b{display:block;font-size:1.02rem;margin:4px 0 2px;overflow-wrap:anywhere}
+.pod i{font-style:normal;font-size:.85rem;color:var(--ink2)}
+.pod.first{background:var(--navy);color:#fff;order:2}
+.pod.first span,.pod.first i{color:#c8d6ee}
+.pod.second{order:1}
+.pod.third{order:3}
+.scores{list-style:none;margin:8px 0 0;padding:0}
+.scores .row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);
+  border-radius:11px;margin:0 0 6px;background:#fff}
+.scores .row.you{border-color:var(--navy);background:var(--chip)}
+.scores .place{width:22px;color:var(--ink2);font-size:.85rem}
+.scores .who{flex:1;font-weight:700;overflow-wrap:anywhere}
+.scores .pts{font-size:1.02rem}
+.past{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:10px}
+.past li{border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.past img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px}
+.past li>b:first-child{display:grid;place-items:center;width:100%;aspect-ratio:1/1;margin:0;
+  border-radius:9px;background:var(--chip);color:var(--ink2);font-size:1.4rem}
+.past b{display:block;margin-top:6px;font-size:.9rem;overflow-wrap:anywhere}
+
+/* admin form */
+.person{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:14px 0;background:#f7fafd}
+.person legend{font-weight:800;padding:0 8px;color:var(--navy)}
+.person .photo{display:flex;gap:12px;align-items:flex-start}
+.person .thumb{width:96px;height:96px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.person .pick{flex:1;min-width:0}
+.person .keep{font-weight:600;display:flex;gap:7px;align-items:center}
+.person.bad{border-color:var(--bad);background:#fdeeea}
+.person.bad legend{color:var(--bad)}
+.pick label:first-child::after{content:" (required)";font-weight:600;color:var(--bad)}
+.how{margin:8px 0 0;padding-left:20px}
+.how li{margin-bottom:6px}
+.list{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
+.list th,.list td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.list th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+
+@media (max-width:620px){
+  .head{flex-direction:column}
+  .roomcode{align-self:stretch;text-align:left}
+  /* a 6-inch phone has no room beside the picture, so the clues drop under it,
+     and the picture stays small rather than filling the card */
+  .guess{grid-template-columns:1fr}
+  .piccol{width:min(100%,260px)}
+  #answerForm{flex-direction:column}
+  .podium{grid-template-columns:1fr}
+  .pod.first,.pod.second,.pod.third{order:none}
+  .reveal button{min-width:0}
+}

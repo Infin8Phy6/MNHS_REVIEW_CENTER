@@ -1,0 +1,86 @@
+{% extends "cw_base.html" %}
+{% block title %}{{ puzzle.title }} — printable{% endblock %}
+{% block body %}
+{% set mode = mode or 'blank' %}
+{% set answers = mode == 'key' %}
+{% set easy = mode == 'easy' %}
+{% set numbers = {} %}
+{% for p in puzzle.placements %}{% set _ = numbers.setdefault((p.at[0], p.at[1]), p.n) %}{% endfor %}
+
+<div class="toolbar no-print">
+  <b>{{ puzzle.title }}</b>
+  {% if mode == 'blank' %}
+  <a class="btn" href="{{ url_for('crossword.worksheet_print_key', pid=puzzle.id) }}">Print with answers</a>
+  <a class="btn" href="{{ url_for('crossword.worksheet_print_easy', pid=puzzle.id) }}">Print as easy level worksheet</a>
+  <a class="btn" href="{{ url_for('crossword.pdf_unsolved', pid=puzzle.id) }}">Worksheet PDF</a>
+  {% elif mode == 'key' %}
+  <a class="btn" href="{{ url_for('crossword.worksheet_print', pid=puzzle.id) }}">Show the blank worksheet</a>
+  <a class="btn" href="{{ url_for('crossword.worksheet_print_easy', pid=puzzle.id) }}">Print as easy level worksheet</a>
+  <a class="btn" href="{{ url_for('crossword.pdf_solved', pid=puzzle.id) }}">Answer key PDF</a>
+  {% else %}
+  <a class="btn" href="{{ url_for('crossword.worksheet_print', pid=puzzle.id) }}">Show the blank worksheet</a>
+  <a class="btn" href="{{ url_for('crossword.worksheet_print_key', pid=puzzle.id) }}">Print with answers</a>
+  <a class="btn" href="{{ url_for('crossword.pdf_easy', pid=puzzle.id) }}">Easy level PDF</a>
+  {% endif %}
+  <button class="btn primary" type="button" onclick="window.print()">Print this page</button>
+  <a class="btn" href="{{ url_for('crossword.manage') }}">Back to teacher tools</a>
+</div>
+
+<div class="sheet">
+  <div class="sheet-title">Crosswords &mdash; {{ puzzle.title }}
+    {% if answers %}<span class="sheet-tag">ANSWER KEY (staff)</span>{% endif %}
+    {% if easy %}<span class="sheet-tag">EASY LEVEL (word hunt)</span>{% endif %}</div>
+  <div class="sheet-line">Name __________________   Grade ____________   Section ____________</div>
+  {% if mode == 'blank' %}
+  <div class="sheet-note">Solve the clues and write one letter in each square of the grid.</div>
+  {% elif easy %}
+  <div class="sheet-note">Word hunt: find each answer hidden in the grid and circle it.
+    Write the word on the blank beside its definition.</div>
+  {% endif %}
+
+  <div class="cw-sheet-grid">
+    <table class="cwgrid">
+      <tbody>
+      {% for r in range(puzzle.rows) %}
+        <tr>
+        {% for c in range(puzzle.cols) %}
+          {% set ch = puzzle.grid[r][c] %}
+          {% if ch %}
+          <td class="cell">
+            {% if not easy and (r, c) in numbers %}<span class="cwn">{{ numbers[(r, c)] }}</span>{% endif %}
+            {% if answers or easy %}<span class="cwl">{{ ch }}</span>{% endif %}
+          </td>
+          {% else %}
+          <td class="cell black"></td>
+          {% endif %}
+        {% endfor %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cw-clues">
+    <div>
+      <h3>Across</h3>
+      <ol>
+        {% for p in puzzle.placements if p.dir == 'H' %}
+        <li value="{{ p.n }}">{{ p.clue or '(no clue given)' }}
+          {% if answers %}&mdash; <b>{{ p.word }}</b>{% endif %}
+          {% if easy %}&mdash; <span class="cw-blank">________________</span>{% endif %}</li>
+        {% endfor %}
+      </ol>
+    </div>
+    <div>
+      <h3>Down</h3>
+      <ol>
+        {% for p in puzzle.placements if p.dir == 'V' %}
+        <li value="{{ p.n }}">{{ p.clue or '(no clue given)' }}
+          {% if answers %}&mdash; <b>{{ p.word }}</b>{% endif %}
+          {% if easy %}&mdash; <span class="cw-blank">________________</span>{% endif %}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+</div>
+{% endblock %}

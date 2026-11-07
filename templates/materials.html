@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <h2>Materials</h2>
+    {% if locked %}
+    <p style="color: #666;">
+        Your account has no section yet, so there is no section page to open for you.
+        Once your teacher records your grade and section, your own materials appear on
+        your profile page.
+    </p>
+    <p><a href="/profile" class="btn btn-primary cta">Go to My Profile</a></p>
+
+    {% elif learner %}
+    <p style="color: #666;">
+        Everything here was put up for your class &mdash; {{ own_grade }}, section
+        {{ own_section }}. Other sections have their own page and their own files.
+    </p>
+    <h3 class="admin-section-title">{{ own_grade }}</h3>
+    <h4 class="res-class-title">{{ own_grade }} &mdash; {{ own_section }}</h4>
+    {% if items %}
+    <ul class="res-list">
+        {% for r in items %}
+        <li class="res-row">
+            <span class="res-kind">{{ kind_names.get(r.kind, 'Link') }}</span>
+            <div class="res-body">
+                <a class="res-title" href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>
+                {% if r.note %}<p class="res-note">{{ r.note }}</p>{% endif %}
+                <p class="res-meta">Added {{ r.created_at.strftime('%b %d, %Y') }}</p>
+            </div>
+            <a class="btn btn-outline res-open" href="{{ r.url }}" target="_blank" rel="noopener">Open</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="games-note">Nothing has been put up for {{ own_grade }} {{ own_section }} yet.
+        It shows here as soon as the admin posts it.</p>
+    {% endif %}
+
+    {% else %}
+    <p style="color: #666;">
+        Materials are filed by grade level, then by section. Open a section to read what
+        its learners see{% if can_post %}, and to add or remove one on that same page{% endif %}.
+    </p>
+
+    {% if own_section and own_grade and groups.get(own_grade) and own_section in groups[own_grade] %}
+    <p style="margin-top: 0;">
+        <a href="/materials/{{ (own_grade ~ '/' ~ own_section) | urlencode }}"
+           class="btn btn-primary cta">My section: {{ own_grade }} {{ own_section }}</a>
+    </p>
+    {% endif %}
+
+    {% for grade, sections in groups.items() %}
+    <h3 class="admin-section-title">{{ grade }}</h3>
+    <div class="games-grid">
+        {% for section in sections %}
+        <div class="game-card{% if grade == own_grade and section == own_section %} res-own{% endif %}">
+            <span class="game-tag">{{ counts.get((grade, section), 0) }}
+                {{ 'item' if counts.get((grade, section), 0) == 1 else 'items' }}</span>
+            <h3>{{ grade }} &mdash; {{ section }}</h3>
+            <a href="/materials/{{ (grade ~ '/' ~ section) | urlencode }}"
+               class="btn btn-outline cta">Open {{ section }}</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="games-note">No sections are set up yet. Create them on the
+        <a href="/admin/classes">Classes</a> page, and each one gets its own materials page here.</p>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

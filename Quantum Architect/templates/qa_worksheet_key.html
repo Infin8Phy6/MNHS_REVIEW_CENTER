@@ -1,0 +1,78 @@
+{% extends "qa_base.html" %}
+{% block title %}Answer key — {{ worksheet.settings.title }}{% endblock %}
+{% block content %}
+{% set s = worksheet.settings %}
+<div class="page-head">
+  <div>
+    <h1>Answer key — {{ s.title }}</h1>
+    <p class="crumb">{{ worksheet['items']|length }} items · {{ worksheet.total_marks }} marks ·
+       {{ worksheet.element_count }} elements · seed {{ s.seed }} ·
+       notation {{ 'grouped by shell' if s.notation_order == 'shell' else 'in energy (Aufbau) order' }}</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn btn-key" href="{{ url_for('qa.worksheet_answer_key_export', worksheet_id=worksheet.id, kind='docx') }}">Download key DOCX</a>
+    <a class="btn btn-key" href="{{ url_for('qa.worksheet_answer_key_export', worksheet_id=worksheet.id, kind='pdf') }}">Download key PDF</a>
+    <button class="btn btn-quiet" type="button" onclick="window.print()">Print</button>
+    <a class="btn btn-quiet" href="{{ url_for('qa.worksheet_view', worksheet_id=worksheet.id) }}">Back to student copy</a>
+  </div>
+</div>
+
+<p class="alert alert-warn">Teacher copy. This page and its exports contain answers —
+   share the student DOCX or PDF instead.</p>
+
+<div class="paper">
+  <p class="sheet-line">Name __________________   Grade ____________   Section ____________
+     &nbsp;&middot;&nbsp; <b>ANSWER KEY (staff)</b></p>
+  <table class="grid paper-table key-table">
+    <thead>
+      <tr>
+        <th scope="col">#</th><th scope="col">Question</th><th scope="col">Answer</th>
+        <th scope="col">Teacher note</th><th scope="col">Marks</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in worksheet['items'] %}
+      <tr>
+        <td class="num-col">{{ item.number }}</td>
+        <td class="pre-line">{{ item.prompt }}</td>
+        <td class="mono pre-line">
+          {%- if item.diagram -%}
+            {%- for row in item.diagram -%}
+              {{ row.sublevel }}
+              <span class="orb-row">
+                {%- for box in row.boxes -%}<span class="orb-box">{{ box or '&nbsp;' }}</span>{%- endfor -%}
+              </span><br>
+            {%- endfor -%}
+          {%- else -%}
+            {{ item.answer }}
+          {%- endif -%}
+          {%- if item.answer_shorthand and item.type in ['full_config', 'ion'] %}<br><em>shorthand: {{ item.answer_shorthand }}</em>{% endif -%}
+          {%- for line in item.answer_lines %}<br><em>{{ line }}</em>{% endfor -%}
+        </td>
+        <td class="note-col">{{ item.note or '—' }}</td>
+        <td class="num-col">{{ item.marks }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<section class="legend">
+  <h2>Marking conventions used here</h2>
+  <ul>
+    <li><strong>Quantum numbers.</strong> Boxes are read left to right as
+        mℓ = −ℓ … +ℓ; the first pass is ↑, the second pass pairs with ↓. Any order of
+        the degenerate boxes is acceptable — award the mark for a consistent answer.</li>
+    <li><strong>Shell distribution.</strong> The counts shown are real, so a transition
+        metal's third shell passes 8 (3d electrons belong to n = 3).</li>
+    <li><strong>Notation order.</strong> {{ 'Answers are grouped by shell (1s 2s 2p 3s 3p 3d 4s…).'
+        if s.notation_order == 'shell' else 'Answers follow the filling (energy) order.' }}
+        Either order is chemically correct; mark for consistency.</li>
+    <li><strong>Find-the-error items.</strong> Award full marks only when the student names
+        the rule <em>and</em> states the specific fault.</li>
+    <li><strong>Exceptions.</strong> {{ s.title }} covers
+        {% for item in worksheet['items'] if item.type == 'exception_explain' %}{{ item.z }}{% if not loop.last %}, {% endif %}{% endfor %}.
+        Half-filled and fully-filled sublevel wording is required.</li>
+  </ul>
+</section>
+{% endblock %}

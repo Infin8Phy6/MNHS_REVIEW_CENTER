@@ -1,0 +1,46 @@
+{% extends "elementals_base.html" %}
+{% block title %}Prepare worksheets{% endblock %}
+{% block body %}
+<section class="card">
+  <h2>Prepare a Symbol Sprint activity sheet</h2>
+  <p class="muted">The button draws the tiles at random, exactly like a game round, and opens a
+    printable <b>activity sheet</b>: twenty tiles on one A4 page &mdash; two columns of ten &mdash;
+    each tile carrying the clues and its own answer space for the symbol. The sheet page also
+    prints <b>with answers</b> for the teacher, and the same two versions download as PDFs.</p>
+  <form method="POST" action="{{ url_for('game.worksheet_new') }}">
+    <label for="tiles">Tiles on the sheet</label>
+    <select id="tiles" name="tiles">
+      {% for n in (10, 20, 30, 40) %}
+      <option value="{{ n }}" {% if n == tiles %}selected{% endif %}>{{ n }} tiles</option>
+      {% endfor %}
+    </select>
+    <button class="wide" type="submit">Prepare the activity sheet</button>
+  </form>
+</section>
+
+{% if items %}
+<section class="card">
+  <h3>This round&rsquo;s sheet &mdash; {{ items|length }} tiles</h3>
+  <p class="muted">
+    <a href="{{ url_for('game.activity', token=token) }}">Open the activity sheet (print)</a>
+    &nbsp;&middot;&nbsp;
+    <a href="{{ url_for('game.activity_key', token=token) }}">Open it with answers (print)</a>
+  </p>
+  <p class="muted">
+    <a href="{{ url_for('game.worksheet_pdf', token=token) }}">Download the worksheet (PDF)</a>
+    &nbsp;&middot;&nbsp;
+    <a href="{{ url_for('game.worksheet_key_pdf', token=token) }}">Download the answer key (PDF)</a>
+  </p>
+  <ol class="how">
+    {% for item in items %}
+    <li>
+      <b>{{ item.name }}</b> &mdash; symbol <b>{{ item.symbol }}</b>
+      <ul>{% for clue in item.clues %}<li>{{ clue }}</li>{% endfor %}</ul>
+    </li>
+    {% endfor %}
+  </ol>
+  <p class="muted">The blank activity sheet hides all of this: it prints only the clues and the
+    empty Symbol space inside each tile. This list is the answer key, so students cannot see it.</p>
+</section>
+{% endif %}
+{% endblock %}

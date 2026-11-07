@@ -1,0 +1,52 @@
+{% extends "ww_base.html" %}
+{% block title %}Join {{ room.code }}{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>{{ act.title if act else "Who's Who" }}</h2>
+  <p class="muted">Room <b>{{ room.code }}</b> is
+    {% if room.status == 'lobby' %}waiting for players{% else %}already playing{% endif %}.
+    {% if room.status != 'lobby' %}You can still join and score the people still to come.{% endif %}</p>
+
+  {% if full %}
+    <p class="banner bad">This room already has {{ max_players }} players.</p>
+  {% endif %}
+
+  {% if act %}
+    <p class="muted small">These are the people in this activity. The picture is the first clue
+      &mdash; the names appear only when the round ends.</p>
+    <div class="strip">
+      {% for p in act.persons %}
+        {% if p.photo and (p.photo.file or p.photo.drive_id) %}
+          <img src="{{ url_for('whoswho.photo', slug=act.slug, person_id=p.id) }}"
+               alt="Person {{ loop.index }}" loading="lazy">
+        {% else %}
+          <b aria-label="Person {{ loop.index }} has no picture">?</b>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if account %}
+    <div class="who-card">
+      <span class="who-label">You join as</span>
+      <b class="who-name">{{ account.name }}</b>
+      {% if account.grade or account.section %}
+      <span class="who-meta">{{ [account.grade, account.section]|select|join(' · ') }}</span>
+      {% endif %}
+      <p class="muted">Taken from your Review Center account.</p>
+    </div>
+  {% else %}
+    <p class="muted">You do not have an account here, so choose a nickname for this room.</p>
+  {% endif %}
+
+  <form method="post">
+    {% if not account %}
+      <label for="nickname">Nickname</label>
+      <input type="text" id="nickname" name="nickname" maxlength="30" placeholder="e.g. Marisol"
+             value="{{ request.cookies.get('ww_nick', '') }}">
+    {% endif %}
+    <button class="wide" type="submit">Join the round</button>
+  </form>
+</section>
+{% endblock %}

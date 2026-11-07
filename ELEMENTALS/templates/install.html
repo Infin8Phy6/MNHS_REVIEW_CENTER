@@ -1,0 +1,73 @@
+{% extends "elementals_base.html" %}
+{% block title %}Install and play offline{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>Play without internet</h2>
+  <p class="muted">ELEMENTALS is a small Python program with its own database file. Nothing is sent to the
+    internet: the tiles, the clues and every score stay inside this folder.</p>
+  <div class="row2" style="margin-bottom:14px">
+    <a class="btnlink" href="{{ url_for('game.download') }}">Download the app (ELEMENTALS.zip)</a>
+    <button id="bip" hidden type="button">Install as an app in this browser</button>
+  </div>
+
+  <h3>1 &middot; Put the folder on the computer</h3>
+  <ul class="how">
+    <li>Copy the <b>ELEMENTALS</b> folder from this machine, or download the zip above and unzip it.</li>
+    <li>The folder needs <code>app.py</code>, <code>periodic_data.py</code>, <code>clue_data.py</code>,
+      <code>templates\</code>, <code>static\</code> and <code>elements.db</code>.</li>
+  </ul>
+
+  <h3>2 &middot; Install Python once</h3>
+  <ul class="how">
+    <li>From <b>python.org/downloads</b> install Python 3.9 or newer. On Windows tick
+      <i>Add python to PATH</i> during setup.</li>
+    <li>Then, one time, in a terminal inside the folder: <code>pip install -r requirements.txt</code></li>
+  </ul>
+
+  <h3>3 &middot; Open the app</h3>
+  <ul class="how">
+    <li><b>Windows:</b> double-click <code>run.bat</code>.</li>
+    <li><b>Mac:</b> double-click <code>run.command</code>.</li>
+    <li><b>Any computer:</b> <code>python app.py</code> &mdash; the browser opens by itself.</li>
+    <li>Classroom mode: <code>python app.py --lan</code> prints an address such as
+      <code>http://192.168.1.9:8000</code> that other computers on the same wifi can open. No internet is
+      needed for that either.</li>
+  </ul>
+
+  <h3>4 &middot; Add it to the desktop like a real app</h3>
+  <ul class="how">
+    <li>Open the app in Chrome or Edge and press the <b>Install</b> icon at the right end of the address
+      bar (or the menu &rarr; <i>Apps &rarr; Install this site as an app</i>).</li>
+    <li>ELEMENTALS then gets its own window, taskbar icon and Start-menu entry. The pages and the element
+      tiles are cached, so they still open even if the server window was closed &mdash; starting
+      <code>run.bat</code> again brings the game itself back.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h3>What is in the database</h3>
+  <ul class="how">
+    <li><b>elements</b> &mdash; {{ total_elements }} tiles: atomic number, chemical symbol, element name,
+      atomic mass, group and period, electron configuration, oxidation states, state of matter and the
+      metal / nonmetal / metalloid class that drives the tile colour.</li>
+    <li><b>clues</b> &mdash; three classroom clues for {{ clued_elements }} of those elements; only elements
+      with clues are drawn into a game.</li>
+    <li><b>games</b> and <b>answers</b> &mdash; every attempt with the level it was played on
+      (<b>with choices</b> or <b>hard</b>, where the symbol is typed and capitalisation counts), so the
+      teacher can reopen <a href="{{ url_for('game.results') }}">saved scores</a> and see who played which set of ten.</li>
+  </ul>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+var slot = null;
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault(); slot = e;
+  var b = document.getElementById("bip");
+  b.hidden = false;
+  b.addEventListener("click", function () { slot.prompt(); });
+});
+</script>
+{% endblock %}

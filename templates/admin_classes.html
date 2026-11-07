@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+{% macro schedule_slots(slots, room='') %}
+{% set rows = slots if slots and slots | length else [None] %}
+<input type="hidden" name="slot_count" value="{{ rows | length }}">
+<label class="cs-room">Room
+    <input type="text" name="room" value="{{ room }}" maxlength="60" placeholder="5">
+</label>
+<div class="cs-slots">
+    {% for slot in rows %}
+    {% set index = loop.index0 %}
+    {% set picked = slot[0] if slot else [] %}
+    <div class="cs-slot">
+        <span class="cs-days">
+            {% for day in days %}
+            <label class="cs-day">
+                <input type="checkbox" name="days_{{ index }}" value="{{ day }}"
+                       {{ 'checked' if day in picked }}>
+                <span>{{ day }}</span>
+            </label>
+            {% endfor %}
+        </span>
+        <span class="cs-time">
+            <input type="time" name="start_{{ index }}" data-kind="start"
+                   value="{{ slot[1] if slot else '' }}" aria-label="Start time">
+            <input type="time" name="end_{{ index }}" data-kind="end"
+                   value="{{ slot[2] if slot else '' }}" aria-label="End time">
+        </span>
+        <button type="button" class="cs-del-slot" aria-label="Remove this time slot"
+                title="Remove this time slot">&#215;</button>
+    </div>
+    {% endfor %}
+</div>
+<button type="button" class="btn btn-outline cs-add-slot" title="Add another time slot">+ Add time slot</button>
+{% endmacro %}
+{% block content %}
+<div class="container card">
+    <h2>Grades &amp; Sections</h2>
+    <p style="color: #666;">
+        This page is the school's class list. Every grade and section a learner signs up under,
+        every section a material is posted to and every class a teacher can open comes from here,
+        so a section can never grow a new spelling on its own. Renaming one moves its learners,
+        scores and materials with it; a class that still holds learners cannot be removed until
+        they are moved on the <a href="/admin/assessment">Assessment</a> page.
+    </p>
+    <p style="color: #666;">
+        <b>Schedule &amp; time</b> is where each class meets: tick the days it runs, type when it
+        starts and ends, say which <b>Room</b> it meets in, then press <b>Save schedule</b>. A class
+        with <b>double periods</b> can
+        meet at more than one time in the week - press <b>+ Add time slot</b> and fill each slot
+        with its own days and times; two slots on the same day may touch back to back but never
+        overlap. Leave a slot empty to drop it, and clear them all to take the schedule away.
+        The room is the one box for the whole week: a class that moves room between slots is
+        written as two classes.
+        This is the section's own time; every teacher listed
+        beside it can be given their own days, time and room under their name, and that one is what
+        shows on their profile.
+    </p>
+
+    {% if message %}<p class="res-message">{{ message }}</p>{% endif %}
+    {% if errors %}
+        <p class="field-error">
+            {% for key, text in errors.items() %}{{ text }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+        </p>
+    {% endif %}
+
+    {% if owner %}
+    <form method="POST" class="as-form" style="margin-bottom: 14px;">
+        <input type="hidden" name="action" value="add_grade">
+        <label>New grade level
+            <input type="text" name="name" maxlength="40" required placeholder="Grade 11"></label>
+        <button type="submit" class="btn btn-primary">Create grade level</button>
+    </form>
+
+    <form method="POST" class="as-form" style="margin-bottom: 24px;">
+        <input type="hidden" name="action" value="add_section">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="admin-filter-field">
+                <label>Grade *</label>
+                <select name="grade" required>
+                    {% for entry in grades %}
+                        <option value="{{ entry.grade.name }}">{{ entry.grade.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field">
+                <label>Section *</label>
+                <input type="text" name="name" maxlength="40" required placeholder="ORION">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Create section</button>
+    </form>
+    {% else %}
+    <p class="games-note">The grade and section list belongs to the main admin. Below you can hand
+        any teacher a class, the subjects they teach there, and the schedule.</p>
+    {% endif %}
+
+    {% if grades %}
+    <div class="table-scroll">
+        <table class="db-table">
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Learners</th>
+                    <th>Materials</th>
+                    <th>Teacher assigned</th>
+                    <th>Schedule &amp; time</th>
+                    {% if owner %}
+                    <th>Rename</th>
+                    <th>Fold a duplicate into</th>
+                    <th></th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in grades %}
+                <tr class="cs-grade-row">
+                    <td colspan="{{ 8 if owner else 5 }}">
+                        {% if owner %}
+                        <form method="POST" class="as-form cs-inline">
+                            <input type="hidden" name="action" value="rename_grade">
+                            <input type="hidden" name="id" value="{{ entry.grade.id }}">
+                            <input type="text" name="name" value="{{ entry.grade.name }}" maxlength="40" required>
+                            <button type="submit" class="btn btn-outline res-remove">Rename grade</button>
+                        </form>
+                        {% endif %}
+                        <span class="as-when">{{ entry.learners }} learner{{ '' if entry.learners == 1 else 's' }} in
+                            {{ entry.grade.name }}</span>
+                        {% if owner %}
+                        <form method="POST" class="as-form cs-inline"
+                              onsubmit="return confirm('Remove {{ entry.grade.name }} from the list?');">
+                            <input type="hidden" name="action" value="delete_grade">
+                            <input type="hidden" name="id" value="{{ entry.grade.id }}">
+                            <button type="submit" class="btn btn-outline res-remove">Remove grade</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% for section in entry.sections %}
+                <tr>
+                    <td class="db-name">{{ section.row.name }}</td>
+                    <td>{{ section.learners }}</td>
+                    <td>{{ section.materials }}</td>
+                    <td>
+                        {% if section.teachers %}
+                            {% for item in section.teachers %}
+                            <div class="cs-teacher">
+                                <form method="POST" class="cs-inline">
+                                    <input type="hidden" name="action" value="unassign">
+                                    <input type="hidden" name="id" value="{{ item.id }}">
+                                    <button type="submit" class="btn btn-outline res-remove"
+                                            title="Take this class away from {{ item.teacher.name }}">&#215;</button>
+                                    <a href="/profile/account/{{ item.teacher.id }}">{{ item.teacher.name }}</a>
+                                </form>
+                                {% if item.subjects %}
+                                <div class="db-null">{{ item.subjects | join(', ') }}</div>
+                                {% endif %}
+                                <div class="as-when{% if not item.schedule %} db-null{% endif %}">
+                                    {{ item.schedule if item.schedule else 'no own schedule yet' }}</div>
+                                <details class="cs-tsched">
+                                    <summary>{{ 'Change schedule' if item.schedule else 'Set schedule' }}</summary>
+                                    <form method="POST" class="as-form cs-sched" data-slots>
+                                        <input type="hidden" name="action" value="set_assignment_schedule">
+                                        <input type="hidden" name="id" value="{{ item.id }}">
+                                        {{ schedule_slots(item.slots, item.room) }}
+                                        <button type="submit" class="btn btn-outline cs-save">Save</button>
+                                    </form>
+                                </details>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <span class="db-null">nobody yet</span>
+                        {% endif %}
+                    </td>
+                    <td class="cs-sched-cell">
+                        <form method="POST" class="as-form cs-sched" data-slots>
+                            <input type="hidden" name="action" value="set_schedule">
+                            <input type="hidden" name="id" value="{{ section.row.id }}">
+                            {{ schedule_slots(section.slots, section.row.room) }}
+                            <button type="submit" class="btn btn-outline cs-save">Save schedule</button>
+                        </form>
+                        <span class="as-when{% if not section.schedule %} db-null{% endif %}">
+                            {{ section.schedule if section.schedule else 'no schedule yet' }}</span>
+                    </td>
+                    {% if owner %}
+                    <td>
+                        <form method="POST" class="as-form cs-inline">
+                            <input type="hidden" name="action" value="rename_section">
+                            <input type="hidden" name="id" value="{{ section.row.id }}">
+                            <input type="text" name="name" value="{{ section.row.name }}" maxlength="40" required>
+                            <button type="submit" class="btn btn-outline res-remove">Rename</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" class="as-form cs-inline"
+                              onsubmit="return confirm('Move every learner, score and material of {{ entry.grade.name }} {{ section.row.name }} into the section you picked?');">
+                            <input type="hidden" name="action" value="merge_section">
+                            <input type="hidden" name="id" value="{{ section.row.id }}">
+                            <select name="into" required>
+                                <option value="">keep it separate</option>
+                                {% for other in entry.sections %}
+                                    {% if other.row.name != section.row.name %}
+                                    <option value="{{ other.row.name }}">{{ other.row.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-outline res-remove">Fold</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST"
+                              onsubmit="return confirm('Remove {{ entry.grade.name }} {{ section.row.name }} from the list?');">
+                            <input type="hidden" name="action" value="delete_section">
+                            <input type="hidden" name="id" value="{{ section.row.id }}">
+                            <button type="submit" class="btn btn-outline res-remove">Remove</button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="{{ 8 if owner else 5 }}"><span class="db-null">{{ entry.grade.name }} has no section yet.</span></td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="games-note">No grade level exists yet. Create the first one above.</p>
+    {% endif %}
+
+    <h3 class="admin-section-title">Assign a teacher to a class</h3>
+    <p style="color: #666;">
+        A teacher opens the records of the classes listed here under their name and nothing else.
+        They may keep as many classes as the school gives them: <b>tick every section</b> in the
+        dropdown and one submit hands them all the same subjects and schedule - no need to repeat
+        the form per class. Tick the <b>subjects</b> they teach in those classes: their quiz and
+        test pickers then offer only those subjects. Leave them all off and the teacher keeps the
+        whole grade to choose from. Each teacher also gets their own <b>days and time</b> here,
+        plotted on a weekly table on their profile; use <b>Set schedule</b> under a teacher in the
+        list above to change it later. If two of a teacher's classes meet at the same time, the
+        save message warns you and the profile shows that cell in red.
+    </p>
+    {% if members and grades %}
+    <form method="POST" class="res-form" id="cs-assign-form">
+        <input type="hidden" name="action" value="assign">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="admin-filter-field" style="flex: 2 1 200px;">
+                <label>Teacher *</label>
+                <select name="staff_id" required>
+                    {% for m in members %}
+                        <option value="{{ m.id }}">{{ m.name }} &#8212; {{ m.email }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field">
+                <label>Grade *</label>
+                <select name="grade" id="cs-grade" required>
+                    <option value="">pick a grade</option>
+                    {% for entry in grades %}
+                        <option value="{{ entry.grade.name }}">{{ entry.grade.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="admin-filter-field cs-dd" id="cs-section-dd">
+                <label>Sections * (tick every class to hand over)</label>
+                <button type="button" class="cs-dd-btn" id="cs-section-btn"
+                        aria-haspopup="true" aria-expanded="false">pick a grade first</button>
+                <div class="cs-dd-panel" id="cs-section-panel" hidden>
+                    <label class="cs-dd-all"><input type="checkbox" id="cs-section-all">
+                        <span>select all</span></label>
+                    <div class="cs-dd-list" id="cs-section-list">
+                        <span class="db-null">pick a grade first</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cs-subjects" id="cs-subjects">
+            <span class="db-null">pick a grade to see its subjects</span>
+        </div>
+        <p class="games-note" style="margin: 4px 0 0;">
+            <b>Class days &amp; time</b> is this teacher's own schedule in that class. Tick the days
+            they meet, type when it starts and ends and say the <b>Room</b>; press <b>+ Add time
+            slot</b> for a double period. Leave it all off to follow the section's schedule instead.
+        </p>
+        <div class="as-form" style="align-items: flex-start; margin: 6px 0 12px;" data-slots>
+            {{ schedule_slots([]) }}
+        </div>
+        <button type="submit" class="btn btn-primary cta">Assign the class</button>
+    </form>
+    {% else %}
+    <p class="games-note">{% if owner %}A teacher needs a login on the <a href="/admin/staff">Staff</a>
+        page before a class can be handed to them.{% else %}There is no teacher login to hand a class
+        to yet. One must be created on the <a href="/admin/staff">Staff</a> page first.{% endif %}</p>
+    {% endif %}
+
+    <h3 class="admin-section-title">No-class days (school-wide)</h3>
+    <p style="color: #666;">
+        When the whole school is closed &mdash; <b>no classes, it is a non-working holiday</b>
+        &mdash; write the date and the note here. On that day the class-start reminders and the
+        morning <b>Today&rsquo;s classes</b> digest are halted for everyone, and the note shows on
+        the learner and staff profiles in place of the day&rsquo;s classes. Only the main admin
+        writes these; every admin can read them.
+    </p>
+    {% if halt_today %}<p class="res-message">Today classes are halted: {{ halt_today }}</p>{% endif %}
+    {% if no_class_days %}
+    <div class="table-scroll">
+        <table class="db-table">
+            <thead>
+                <tr>
+                    <th>Date</th><th>Note</th><th>Written by</th>
+                    {% if owner %}<th></th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in no_class_days %}
+                <tr>
+                    <td><b>{{ day.date }}</b>{% if day.date == today %} &middot; today{% endif %}</td>
+                    <td>{{ day.note }}</td>
+                    <td class="db-null">{{ day.created_by or '--' }}</td>
+                    {% if owner %}
+                    <td>
+                        <form method="POST" onsubmit="return confirm('Lift the no-class note for {{ day.date }}? Reminders will run that day again.');">
+                            <input type="hidden" name="action" value="no_class_delete">
+                            <input type="hidden" name="id" value="{{ day.id }}">
+                            <button type="submit" class="btn btn-outline res-remove">Lift</button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="games-note">No no-class day has been declared yet.</p>
+    {% endif %}
+    {% if errors and errors.no_class %}<p class="field-error">{{ errors.no_class }}</p>{% endif %}
+    {% if owner %}
+    <form method="POST" class="res-form">
+        <input type="hidden" name="action" value="no_class">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="admin-filter-field">
+                <label>Date *</label>
+                <input type="date" name="date" required>
+            </div>
+            <div class="admin-filter-field" style="flex: 1 1 280px;">
+                <label>Note * &mdash; why there are no classes</label>
+                <input type="text" name="note" maxlength="200" required
+                       placeholder="no classes - non-working holiday">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary cta">Declare the no-class day</button>
+    </form>
+    {% endif %}
+</div>
+
+<script src="/static/schedule-slots.js" defer></script>
+<script>
+  // The section and subject pickers only ever offer what this page created, so an
+  // assignment can not name a class that does not exist or a subject the school
+  // does not teach. Sections are a checklist: one submit hands the same subjects
+  // and time to every ticked class, so the form no longer repeats per section.
+  (function () {
+    var CLASSES = {
+      {% for entry in grades %}
+      "{{ entry.grade.name | e }}": [{% for section in entry.sections %}"{{ section.row.name | e }}"{{ ',' if not loop.last }}{% endfor %}]{% if not loop.last %},{% endif %}
+      {% endfor %}
+    };
+    var SUBJECTS = {
+      {% for name, list in subjects.items() %}
+      "{{ name | e }}": [{% for subject in list %}"{{ subject | e }}"{{ ',' if not loop.last }}{% endfor %}]{% if not loop.last %},{% endif %}
+      {% endfor %}
+    };
+    var grade = document.getElementById('cs-grade');
+    var dd = document.getElementById('cs-section-dd');
+    var btn = document.getElementById('cs-section-btn');
+    var panel = document.getElementById('cs-section-panel');
+    var list = document.getElementById('cs-section-list');
+    var all = document.getElementById('cs-section-all');
+    var subjects = document.getElementById('cs-subjects');
+    if (!grade || !dd || !btn || !panel || !list || !subjects) return;
+
+    function boxes() {
+      return list.querySelectorAll('input[type="checkbox"][name="sections"]');
+    }
+    function picked() {
+      return Array.prototype.filter.call(boxes(), function (box) { return box.checked; });
+    }
+    function showLabel() {
+      var names = picked().map(function (box) { return box.value; });
+      btn.classList.remove('cs-dd-error');
+      btn.textContent = names.length ? names.join(', ') : 'tick the section(s) to assign';
+      if (all) all.checked = boxes().length > 0 && names.length === boxes().length;
+    }
+    btn.addEventListener('click', function () {
+      panel.hidden = !panel.hidden;
+      btn.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');
+    });
+    document.addEventListener('click', function (event) {
+      if (!panel.hidden && !event.target.closest('#cs-section-dd')) {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    if (all) all.addEventListener('change', function () {
+      Array.prototype.forEach.call(boxes(), function (box) { box.checked = all.checked; });
+      showLabel();
+    });
+    list.addEventListener('change', showLabel);
+
+    function fill() {
+      var names = CLASSES[grade.value] || [];
+      list.innerHTML = '';
+      if (!names.length) {
+        list.appendChild(document.createTextNode('this grade has no section yet'));
+      } else {
+        names.forEach(function (name) {
+          var row = document.createElement('label');
+          row.className = 'cs-day';
+          var box = document.createElement('input');
+          box.type = 'checkbox';
+          box.name = 'sections';
+          box.value = name;
+          row.appendChild(box);
+          row.appendChild(document.createTextNode(' ' + name));
+          list.appendChild(row);
+        });
+      }
+      showLabel();
+      subjects.innerHTML = '';
+      var list2 = SUBJECTS[grade.value] || [];
+      if (!list2.length) {
+        subjects.appendChild(document.createTextNode(
+          'this grade has no subject in the question bank yet'));
+        return;
+      }
+      list2.forEach(function (subject) {
+        var label = document.createElement('label');
+        label.className = 'cs-day';
+        var box = document.createElement('input');
+        box.type = 'checkbox';
+        box.name = 'subjects';
+        box.value = subject;
+        label.appendChild(box);
+        label.appendChild(document.createTextNode(' ' + subject));
+        subjects.appendChild(label);
+      });
+    }
+    grade.addEventListener('change', fill);
+    fill();
+
+    var form = document.getElementById('cs-assign-form');
+    if (form) form.addEventListener('submit', function (event) {
+      if (!picked().length) {
+        event.preventDefault();
+        btn.textContent = 'tick at least one section first';
+        btn.classList.add('cs-dd-error');
+      }
+    });
+  })();
+</script>
+{% endblock %}

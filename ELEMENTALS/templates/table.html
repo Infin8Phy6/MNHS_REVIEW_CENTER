@@ -1,0 +1,70 @@
+{% extends "elementals_base.html" %}
+{% block title %}Element tiles{% endblock %}
+{% block body %}
+
+<section class="card">
+  <h2>{{ tiles|length }} element tiles</h2>
+  <p class="muted">Every tile carries its <b>atomic number</b>, <b>chemical symbol</b>, <b>element name</b> and
+    <b>atomic mass</b>. Press a tile for the electron configuration, oxidation states, state of matter and
+    metal class. Press <b>Play</b> when you are ready for the clues.</p>
+
+  <div id="detail" class="detail" hidden></div>
+</section>
+
+<section class="card">
+  <div class="gridwrap">
+    <div class="grid">
+      {% for t in tiles %}
+      <button type="button" data-z="{{ t.z }}" style="grid-row:{{ t.row }};grid-column:{{ t.col }}">
+        <div class="tile f-{{ t.family }}">
+          <div class="tn">{{ t.z }}</div>
+          <div class="tsym">{{ t.symbol }}</div>
+          <div class="tnm">{{ t.name }}</div>
+          <div class="tm">{{ t.mass_text }}</div>
+        </div>
+      </button>
+      {% endfor %}
+      <div class="tile f-lanthanide" style="grid-row:6;grid-column:3"><div class="tn">57</div>
+        <div class="tsym">La<span style="font-size:.5rem">&hellip;</span></div><div class="tnm">Lanthanides</div>
+        <div class="tm">&nbsp;</div></div>
+      <div class="tile f-actinide" style="grid-row:7;grid-column:3"><div class="tn">89</div>
+        <div class="tsym">Ac<span style="font-size:.5rem">&hellip;</span></div><div class="tnm">Actinides</div>
+        <div class="tm">&nbsp;</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    {% for key, label in families|dictsort %}
+    <span><i class="sw" style="background:var(--f-{{ key }});border-color:var(--f-{{ key }}-b)"></i>{{ label }}</span>
+    {% endfor %}
+  </div>
+  <p class="muted">Solid, liquid and gas at room temperature are printed on each tile detail.
+    Masses in [brackets] are the longest-lived isotope, because that element has no stable form.</p>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+var EL_TILES = {{ tiles|tojson }};
+document.querySelector(".grid").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-z]");
+  if (!b) { return; }
+  var t = null;
+  EL_TILES.forEach(function (x) { if (x.z === +b.getAttribute("data-z")) { t = x; } });
+  if (!t) { return; }
+  var d = document.getElementById("detail");
+  d.hidden = false;
+  d.innerHTML = EL.tileHTML(t, { size: "big" }) +
+    '<div style="flex:1;min-width:260px"><h2 style="margin-bottom:2px">' + EL.esc(t.name) + '</h2>' +
+    '<p class="muted">' + EL.esc(t.where) + '</p>' +
+    '<dl class="facts">' +
+    f("Atomic number (protons)", t.z) + f("Chemical symbol", t.symbol) +
+    f("Atomic mass", t.mass_text + " u") + f("Electron configuration", t.config_pretty) +
+    f("Oxidation states", t.oxidation_pretty) + f("State at room temperature", t.state) +
+    f("Metal class", t.class) + f("Symbol origin", t.symbol_origin || "From the English name") +
+    '</dl></div>';
+  d.scrollIntoView({ block: "nearest" });
+});
+function f(k, v) { return "<dt>" + EL.esc(k) + "</dt><dd>" + EL.esc(v) + "</dd>"; }
+</script>
+{% endblock %}

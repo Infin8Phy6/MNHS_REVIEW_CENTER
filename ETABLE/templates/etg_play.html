@@ -1,0 +1,68 @@
+{% extends "etg_base.html" %}
+{% block title %}Your table{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>{{ student }}&rsquo;s table</h1>
+  <p class="help">Type into the {{ max_points }} empty cells. Each one is worth a point and
+    each one can be worked out from the clues its own row leaves standing.</p>
+
+  <div class="toolbar">
+    <button type="button" class="go" id="check">Check and score</button>
+    <button type="button" class="quiet" id="downloadPng" disabled>Download the table (PNG)</button>
+    <button type="button" class="quiet" id="downloadPdf" disabled>Download the table (PDF)</button>
+    <a class="quiet" href="{{ url_for('etg.index') }}">Deal another</a>
+  </div>
+
+  <div class="score" id="score" hidden></div>
+
+  <div class="table-scroll">
+    <table class="etg" id="etg">
+      <thead>
+        <tr>
+          <th class="row-no">#</th>
+          {% for column in columns %}<th>{{ heads[column] }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in table %}
+        {% set rindex = loop.index0 %}
+        <tr>
+          <td class="row-no">{{ loop.index }}</td>
+          {% for column in columns %}
+            {% if column in row.blanks %}
+            <td class="blank" data-cell="{{ rindex }}:{{ column }}">
+              <input type="text"
+                     data-r="{{ rindex }}" data-col="{{ column }}"
+                     maxlength="24" autocomplete="off" spellcheck="false">
+            </td>
+            {% else %}
+            <td class="given">{{ row.given[column] }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="key">A filled cell you did not have to touch is printed in plain type; a cell you
+    answered is marked <b class="yes">&#10003;</b> or <b class="no">&#10007;</b> after checking,
+    and the right value shows under a miss.</p>
+</section>
+
+<script src="{{ url_for('etg.static', filename='etg_export.js') }}"></script>
+<script src="{{ url_for('etg.static', filename='etg.js') }}"></script>
+<script>
+  ETABLE.start({
+    checkUrl: "{{ url_for('etg.check', token=token) }}",
+    student: {{ student | tojson }},
+    heads: {{ heads | tojson }},
+    columns: {{ columns | tojson }},
+    table: {{ table | tojson }},
+    saved: {{ answers | tojson }},
+    savedScore: {{ saved_score | tojson }},
+    checked: {{ 'true' if checked else 'false' }},
+    maxPoints: {{ max_points | tojson }}
+  });
+</script>
+{% endblock %}

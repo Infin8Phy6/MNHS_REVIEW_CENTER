@@ -1,0 +1,773 @@
+{
+  "Grade 7": {
+    "English": {
+      "Quarter 1": [
+        "Narrative Texts and Story Elements",
+        "Philippine Folktales, Myths, and Legends",
+        "Poetry: Elements and Forms",
+        "Figurative Language (Simile, Metaphor, Personification)",
+        "Sound Devices (Alliteration, Onomatopoeia, Rhyme)",
+        "Context Clues and Vocabulary Building",
+        "Subject-Verb Agreement",
+        "Listening and Note-Taking Strategies"
+      ],
+      "Quarter 2": [
+        "Types and Elements of Drama",
+        "The One-Act Play",
+        "Dramatic Conventions and Stage Directions",
+        "Characterization, Dialogue, and Delivery",
+        "Stage Movement and Gestures",
+        "Direct and Indirect (Reported) Speech",
+        "Simple Tenses and Time Markers",
+        "Evaluating Dramatic Performances"
+      ],
+      "Quarter 3": [
+        "Types and Features of Informational Texts",
+        "Cause and Effect Texts",
+        "Comparison and Contrast Texts",
+        "Problem-Solution Texts",
+        "The Argumentative Essay: Claims and Evidence",
+        "Bias and Propaganda Techniques",
+        "Modal Auxiliaries (Can, May, Must, Should)",
+        "Cohesive Devices in Texts"
+      ],
+      "Quarter 4": [
+        "The Expository Essay (Definition, Classification, Cause-Effect)",
+        "Problem-Solution Essay Writing",
+        "Summarizing and Outlining",
+        "Active and Passive Voice",
+        "Present Perfect Tense",
+        "Writing a Research Report",
+        "Bibliography and Citation Basics"
+      ]
+    },
+    "Filipino": {
+      "Quarter 1": [
+        "Epiko ng Visayas (Hinilawod, Maragtas)",
+        "Alamat ng Visayas",
+        "Tulang Pambayan ng Visayas",
+        "Mga Elemento ng Epiko",
+        "Pakikinig at Pag-unawa sa Akda",
+        "Paghahambing ng mga Akdang Pampanitikan"
+      ],
+      "Quarter 2": [
+        "Epiko ng Luzon (Biag ni Lam-ang)",
+        "Awit at Korido",
+        "Maikling Kuwento ng Luzon",
+        "Talumpati at Deklamasyon",
+        "Pangangatwiran sa Talumpati",
+        "Mga Sanggunian sa Pakikinig"
+      ],
+      "Quarter 3": [
+        "Mga Elemento ng Nobela",
+        "Mga Elemento ng Dula",
+        "Dulang Pangradyo at Pangtelebisyon",
+        "Pagtatanghal ng Dula",
+        "Mga Uri ng Pangungusap",
+        "Pang-abay at Pang-ukol"
+      ],
+      "Quarter 4": [
+        "Pagsulat ng Sanaysay",
+        "Pagsulat ng Tula",
+        "Etnograpiya: Ang Aking Pamilya at Ninuno",
+        "Paglalarawan ng Tagpuan",
+        "Wastong Gamit ng Bantas at Baybay"
+      ]
+    },
+    "Mathematics": {
+      "Quarter 1": [
+        "Sets: Union, Intersection, and Complement",
+        "Subsets and Venn Diagrams",
+        "The Real Number System",
+        "Properties of Real Numbers",
+        "Absolute Value and the Number Line"
+      ],
+      "Quarter 2": [
+        "Operations on Integers",
+        "Operations on Rational Numbers (Fractions and Decimals)",
+        "Solving Percent Problems",
+        "Applications: Discount, Interest, and Sales Tax"
+      ],
+      "Quarter 3": [
+        "Linear Equations in One Variable",
+        "Linear Inequalities in One Variable",
+        "Solving Word Problems Involving Linear Equations"
+      ],
+      "Quarter 4": [
+        "Translating Verbal Phrases to Algebraic Expressions",
+        "Evaluation of Algebraic Expressions",
+        "Addition and Subtraction of Polynomials",
+        "Simple Probability of Events"
+      ]
+    },
+    "MAPEH": {
+      "Quarter 1": [
+        "Music: Vocal Music of the Lowlands of Luzon (Folk Songs, Harana, Kundiman)",
+        "Music: Sacred Music of the Lowlands of Luzon",
+        "Arts: Folk Arts and Crafts of Luzon (Ilocos at Cordillera)",
+        "PE: Physical Fitness Assessment (Health- and Skill-Related)",
+        "PE: Setting Fitness Goals",
+        "Health: Holistic Health and Its Dimensions"
+      ],
+      "Quarter 2": [
+        "Music: Instrumental Music of the Lowlands of Luzon (Rondalla, Brass Band)",
+        "Arts: Folk Arts and Crafts of Luzon (Batangas, Laguna, Quezon)",
+        "Arts: Designs in Textiles, Pottery, and Woodcarving",
+        "PE: Indigenous Games (Laro ng Lahi)",
+        "Health: Nutrition: Food Groups and Macronutrients",
+        "Health: Malnutrition and a Healthy Diet"
+      ],
+      "Quarter 3": [
+        "Music: Music of the Cordillera (Vocal at Instrumental)",
+        "Arts: Sculpture and Architecture of Luzon",
+        "PE: Athletics: Basic Skills in Running, Jumping, and Throwing",
+        "Health: Substance Use and Abuse Prevention",
+        "Health: Decision-Making and Refusal Skills"
+      ],
+      "Quarter 4": [
+        "Music: Music of Mindoro, Marinduque, Romblon, at Palawan",
+        "Arts: Arts and Crafts ng Mindoro, Marinduque, Romblon, at Palawan",
+        "PE: Rhythmic Activities: Folk Dances (Tinikling, Itik-Itik)",
+        "Health: Injury Prevention, Safety, and First Aid",
+        "Health: Home Safety and Disaster Preparedness"
+      ]
+    },
+    "SocSci": {
+      "Quarter 1": [
+        "Ang Likas na Katangian ng Kasaysayan",
+        "Lipunan at Istruktura Sosyal",
+        "Ang Aking Komunidad: Pinagmulan at Kasaysayan",
+        "Pinagkukunan ng Kasaysayan: Primarya at Sekundaryang Sanggunian",
+        "Heograpiya ng Komunidad"
+      ],
+      "Quarter 2": [
+        "Kolonyalismo at Imperyalismo: Batayang Konsepto",
+        "Ang Pananakop ng Espanya sa Pilipinas",
+        "Mga Reaksyon ng mga Pilipino sa Kolonyalismo",
+        "Pagpapahalaga sa mga Pamanang Pook (Heritage Sites)"
+      ],
+      "Quarter 3": [
+        "Ang Diwa ng Kalayaan at Pagkamalay-Kabansa",
+        "Mga Pangyayari Tungo sa Rebolusyong Pilipino",
+        "Ang Imperyalismo ng Amerika sa Pilipinas"
+      ],
+      "Quarter 4": [
+        "Paghahanda sa Kaunlaran: Ang Ekonomiya ng Aking Bansa",
+        "Pangangailangan at Kagustuhan: Batayang Konsepto ng Ekonomiya",
+        "Supply at Demand",
+        "Pag-iipon, Paggastos, at Pamumuhunan",
+        "Mga Isyung Pangkabuhayan ng Bansa"
+      ]
+    },
+    "Science": {
+      "Quarter 1": [
+        "The Scientific Method and Laboratory Safety",
+        "Measurement and the SI Units",
+        "Substances and Mixtures",
+        "Elements, Compounds, and Mixtures",
+        "Properties of Solutions (Concentration and Saturation)",
+        "Separation Techniques for Mixtures"
+      ],
+      "Quarter 2": [
+        "The Cell: Structure and Function",
+        "Cell Division (Mitosis)",
+        "Levels of Biological Organization",
+        "The Digestive System",
+        "The Respiratory and Circulatory Systems",
+        "Asexual and Sexual Reproduction"
+      ],
+      "Quarter 3": [
+        "Balanced and Unbalanced Forces",
+        "Speed, Velocity, and Distance-Time Graphs",
+        "Kinetic and Potential Energy",
+        "Energy Transformation",
+        "Heat Transfer (Conduction, Convection, Radiation)"
+      ],
+      "Quarter 4": [
+        "Rotation and Revolution of the Earth",
+        "The Seasons of the Earth",
+        "Eclipses (Solar and Lunar)",
+        "Phases of the Moon",
+        "The Tides"
+      ]
+    },
+    "TLE": {
+      "Quarter 1": [
+        "Agriculture: Use and Maintenance of Farm Tools and Equipment",
+        "Occupational Health and Safety in the Workplace",
+        "Mensuration and Calculation"
+      ],
+      "Quarter 2": [
+        "ICT: Computer Hardware and Software Basics",
+        "ICT: Assembling and Disassembling a Computer",
+        "ICT: Basic Computer Operation and Care"
+      ],
+      "Quarter 3": [
+        "Cookery: Kitchen Tools and Equipment",
+        "Cookery: Safety and Sanitation in the Kitchen",
+        "Cookery: Mise en Place and Cooking Principles"
+      ],
+      "Quarter 4": [
+        "Entrepreneurship: Generating Business Ideas",
+        "Entrepreneurship: The Simple Business Plan",
+        "Industrial Arts: Basic Carpentry and Electrical Tools"
+      ]
+    }
+  },
+  "Grade 8": {
+    "English": {
+      "Quarter 1": [
+        "Literature of Africa: Folktales, Poetry, and Short Stories",
+        "Literature of Asia: China, Japan, and Korea",
+        "Myths and Legends of Afro-Asian Countries",
+        "Poetry of Asia and Africa",
+        "Context Clues and Vocabulary Development",
+        "Verb Tenses and Aspects"
+      ],
+      "Quarter 2": [
+        "Dramatic Forms of Asia (Kabuki, Peking Opera, Wayang Kulit)",
+        "Elements of Drama and Theatrical Conventions",
+        "Persuasive Speaking and Debate",
+        "Active and Passive Voice",
+        "Direct and Indirect Speech",
+        "Evaluating Theatrical Performances"
+      ],
+      "Quarter 3": [
+        "Informational Text Structures",
+        "The Argumentative Essay",
+        "Logical Fallacies and Reasoning",
+        "Propaganda Techniques and Bias in Media",
+        "Cohesive Devices and Discourse Markers",
+        "Conditional Sentences (Zero, First, Second)"
+      ],
+      "Quarter 4": [
+        "The Persuasive Essay and Editorial Writing",
+        "Technical and Report Writing",
+        "Research Skills: Gathering and Citing Sources",
+        "Revising and Editing Strategies",
+        "Participles, Gerunds, and Infinitives",
+        "Multimodal Presentation Skills"
+      ]
+    },
+    "Filipino": {
+      "Quarter 1": [
+        "Epiko ng Mindanao (Darangen)",
+        "Alamat at Tulang Pambayan ng Mindanao",
+        "Mga Elemento ng Epiko",
+        "Pag-unawa at Pagsusuri sa mga Akda",
+        "Mga Gamit ng Wika sa Panitikan"
+      ],
+      "Quarter 2": [
+        "Maikling Kuwento ng Mindanao",
+        "Talumpati: Layunin at Katangian",
+        "Pangangatwiran at Paniniwala sa Talumpati",
+        "Mga Kadalubhasaan sa Pakikinig",
+        "Pagbibigay ng Sariling Opinyon"
+      ],
+      "Quarter 3": [
+        "Nobela: Mga Elemento at Uri",
+        "Dula: Mga Elemento at Uri",
+        "Dulang Pangradyo at Pangtelebisyon",
+        "Pagpapalutang ng Damdamin at Kaisipan sa Dula",
+        "Pagbuo ng Iskrip"
+      ],
+      "Quarter 4": [
+        "Malikhaing Pagsulat ng Sanaysay",
+        "Pagsulat ng Tula na May Malayang Taludtod",
+        "Etnograpiya: Ang Aking Pamilya at Komunidad",
+        "Paglalarawan ng Karanasan sa Buhay"
+      ]
+    },
+    "Mathematics": {
+      "Quarter 1": [
+        "Linear Equations in Two Variables",
+        "Graphs of Linear Equations (Slope and Intercepts)",
+        "Linear Inequalities in Two Variables",
+        "Applications of Linear Equations"
+      ],
+      "Quarter 2": [
+        "Systems of Linear Equations: Graphing Method",
+        "Systems of Linear Equations: Substitution and Elimination",
+        "Word Problems Involving Systems of Linear Equations"
+      ],
+      "Quarter 3": [
+        "Operations on Polynomials",
+        "Special Products (Sum and Difference of Two Squares, Square of Binomials)",
+        "Factoring Polynomials (Common Monomial, Trinomials)",
+        "Applications of Factoring"
+      ],
+      "Quarter 4": [
+        "Logical Reasoning: If-Then Statements and Converse",
+        "Triangle Congruence Postulates (SSS, SAS, ASA)",
+        "Right Triangles and the Pythagorean Theorem",
+        "Applications of the Pythagorean Theorem"
+      ]
+    },
+    "MAPEH": {
+      "Quarter 1": [
+        "Music: Music of Southeast Asia (Indonesia, Thailand, Cambodia, Myanmar)",
+        "Arts: Southeast Asian Arts (Batik, Wayang, Angkor Wat)",
+        "PE: Individual and Dual Sports (Badminton, Table Tennis, Athletics)",
+        "Health: Injury Prevention and Safety",
+        "Health: First Aid Basics"
+      ],
+      "Quarter 2": [
+        "Music: Music of China, Japan, and Korea",
+        "Arts: East Asian Arts (Chinese Painting, Japanese Woodblock, Korean Mask)",
+        "PE: Team Sports (Basketball, Volleyball, Football)",
+        "Health: Substance Use and Abuse (Alcohol, Tobacco, Drugs)",
+        "Health: Gateway Drugs and Their Effects"
+      ],
+      "Quarter 3": [
+        "Music: Music of South Asia and the Middle East",
+        "Arts: Arts of South, Central, and West Asia",
+        "PE: Folk Dances of Asia",
+        "Health: Community Health and Environmental Health",
+        "Health: Waste Management and Pollution"
+      ],
+      "Quarter 4": [
+        "Music: Musical Instruments and Ensembles of Asia",
+        "Arts: Asian Festivals and Celebrations",
+        "PE: Physical Fitness Development",
+        "Health: Communicable Diseases and Prevention",
+        "Health: Personal Health Habits and Hygiene"
+      ]
+    },
+    "SocSci": {
+      "Quarter 1": [
+        "Ang Heograpiya ng Asya: Lokasyon at Katangian",
+        "Mga Anyong Lupa at Anyong Tubig ng Asya",
+        "Klima at Vegetation ng Asya",
+        "Mga Rehiyon ng Asya",
+        "Yamang Likas ng Asya"
+      ],
+      "Quarter 2": [
+        "Ang Kasaysayan ng Silangang Asya (Tsina, Hapon, Korea)",
+        "Ang Kabihasnang Tsino",
+        "Ang Kabihasnang Hapon at Koreano",
+        "Mga Ambag ng Silangang Asya sa Mundo"
+      ],
+      "Quarter 3": [
+        "Ang Timog at Kanlurang Asya: Heograpiya at Kasaysayan",
+        "Ang Kabihasnang Indus at India",
+        "Mga Sibilisasyon sa Gitnang Silangan",
+        "Mga Relihiyon at Kultura ng Timog at Kanlurang Asya"
+      ],
+      "Quarter 4": [
+        "Ang Ekonomiya ng Asya: Mga Salik ng Produksyon",
+        "Globalisasyon at ang Asya",
+        "Mga Kontemporaryong Isyu ng Asya",
+        "Ang Ugnayan ng Pilipinas sa mga Bansa ng Asya"
+      ]
+    },
+    "Science": {
+      "Quarter 1": [
+        "Balanced and Unbalanced Forces",
+        "Newton's Laws of Motion",
+        "Force Diagrams and Net Force",
+        "Work and Power"
+      ],
+      "Quarter 2": [
+        "The Particulate Nature of Matter",
+        "The Structure of the Atom",
+        "Isotopes and Atomic Mass",
+        "The Periodic Table of Elements"
+      ],
+      "Quarter 3": [
+        "Physical and Chemical Changes",
+        "Chemical Reactions and Their Characteristics",
+        "The Law of Conservation of Mass",
+        "Disease-Causing Organisms (Viruses, Bacteria, Fungi, Protists)"
+      ],
+      "Quarter 4": [
+        "Earthquakes: Focus, Epicenter, and Magnitude",
+        "Typhoons and the Philippine Weather Systems",
+        "Preparing for Natural Disasters"
+      ]
+    },
+    "TLE": {
+      "Quarter 1": [
+        "Agriculture: Farm Tools, Safety, and Crop Production",
+        "Agriculture: Plant Propagation"
+      ],
+      "Quarter 2": [
+        "ICT: Computer Systems Servicing: Parts, Tools, and Maintenance",
+        "ICT: Software Installation and Basic Troubleshooting"
+      ],
+      "Quarter 3": [
+        "Home Economics: Household Services (Cleaning and Housekeeping)",
+        "Home Economics: Caregiving: Basic Care and First Aid"
+      ],
+      "Quarter 4": [
+        "Industrial Arts: Electrical Safety and Basic Wiring",
+        "Entrepreneurship: Recording Business Transactions and Simple Bookkeeping"
+      ]
+    }
+  },
+  "Grade 9": {
+    "English": {
+      "Quarter 1": [
+        "Anglo-American Literature: Short Stories",
+        "Elements of the Short Story",
+        "Literary Devices in Fiction (Foreshadowing, Irony, Symbolism)",
+        "Modals and Their Functions",
+        "Conditionals in Real-Life Communication"
+      ],
+      "Quarter 2": [
+        "Anglo-American Poetry: Forms and Poets",
+        "Poetic Devices and Sound Techniques",
+        "The Epic and Heroic Literature (Beowulf and World Epics)",
+        "Pronoun-Antecedent Agreement",
+        "Analyzing Theme and Tone"
+      ],
+      "Quarter 3": [
+        "Drama: Greek Theater and Tragedy",
+        "Shakespeare and Elizabethan Theater",
+        "Persuasive Writing and Debate",
+        "Argumentation: Claims, Evidence, and Fallacies",
+        "Degrees of Comparison"
+      ],
+      "Quarter 4": [
+        "Reading and Writing Research Reports",
+        "Technical Writing and Documentation",
+        "Citing Sources and Avoiding Plagiarism",
+        "Media and Information Literacy",
+        "Reported Speech and Tense Consistency"
+      ]
+    },
+    "Filipino": {
+      "Quarter 1": [
+        "Epiko ng Luzon (Biag ni Lam-ang, Ibalon, Handiong)",
+        "Pasyon at Senakulo",
+        "Awit at Korido",
+        "Pagpapahalagang Pampanitikan sa mga Akdang Luzon"
+      ],
+      "Quarter 2": [
+        "Noli Me Tangere: mga Tauhan at Katangian",
+        "Noli Me Tangere: mga Pangyayari at Buod",
+        "Noli Me Tangere: Simbolismo, Paksa at Mensahe"
+      ],
+      "Quarter 3": [
+        "Nobela: Mga Elemento at Uri",
+        "Dula: Mga Elemento, Uri at Tradisyon (Zarzuela, Moro-Moro)",
+        "Pagtatanghal at Paggawa ng Iskrip",
+        "Mga Uri ng Pangungusap ayon sa Gamit"
+      ],
+      "Quarter 4": [
+        "Pananaliksik: mga Hakbang at Bahagi",
+        "Mga Sanggunian at Wastong Pagbanggit (Citation)",
+        "Pagsulat ng Sanaysay at Talumpati",
+        "Etnograpiya at Pag-aaral ng Kultura"
+      ]
+    },
+    "Mathematics": {
+      "Quarter 1": [
+        "Quadratic Equations: Extracting Square Roots and Factoring",
+        "Quadratic Equations: Completing the Square and the Quadratic Formula",
+        "The Nature of Roots and the Discriminant",
+        "Quadratic Inequalities",
+        "Word Problems Involving Quadratic Equations"
+      ],
+      "Quarter 2": [
+        "Variation: Direct, Inverse, Joint, and Combined",
+        "Quadratic Functions and Their Graphs",
+        "Transformations of Quadratic Graphs",
+        "Applications of Quadratic Functions"
+      ],
+      "Quarter 3": [
+        "Operations on Radicals",
+        "Solving Radical Equations",
+        "Quadrilaterals: Parallelograms, Trapezoids, and Kites",
+        "Problems Involving Quadrilaterals"
+      ],
+      "Quarter 4": [
+        "Similarity and Proportion",
+        "Right-Triangle Trigonometry: Sine, Cosine, Tangent",
+        "Solving Right Triangles: Angles of Elevation and Depression",
+        "The Law of Sines and the Law of Cosines"
+      ]
+    },
+    "MAPEH": {
+      "Quarter 1": [
+        "Music: Music of the Medieval Period",
+        "Music: Music of the Renaissance Period",
+        "Arts: Medieval and Renaissance Art",
+        "PE: Team Sports: Skills and Rules",
+        "Health: Community Health",
+        "Health: Environmental Health and Sustainable Development"
+      ],
+      "Quarter 2": [
+        "Music: Music of the Baroque Period (Bach, Handel, Vivaldi)",
+        "Arts: Baroque Art (Rembrandt, Caravaggio, Bernini)",
+        "PE: Officiating Team Sports: Signals and Mechanics",
+        "Health: Prevention and Control of Diseases and Disorders"
+      ],
+      "Quarter 3": [
+        "Music: Music of the Classical Period (Mozart, Haydn, Beethoven)",
+        "Arts: Neoclassical and Romantic Art",
+        "PE: Physical Fitness Testing and Conditioning",
+        "Health: Nutrition and Healthy Lifestyle"
+      ],
+      "Quarter 4": [
+        "Music: Music of the Romantic Period (Chopin, Tchaikovsky)",
+        "Arts: 19th Century Art Movements",
+        "PE: Recreational Activities and Outdoor Pursuits",
+        "Health: Stress Management and Mental Health"
+      ]
+    },
+    "SocSci": {
+      "Quarter 1": [
+        "Ang Batayang Konsepto ng Ekonomiks: Scarcity, Needs at Wants",
+        "Opportunity Cost at Production Possibilities",
+        "Mga Salik ng Produksyon (Lupa, Paggawa, Kabisera, Negosyante)",
+        "Mga Uri ng Ekonomiya (Tradisyon, Utos, Pamilihan)"
+      ],
+      "Quarter 2": [
+        "Supply: Konsepto at Determinants",
+        "Demand: Konsepto at Determinants",
+        "Presyo at Ekilibriyo ng Pamilihan",
+        "Price Ceiling at Price Floor"
+      ],
+      "Quarter 3": [
+        "Gastos ng Produksyon",
+        "Mga Uri ng Kompetisyon sa Pamilihan",
+        "Ang Factor Market: Lupa, Paggawa, at Kabisera",
+        "Kompetisyon at Monopolyo"
+      ],
+      "Quarter 4": [
+        "Pambansang Ekonomiya: GDP at GNP",
+        "Inflation at Unemployment",
+        "Personal Finance: Pagbabadyet, Pag-iipon, at Pamumuhunan",
+        "Ang Papel ng Salapi at Bangko sa Ekonomiya"
+      ]
+    },
+    "Science": {
+      "Quarter 1": [
+        "The Respiratory System",
+        "The Circulatory System",
+        "Blood Components and Functions",
+        "Prevention of Cardiovascular and Respiratory Diseases"
+      ],
+      "Quarter 2": [
+        "Work, Power, and Energy",
+        "Kinetic and Potential Energy",
+        "The Law of Conservation of Energy",
+        "Energy Transformation and Efficiency"
+      ],
+      "Quarter 3": [
+        "Atoms, Ions, and Molecules",
+        "Chemical Bonding (Ionic and Covalent)",
+        "The Mole Concept and Molar Mass",
+        "Percentage Composition of Compounds"
+      ],
+      "Quarter 4": [
+        "The Interior of the Earth",
+        "Volcanoes: Parts, Types, and Eruptions",
+        "Climate and the Greenhouse Effect",
+        "Climate Change and Its Effects"
+      ]
+    },
+    "TLE": {
+      "Quarter 1": [
+        "Cookery: Kitchen Tools, Equipment, and Safety",
+        "Cookery: Preparation of Appetizers",
+        "Cookery: Preparation of Salads and Dressings"
+      ],
+      "Quarter 2": [
+        "Cookery: Preparation of Sandwiches",
+        "Cookery: Desserts and Garnishing",
+        "Cookery: Costing and Portion Control"
+      ],
+      "Quarter 3": [
+        "ICT: Diagnosing and Troubleshooting Computer Hardware",
+        "ICT: Software Installation, Updates, and Maintenance",
+        "ICT: Basic Networking Concepts and Cables"
+      ],
+      "Quarter 4": [
+        "Entrepreneurship: Business Plan and Marketing Mix (4Ps)",
+        "Entrepreneurship: Simple Accounting and Financial Records",
+        "Work Readiness: Resume and Job Interview"
+      ]
+    }
+  },
+  "Grade 10": {
+    "English": {
+      "Quarter 1": [
+        "World Literature: Myths and Epics (Greek, Norse, Asian)",
+        "Overcoming Challenges in World Literature",
+        "Comparison-Contrast Essays",
+        "Verbals: Participles, Gerunds, and Infinitives",
+        "Listening Strategies for Critical Evaluation"
+      ],
+      "Quarter 2": [
+        "Establishing Solidarity: Persuasive and Argumentative Texts",
+        "Debate and Formal Argumentation",
+        "Modality and Hedging in Language",
+        "Evaluating Arguments and Evidence"
+      ],
+      "Quarter 3": [
+        "Reconciling with Nature: Environmental Literature",
+        "Technical and Scientific Writing",
+        "Logical Fallacies and Faulty Reasoning",
+        "Expressions of Obligation and Prohibition"
+      ],
+      "Quarter 4": [
+        "Research Project: Choosing a Topic and Formulating Questions",
+        "Gathering, Evaluating, and Citing Sources",
+        "Writing the Research Paper",
+        "Defending and Presenting Research",
+        "Bibliography Formats (APA, MLA)"
+      ]
+    },
+    "Filipino": {
+      "Quarter 1": [
+        "El Filibusterismo: mga Tauhan",
+        "El Filibusterismo: mga Pangyayari at Buod",
+        "El Filibusterismo: Simbolismo, Paksa at Mensahe"
+      ],
+      "Quarter 2": [
+        "Panitikan ng Visayas (Epiko at Tulang Pambayan)",
+        "Panitikan ng Mindanao (Epiko at Alamat)",
+        "Pagsusuri ng mga Piling Akda"
+      ],
+      "Quarter 3": [
+        "Dula at Pelikula: mga Elemento at Tradisyon",
+        "Mga Uri ng Dula (Comedy, Tragedy, Melodrama)",
+        "Pagbuo ng Iskrip at Pagtatanghal",
+        "Malikhaing Pagsulat ng Dula"
+      ],
+      "Quarter 4": [
+        "Pananaliksik: Paggawa ng Panukalang Pananaliksik",
+        "Paglalahad ng Resulta ng Pananaliksik",
+        "Sanaysay at Talumpati: Pagsulat at Pagtatanghal",
+        "Mga Sanggunian at Wastong Pagbanggit"
+      ]
+    },
+    "Mathematics": {
+      "Quarter 1": [
+        "Arithmetic Sequences and Series",
+        "Geometric Sequences and Series",
+        "Infinite Geometric Series",
+        "Problems Involving Sequences and Series"
+      ],
+      "Quarter 2": [
+        "Polynomial Functions and Their Graphs",
+        "Polynomial Equations: Remainder and Factor Theorems",
+        "Solving Polynomial Equations"
+      ],
+      "Quarter 3": [
+        "Circles: Chords, Arcs, and Central Angles",
+        "Inscribed Angles and Tangent Lines",
+        "Distance Formula, Midpoint Formula, and the Equation of a Circle",
+        "Perimeter and Area Problems Involving Circles"
+      ],
+      "Quarter 4": [
+        "Permutations and Combinations",
+        "Probability of Simple and Compound Events",
+        "Measures of Position: Quartiles, Deciles, and Percentiles",
+        "Interpreting Measures of Position"
+      ]
+    },
+    "MAPEH": {
+      "Quarter 1": [
+        "Music: 20th Century Music (Impressionism, Expressionism, Jazz)",
+        "Arts: Modern Art (Impressionism to Abstract Art)",
+        "PE: Health-Related Fitness and Exercise Programs",
+        "Health: Consumer Health: Products, Services, and Information"
+      ],
+      "Quarter 2": [
+        "Music: African and Latin American Music",
+        "Arts: Technology-Based Arts (Photography, Digital Art, Video)",
+        "PE: Fitness Exercise Programs (Aerobics, Zumba, Yoga)",
+        "Health: Health Services and Health Plans"
+      ],
+      "Quarter 3": [
+        "Music: Philippine Opera, Ballet, and Musical Theater",
+        "Arts: Media-Based Arts (Film, Animation, Print Ads)",
+        "PE: Outdoor Recreation: Camping, Hiking, and Orienteering",
+        "Health: Health Trends, Quackery, and Health Fraud"
+      ],
+      "Quarter 4": [
+        "Music: Philippine Popular Music (OPM) and Contemporary Music",
+        "Arts: Contemporary Philippine Arts from the Regions",
+        "PE: Active Recreation and Healthy Lifestyle",
+        "Health: Health Career Pathways"
+      ]
+    },
+    "SocSci": {
+      "Quarter 1": [
+        "Mga Kontemporaryong Isyu ng Bansang Pilipinas (Politika at Lipunan)",
+        "Mga Isyung Pangkapaligiran ng Bansa",
+        "Mga Isyung Pang-ekonomiya ng Bansa",
+        "Kritikal na Pagsusuri ng mga Isyu gamit ang mga Sanggunian"
+      ],
+      "Quarter 2": [
+        "Globalisasyon: mga Epekto sa Bansa",
+        "Mga Isyung Pandaigdig (Klima, Karapatang Pantao, Terorismo)",
+        "Ang Pilipinas sa Konteksto ng Mundo",
+        "Mga Internasyonal na Organisasyon"
+      ],
+      "Quarter 3": [
+        "Ang Ugnayang Panlabas ng Pilipinas: Prinsipyo at Patakaran",
+        "Ang Pilipinas at ang mga Bansang Asyano",
+        "Ang Pilipinas sa United Nations at ASEAN",
+        "Ang West Philippine Sea at mga Teritoryal na Sagutan"
+      ],
+      "Quarter 4": [
+        "Ang Pagkamamamayang Pilipino: mga Karapatan at Tungkulin",
+        "Karapatang Pantao sa Pilipinas",
+        "Pananagutan ng Mamamayan sa Pagpapaunlad ng Bansa",
+        "Pagpapatupad ng mga Batas at Pananagutan ng Pamahalaan"
+      ]
+    },
+    "Science": {
+      "Quarter 1": [
+        "Motion: Distance, Displacement, Speed, and Velocity",
+        "Momentum and Impulse",
+        "Conservation of Momentum and Collisions",
+        "Newton's Laws of Motion: Applications"
+      ],
+      "Quarter 2": [
+        "Electric Charge, Current, Voltage, and Resistance",
+        "Ohm's Law and Electrical Power",
+        "Series and Parallel Circuits",
+        "Electromagnetism",
+        "Electric Motors and Generators"
+      ],
+      "Quarter 3": [
+        "Writing and Balancing Chemical Equations",
+        "Types of Chemical Reactions",
+        "Factors Affecting Reaction Rates and Catalysts",
+        "Biomolecules: Carbohydrates, Proteins, Lipids, and Nucleic Acids"
+      ],
+      "Quarter 4": [
+        "Heredity: Mendelian Genetics",
+        "Non-Mendelian Inheritance and Sex-Linked Traits",
+        "DNA, Genes, and Chromosomes",
+        "Evolution and Biodiversity",
+        "Ecosystems: Energy Flow and Material Cycles"
+      ]
+    },
+    "TLE": {
+      "Quarter 1": [
+        "Bread and Pastry Production: Baking Tools, Equipment, and Ingredients",
+        "Bread and Pastry Production: Principles of Baking and Bread Making"
+      ],
+      "Quarter 2": [
+        "Electrical Installation and Maintenance: Tools and Materials",
+        "Electrical Installation and Maintenance: Circuits and Wiring Diagrams",
+        "Electrical Installation and Maintenance: Safety Practices"
+      ],
+      "Quarter 3": [
+        "ICT: Set Up Computer Networks",
+        "ICT: Network Cables, Devices, and Topologies",
+        "ICT: Configuring and Testing Networks"
+      ],
+      "Quarter 4": [
+        "Entrepreneurship: Business Registration and Legal Requirements",
+        "Entrepreneurship: Financial Management and Recording",
+        "Work Immersion Readiness: Workplace Ethics and Communication"
+      ]
+    }
+  }
+}

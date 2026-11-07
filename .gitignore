@@ -1,0 +1,2 @@
+# Holds the shared sync token; the live server keeps its copy in the WSGI file.
+sync_config.json

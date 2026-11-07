@@ -1,0 +1,18 @@
+IP:192.168.254.254
+wifiname: GlobeAtHome_B40C4
+PASSWORD: L8HFGYB8FJ8
+SSID:	GlobeAtHome_B40C4
+Protocol:	Wi-Fi 4 (802.11n)
+Security type:	WPA2-Personal
+Network band:	2.4 GHz
+Network channel:	8
+Link speed (Receive/Transmit):	144/144 (Mbps)
+IPv6 address:	fd50:21ec:cb40:c400:4bf3:9b78:6ac9:6a56
+Link-local IPv6 address:	fe80::766f:187e:d65e:649d%10
+IPv6 DNS servers:	fe80::5221:ecff:fecb:40c4%10
+IPv4 address:	192.168.254.115
+IPv4 DNS servers:	192.168.254.254
+Manufacturer:	Intel Corporation
+Description:	Intel(R) Dual Band Wireless-N 7260
+Driver version:	18.33.14.3
+Physical address (MAC):	80-19-34-01-A4-D7

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>My Profile</h2>
+        <p style="color: #666; margin-top: 0;">
+            This is what the Review Hub keeps about you, and the materials filed for your section.
+        </p>
+
+        <div class="profile-grid">
+            <div>
+                <h3 class="admin-section-title">Account</h3>
+                <ul class="profile-list">
+                    <li><span>Name</span><b>{{ user.full_name() }}</b></li>
+                    <li><span>Email</span><b>{{ user.email }}</b></li>
+                    <li><span>School</span><b>{{ user.school }}</b></li>
+                    <li><span>Grade</span><b>{{ user.grade }}</b></li>
+                    <li><span>Section</span><b>{{ user.section | upper }}</b></li>
+                    <li><span>Joined</span><b>{{ joined }}</b></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="admin-section-title">Quizzes</h3>
+                <ul class="profile-list">
+                    <li><span>Saved results</span><b>{{ attempt_count }}</b></li>
+                    <li><span>Average</span><b>{{ avg_pct }}%</b></li>
+                    <li><span>Subjects</span><b>{{ subjects | join(', ') if subjects else 'None yet' }}</b></li>
+                    <li><span>Latest quiz</span><b>{{ latest or 'None yet' }}</b></li>
+                </ul>
+                <p style="margin-top: 14px;">
+                    <a href="/my-results" class="btn btn-outline cta">My Saved Results</a>
+                </p>
+            </div>
+            <div>
+                <h3 class="admin-section-title">Class Schedule</h3>
+                {% if halt %}
+                <p class="res-message">No classes today &mdash; {{ halt }}.</p>
+                {% endif %}
+                {% if slots or room %}
+                <ul class="profile-list">
+                    {% for slot in slots %}
+                    <li><span>{{ slot.days or 'every day' }}</span>
+                        <b>{% if slot.start and slot.end %}{{ slot.start }}&ndash;{{ slot.end }}
+                           {% elif slot.start %}from {{ slot.start }}
+                           {% else %}no time set{% endif %}</b></li>
+                    {% endfor %}
+                    {% if room %}<li><span>Room</span><b>{{ room }}</b></li>{% endif %}
+                </ul>
+                {% else %}
+                <p class="games-note">No schedule has been posted for
+                    {{ user.grade }} {{ user.section | upper }} yet. It shows here once your
+                    teacher saves the days, time and room on the Classes page.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="remind-setting" data-reminder-card>
+            <div class="remind-setting-copy">
+                <h3 class="admin-section-title">Class reminders</h3>
+                <p class="remind-setting-status">
+                    <span class="remind-setting-dot" aria-hidden="true"></span>
+                    <b data-reminder-status>Checking this device&hellip;</b>
+                </p>
+                <p class="remind-setting-note" data-reminder-note>
+                    The reminder bar appears only once. Whatever you choose is
+                    saved for your account until you change it here.
+                </p>
+            </div>
+            <button type="button" class="btn btn-outline remind-setting-btn"
+                    data-reminder-toggle disabled>Turn on this device</button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 18px;">
+        <h3 class="admin-section-title">
+            {{ user.grade }} {{ user.section | upper }} Materials
+        </h3>
+
+        {% if items %}
+        <ul class="res-list">
+            {% for r in items %}
+            <li class="res-row">
+                <span class="res-kind">{{ kind_names.get(r.kind, 'Link') }}</span>
+                <div class="res-body">
+                    <a class="res-title" href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>
+                    {% if r.note %}<p class="res-note">{{ r.note }}</p>{% endif %}
+                    <p class="res-meta">Added {{ r.created_at.strftime('%b %d, %Y') }}</p>
+                </div>
+                <a class="btn btn-outline res-open" href="{{ r.url }}" target="_blank" rel="noopener">Open</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% elif user.section %}
+        <p class="games-note">Nothing has been put up for {{ user.grade }}
+            {{ user.section | upper }} yet. It will show here as soon as your teacher adds one.</p>
+        {% else %}
+        <p class="games-note">Your account has no section yet, so there are no materials to show.
+            Ask your teacher to correct it if that looks wrong.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

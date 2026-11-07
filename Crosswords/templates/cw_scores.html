@@ -1,0 +1,21 @@
+{% extends "cw_base.html" %}
+{% block title %}Scores{% endblock %}
+{% block body %}
+<section class="card">
+  <h2>{{ puzzle.title }} &mdash; best attempt per student</h2>
+  <p class="muted">Puzzle #{{ puzzle.id }} &middot; {{ puzzle.status }} &middot;
+    every word is worth {{ points_per_word }} points, {{ max_points }} at the most.</p>
+  {% if not rows %}<p class="empty">Nobody has finished this puzzle yet.</p>{% endif %}
+  <table class="roster">
+    {% for r in rows %}
+    <tr>
+      <td><b>{{ r.student or r.key }}</b>
+        {% if r.grade %}<span class="muted">{{ r.grade }} {% if r.section %}{{ r.section }}{% endif %}</span>{% endif %}</td>
+      <td class="num">{{ r.best }} / {{ max_points }}</td>
+      <td class="muted">{{ r.tries }} {{ 'try' if r.tries == 1 else 'tries' }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="row"><a class="btn" href="{{ url_for('crossword.manage') }}">Back to teacher page</a></p>
+</section>
+{% endblock %}

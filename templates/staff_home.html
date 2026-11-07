@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <h2>Staff Home</h2>
+    <p>Welcome, <b class="user-email">{{ name }}</b> — signed in as a
+        <b>{{ kind.replace('_', ' ') }}</b>.</p>
+    <p style="color: #666; font-size: 0.92rem;">
+        This page is for the people who run the review center. Learners have
+        their own home page.
+    </p>
+
+    <div style="margin-top: 18px;">
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 12px;">
+                <a href="/admin/assessment" class="btn btn-primary cta">Assessment</a>
+            </li>
+            <li style="margin-bottom: 12px;">
+                <a href="/materials" class="btn btn-outline cta">Materials</a>
+            </li>
+            <li style="margin-bottom: 12px;">
+                <a href="/games" class="btn btn-outline cta">Educational Games</a>
+            </li>
+            <li style="margin-bottom: 12px;">
+                <a href="/staff/pdf-studio" class="btn btn-outline cta">PDF Studio</a>
+            </li>
+            {% if can('manage_classes') %}
+            <li style="margin-bottom: 12px;">
+                <a href="/admin/classes" class="btn btn-outline cta">Classes</a>
+            </li>
+            {% endif %}
+            {% if can('manage_teachers') or can('manage_teacher_assignment') or is_admin %}
+            <li style="margin-bottom: 12px;">
+                <a href="/admin/staff" class="btn btn-outline cta">Staff</a>
+            </li>
+            {% endif %}
+            {% if can('manage_database') %}
+            <li style="margin-bottom: 12px;">
+                <a href="/admin/database" class="btn btn-outline cta">Database</a>
+            </li>
+            {% endif %}
+            <li style="margin-bottom: 12px;">
+                <a href="/profile" class="btn btn-outline cta">My Profile &amp; Schedule</a>
+            </li>
+        </ul>
+    </div>
+
+    <h3 style="margin-top: 22px;">Today's classes</h3>
+    {% if halt %}
+        <p class="res-message">No classes today &mdash; {{ halt }}. Reminders for today are
+            halted for everybody.</p>
+    {% elif meetings %}
+        <ul class="staff-today-list">
+            {% for m in meetings %}
+            <li>
+                <b>{{ m.start }}–{{ m.end }}</b>
+                — {{ m.grade }} {{ m.section }}{% if m.subjects %} ({{ m.subjects }}){% endif %}
+                {% if m.room %}&middot; {{ m.room }}{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="games-note">Nothing is scheduled for you today.</p>
+    {% endif %}
+
+    {% if is_admin %}
+    <div style="margin-top: 26px; padding-top: 18px; border-top: 1px solid #e6e6e6;">
+        <a href="/admin/sync" class="btn btn-outline">Sync results to the live server</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

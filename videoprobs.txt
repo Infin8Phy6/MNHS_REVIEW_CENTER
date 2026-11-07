@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container earning-credits-page">
+    <div class="card" style="padding: 18px;">
+    <h2 style="margin-top: 0;">Earn Credits & Unlock the Quiz</h2>
+
+    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:space-between; align-items:flex-end;">
+      <div style="min-width: 200px;">
+        <div style="font-size: 0.82rem; color:#888; text-transform: uppercase; letter-spacing:1px; font-weight:700;">Credits From Watching Videos</div>
+        <div style="font-size: 1.15rem; font-weight: 900; color: var(--primary); line-height: 1.1;">
+          <span id="credits-count">{{ credits }}</span>
+        </div>
+        <div class="earning-progress">
+          <div class="earning-progress-label">Current progress:</div>
+          <div class="earning-progress-value"><span id="time-display">0</span> / {{ threshold }}</div>
+        </div>
+      </div>
+
+      <div style="min-width: 220px;">
+        <div style="font-size: 0.9rem; color:#888; text-transform: uppercase; letter-spacing:1px; font-weight:700;">Credits from col "creds_from_points" (earned from free quizzes)</div>
+        <div style="font-size: 1.4rem; font-weight: 900; color: var(--dark);">
+          <span id="points-credits-count">{{ creds_from_points }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 14px;">
+
+      <div id="free-quiz-config" style="display:none;"
+           data-threshold="{{ threshold }}"
+           data-videos='{{ videos|tojson|safe }}'></div>
+
+      <div class="free-video-layout">
+        <div class="free-video-player">
+          <div class="video-responsive" aria-label="YouTube video player">
+            <div id="player"></div>
+          </div>
+        </div>
+
+        <div class="free-video-sidebar">
+          <div class="free-video-searchbar">
+            <input id="video-search" type="search" placeholder="Search keywords..." />
+            <button id="video-search-btn" class="btn btn-outline cta" style="width:auto; margin-left:8px; max-width:none;">Search</button>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center; margin: 10px 0 12px;">
+            <button id="other-videos-btn" class="btn btn-primary cta" style="width:auto; padding-left:16px; padding-right:16px;">Other videos</button>
+          </div>
+
+          <div id="video-tiles" class="free-video-tiles" aria-label="Related videos"></div>
+        </div>
+      </div>
+
+      <script src="https://www.youtube.com/iframe_api"></script>
+      <script>
+        let player = null;
+        let currentVideoId = null;
+        let activeVideos = [];
+
+        const cfgEl = document.getElementById('free-quiz-config');
+        const THRESHOLD = parseInt(cfgEl.dataset.threshold, 10);
+        const VIDEOS = JSON.parse(cfgEl.dataset.videos || '[]');
+
+        function pickRandom(arr) {
+          if (!arr || !arr.length) return null;
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function normalizeKeywords(raw) {
+          if (!raw) return [];
+          return String(raw)
+            .toLowerCase()
+            .split(/[^a-z0-9]+/g)
+            .map(s => s.trim())
+            .filter(Boolean);
+        }
+
+        function filterBySearch(query) {
+          const kws = normalizeKeywords(query);
+          if (!kws.length) return VIDEOS;
+
+          return VIDEOS.filter(v => {
+            const vk = (v.keywords || []).map(x => String(x).toLowerCase());
+            const help = String(v.help || '').toLowerCase();
+            return kws.some(k => vk.includes(k) || vk.some(x => x.includes(k)) || help.includes(k));
+          });
+        }
+
+        function renderTiles(arr) {
+          const root = document.getElementById('video-tiles');
+          root.innerHTML = '';
+
+          if (!arr.length) {
+            root.innerHTML = '<div style="padding:10px; color:#666;">No related videos found.</div>';
+            return;
+          }
+
+          arr.forEach(v => {
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'free-video-tile';
+            tile.dataset.videoId = v.id;
+            tile.innerHTML = `
+              <div class="free-video-tile-top">Video</div>
+              <div class="free-video-tile-preview">${v.id ? `<iframe class="free-video-tile-iframe" src="https://www.youtube.com/embed/${v.id}?autoplay=0&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=0" frameborder="0" loading="lazy" referrerpolicy="origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>` : ''}</div>
+              <div class="free-video-tile-text">${String(v.help || '').replace(/[<>]/g,'')}</div>
+            `;
+            tile.addEventListener('click', () => {
+              selectVideo(v.id);
+            });
+            root.appendChild(tile);
+          });
+
+          highlightSelected(currentVideoId);
+        }
+
+        function highlightSelected(videoId) {
+          document.querySelectorAll('.free-video-tile').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.videoId === videoId);
+          });
+        }
+
+        function selectVideo(videoId) {
+          currentVideoId = videoId;
+          highlightSelected(videoId);
+          if (!player || !videoId) return;
+          try {
+            player.loadVideoById(videoId);
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        function renderForCurrentSearch(autoPick = true) {
+          const searchEl = document.getElementById('video-search');
+          activeVideos = filterBySearch(searchEl ? searchEl.value : '');
+          renderTiles(activeVideos);
+
+          if (autoPick) {
+            const picked = pickRandom(activeVideos);
+            if (picked) selectVideo(picked.id);
+          }
+        }
+
+        window.addEventListener('load', () => {
+          const searchEl = document.getElementById('video-search');
+          const searchBtn = document.getElementById('video-search-btn');
+          const otherBtn = document.getElementById('other-videos-btn');
+
+          if (searchEl) {
+            searchEl.addEventListener('input', () => {
+              renderForCurrentSearch(false);
+            });
+          }
+          if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+              renderForCurrentSearch(true);
+            });
+          }
+          if (otherBtn) {
+            otherBtn.addEventListener('click', () => {
+              renderForCurrentSearch(true);
+            });
+          }
+
+          renderForCurrentSearch(true);
+        });
+
+        window.onYouTubeIframeAPIReady = function () {
+          if (!activeVideos || !activeVideos.length) activeVideos = VIDEOS;
+
+          const initialPick = pickRandom(activeVideos);
+          currentVideoId = initialPick ? initialPick.id : (VIDEOS[0] ? VIDEOS[0].id : '{{ video_id }}');
+
+          player = new YT.Player('player', {
+            videoId: currentVideoId,
+            playerVars: {
+              autoplay: 0,
+              mute: 1,
+
+              controls: 1,
+              modestbranding: 1,
+              rel: 0
+            },
+            events: {
+              onReady: () => {
+                try { player.pauseVideo(); } catch (e) {}
+                highlightSelected(currentVideoId);
+              }
+            }
+          });
+
+          let lastAwardedBucket = -1;
+          setInterval(() => {
+            if (!player) return;
+
+            const time = Math.floor(player.getCurrentTime());
+            const bucket = Math.floor(time / THRESHOLD);
+
+            const inBucket = time % THRESHOLD;
+            const timeDisp = document.getElementById('time-display');
+            if (timeDisp) timeDisp.innerText = (time < THRESHOLD) ? time : inBucket;
+
+            if (bucket >= 1 && bucket > lastAwardedBucket) {
+              lastAwardedBucket = bucket;
+
+              const secondsForRequest = bucket * THRESHOLD;
+              fetch('/update-progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  seconds_watched: secondsForRequest,
+                  bucket_index: bucket
+                })
+              })
+                .then(res => res.json())
+                .then(data => {
+                  const creditsEl = document.getElementById('credits-count');
+                  if (creditsEl) creditsEl.innerText = data.credits;
+                })
+                .catch(() => {
+                  lastAwardedBucket = bucket - 1;
+                });
+            }
+          }, 1000);
+        };
+      </script>
+
+    </div>
+
+    <div style="margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px;">
+
+      {% if credits|int > 0 and creds_from_points|int > 0 %}
+        <form method="GET" action="/free_reviewer_quiz_specification.html">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+            <a href="/free_reviewer_quiz_specification.html" class="btn btn-outline" style="border-color: var(--primary);">Use Credits From quiz Points</a>
+            {% if credits|int > 0 %}
+              <a href="/free_quiz_setup?credit_source=credits" class="btn btn-outline" style="border-color: var(--dark);">Credits from Watching Videos</a>
+            {% else %}
+              <a href="/earning_credits" class="btn btn-outline" style="border-color: var(--dark);">Credits from Watching Videos</a>
+            {% endif %}
+          </div>
+        </form>
+
+      {% elif credits|int > 0 %}
+        <div style="text-align:center;">
+          <a href="/free_reviewer_quiz_specification.html" class="btn btn-primary" style="max-width: 520px; margin: 0 auto; display:inline-block;">
+            Continue to Free Reviewer Spec
+          </a>
+        </div>
+
+      {% elif creds_from_points|int > 0 %}
+        <div style="text-align:center;">
+          <a href="/free_reviewer_quiz_specification.html" class="btn btn-primary" style="max-width: 520px; margin: 0 auto; display:inline-block;">
+            Continue to Free Reviewer Spec
+          </a>
+        </div>
+
+      {% else %}
+        <div style="text-align:center; color:#666;">
+          <div style="font-weight:800; margin-bottom:6px;">Watch the video to earn credits</div>
+          <div style="font-size:0.9rem;">Both credits wallets are empty.</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

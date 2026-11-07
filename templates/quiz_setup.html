@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card" style="padding: 18px;">
+        <h2 style="text-align: center; color: #333;">Set Up Your Quiz</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Choose a grade, subject, and quarter. 10 questions per quiz.
+        </p>
+
+        <form method="GET" action="/quiz">
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 8px;">1. Select Grade:</label>
+                <select name="level" id="level-select" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                    <option value="" disabled selected>-- Choose Grade --</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 8px;">2. Select Subject:</label>
+                <select name="subject" id="subject-select" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                    <option value="" disabled selected>-- Select Grade First --</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 8px;">3. Select Quarter:</label>
+                <select name="quarter" id="quarter-select" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                    <option value="" disabled selected>-- Select Subject First --</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 8px;">4. Select Topic:</label>
+                <select name="topic" id="topic-select" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                    <option value="" selected>All Topics</option>
+                </select>
+            </div>
+
+            <p id="avail-note" style="color: #999; font-size: 0.85rem; text-align: center; margin: 0 0 12px 0;"></p>
+
+            <div style="margin-bottom: 14px;">
+                <button type="submit" class="btn btn-primary cta" id="start-btn">Start Quiz</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const SPEC = {{ spec_json | safe }};
+
+    const levelSelect = document.getElementById('level-select');
+    const subjectSelect = document.getElementById('subject-select');
+    const quarterSelect = document.getElementById('quarter-select');
+    const topicSelect = document.getElementById('topic-select');
+    const startBtn = document.getElementById('start-btn');
+    const availNote = document.getElementById('avail-note');
+
+    function quarterTotal(quarters) {
+        let n = 0;
+        Object.keys(quarters).forEach(function (q) {
+            const topics = quarters[q];
+            Object.keys(topics).forEach(function (t) { n += topics[t]; });
+        });
+        return n;
+    }
+
+    function selectedQuarters() {
+        const quarters = SPEC[levelSelect.value] && SPEC[levelSelect.value][subjectSelect.value];
+        if (!quarters) return {};
+        if (quarterSelect.value === '__all__') {
+            return quarters;
+        }
+        const picked = {};
+        picked[quarterSelect.value] = quarters[quarterSelect.value] || {};
+        return picked;
+    }
+
+    function availableCount() {
+        const quarters = selectedQuarters();
+        if (!Object.keys(quarters).length) return 0;
+        let n = 0;
+        Object.keys(quarters).forEach(function (q) {
+            const topics = quarters[q];
+            if (topicSelect.value === '') {
+                Object.keys(topics).forEach(function (t) { n += topics[t]; });
+            } else if (topics[topicSelect.value] !== undefined) {
+                n += topics[topicSelect.value];
+            }
+        });
+        return n;
+    }
+
+    function updateAvailability() {
+        const n = availableCount();
+        if (!levelSelect.value || !subjectSelect.value || !quarterSelect.value) {
+            availNote.textContent = '';
+            startBtn.disabled = true;
+            return;
+        }
+        startBtn.disabled = n === 0;
+        availNote.textContent = n > 0
+            ? n + ' question' + (n === 1 ? '' : 's') + ' available for this selection.'
+            : 'No questions available yet for this selection — more are added as the question bank grows.';
+    }
+
+    Object.keys(SPEC).forEach(function (level) {
+        const option = document.createElement('option');
+        option.value = level;
+        option.textContent = level;
+        levelSelect.appendChild(option);
+    });
+
+    function fillSubjects() {
+        const subjects = SPEC[levelSelect.value] || {};
+        subjectSelect.innerHTML = '<option value="" disabled selected>-- Select Subject --</option>';
+        Object.keys(subjects).forEach(function (subject) {
+            const total = quarterTotal(subjects[subject]);
+            const option = document.createElement('option');
+            option.value = subject;
+            option.textContent = total > 0 ? subject + ' (' + total + ' questions)' : subject;
+            subjectSelect.appendChild(option);
+        });
+        fillQuarters();
+    }
+
+    function fillQuarters() {
+        const quarters = (SPEC[levelSelect.value] || {})[subjectSelect.value] || {};
+        quarterSelect.innerHTML = '<option value="" disabled selected>-- Select Quarter --</option>';
+        const allOption = document.createElement('option');
+        allOption.value = '__all__';
+        const total = quarterTotal(quarters);
+        allOption.textContent = total > 0 ? 'All Quarters (' + total + ' questions)' : 'All Quarters';
+        allOption.disabled = total === 0;
+        quarterSelect.appendChild(allOption);
+        Object.keys(quarters).forEach(function (quarter) {
+            let qTotal = 0;
+            Object.keys(quarters[quarter]).forEach(function (t) { qTotal += quarters[quarter][t]; });
+            const option = document.createElement('option');
+            option.value = quarter;
+            option.textContent = qTotal > 0 ? quarter + ' (' + qTotal + ' questions)' : quarter;
+            option.disabled = qTotal === 0;
+            quarterSelect.appendChild(option);
+        });
+        quarterSelect.value = '';
+        fillTopics();
+    }
+
+    function fillTopics() {
+        const quarters = selectedQuarters();
+        topicSelect.innerHTML = '';
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = 'All Topics';
+        topicSelect.appendChild(allOption);
+
+        const merged = {};
+        Object.keys(quarters).forEach(function (quarter) {
+            const topics = quarters[quarter];
+            Object.keys(topics).forEach(function (topic) {
+                merged[topic] = (merged[topic] || 0) + topics[topic];
+            });
+        });
+        Object.keys(merged).forEach(function (topic) {
+            const count = merged[topic];
+            const option = document.createElement('option');
+            option.value = topic;
+            option.textContent = count > 0 ? topic + ' (' + count + ')' : topic + ' (no questions yet)';
+            option.disabled = count === 0;
+            topicSelect.appendChild(option);
+        });
+        topicSelect.value = '';
+        updateAvailability();
+    }
+
+    levelSelect.addEventListener('change', function () {
+        fillSubjects();
+        subjectSelect.value = '';
+        fillQuarters();
+    });
+    subjectSelect.addEventListener('change', fillQuarters);
+    quarterSelect.addEventListener('change', fillTopics);
+    topicSelect.addEventListener('change', updateAvailability);
+
+    updateAvailability();
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{
+  "main_admin": {
+    "email": "angelesedgardo17@gmail.com",
+    "password": "sired110492",
+    "roles": [
+      "manage database",
+      "can add other admin",
+      "can create quizzes",
+      "can create summative tests",
+      "can post materials",
+      "manage teachers",
+      "manage students",
+      "can manage classes",
+      "manage teacher assignment",
+      "can view assessment results",
+      "record marks for the teacher",
+      "can assign a teacher to an admin"
+    ]
+  },
+  "admin": {
+    "email": "",
+    "password": "",
+    "roles": [
+      "can manage classes",
+      "manage teacher assignment",
+      "can view assessment results",
+      "record marks for the teacher"
+    ]
+  },
+  "teacher": {
+    "email": "",
+    "password": "",
+    "roles": [
+      "can create quizzes",
+      "can create summative tests",
+      "record marks"
+    ]
+  }
+}

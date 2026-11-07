@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    {% if is_admin_user %}
+    <p style="margin: 0;"><a href="/materials" style="color: #888;">All sections</a></p>
+    {% endif %}
+    <h2>{{ grade }} &mdash; {{ section }}</h2>
+    <p style="color: #666;">
+        Everything filed here belongs to {{ grade }} {{ section }}: a pdf, picture or slide deck
+        uploaded to Google Drive and shared so that anyone can open it, or a Google Doc, Google Sheet
+        or any other page kept as its link. Every learner in this section sees the same set.
+    </p>
+
+    {% if message %}<p class="res-message">{{ message }}</p>{% endif %}
+    {% if problem %}<p class="field-error">{{ problem }}</p>{% endif %}
+
+    {% if items %}
+    <ul class="res-list">
+        {% for r in items %}
+        <li class="res-row">
+            <span class="res-kind">{{ kind_names.get(r.kind, 'Link') }}</span>
+            <div class="res-body">
+                <a class="res-title" href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>
+                {% if r.note %}<p class="res-note">{{ r.note }}</p>{% endif %}
+                <p class="res-meta">Added {{ r.created_at.strftime('%b %d, %Y') }}</p>
+            </div>
+            <a class="btn btn-outline res-open" href="{{ r.url }}" target="_blank" rel="noopener">Open</a>
+            {% if can_post %}
+            <form method="POST" onsubmit="return confirm('Remove this material from {{ section }}?');">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" value="{{ r.id }}">
+                <button type="submit" class="btn btn-outline res-remove">Remove</button>
+            </form>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="games-note">Nothing has been put up for {{ grade }} {{ section }} yet. It will show
+        here as soon as one is added.</p>
+    {% endif %}
+
+    {% if can_post %}
+    <h3 class="admin-section-title">Add material for {{ grade }} {{ section }}</h3>
+    {% if not drive_ready %}
+    <p class="field-error">Uploads need Google Drive set up on this computer (the same key the
+        Who&rsquo;s Who pictures use). Links work either way.</p>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data" class="res-form">
+        <input type="hidden" name="action" value="add">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="admin-filter-field" style="flex: 2 1 220px;">
+                <label>Title</label>
+                <input type="text" name="title" maxlength="200" placeholder="Quarter 2 worksheet">
+            </div>
+            <div class="admin-filter-field" style="flex: 2 1 220px;">
+                <label>Link (pdf, png and ppt can be uploaded instead)</label>
+                <input type="url" name="link" placeholder="https://docs.google.com/document/d/ID/edit">
+            </div>
+            <div class="admin-filter-field">
+                <label>File (pdf, png, jpg, ppt)</label>
+                <input type="file" name="file">
+            </div>
+            <div class="admin-filter-field" style="flex: 2 1 220px;">
+                <label>Note (optional)</label>
+                <input type="text" name="note" maxlength="300" placeholder="Read pages 4 to 9">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary cta">Add material</button>
+    </form>
+    {% elif is_admin_user %}
+    <p class="games-note">This list belongs to your learners to read. Only somebody whose level may
+        post materials can add or remove one.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+{# One include per page that picks a class: the class list as JSON, then the
+   script that keeps a section box in step with the grade above it. #}
+<script id="rh-classes" type="application/json">{{ class_map | tojson }}</script>
+<script src="{{ url_for('static', filename='class-picker.js') }}" defer></script>

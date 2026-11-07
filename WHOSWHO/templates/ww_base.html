@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Who's Who{% endblock %} — MNHS Review Center</title>
+<meta name="theme_color" content="#14213d">
+<link rel="manifest" href="{{ url_for('whoswho.manifest') }}">
+<link rel="icon" href="{{ url_for('whoswho.icon', size=192) }}">
+<link rel="apple-touch-icon" href="{{ url_for('whoswho.icon', size=192) }}">
+<link rel="stylesheet" href="{{ url_for('whoswho.static', filename='whoswho.css') }}">
+</head>
+<body>
+<header>
+  <a class="brand" href="{{ url_for('whoswho.index') }}">
+    <span class="dot">WW</span>
+    <span><b>WHO'S WHO</b><i>Picture, three clues &middot; guess the person</i></span>
+  </a>
+  <nav>
+    <a href="{{ url_for('whoswho.index') }}">Activities</a>
+    <a href="{{ url_for('whoswho.scores') }}">Scores</a>
+    {% if admin_ok %}<a href="{{ url_for('whoswho.write') }}">New activity</a>{% endif %}
+    {% if back_url %}<a href="{{ back_url }}">MNHS_REVIEW_CENTER</a>{% endif %}
+  </nav>
+</header>
+
+<main>
+{% block body %}{% endblock %}
+</main>
+
+<footer>
+  A round is written by the teacher, so every person, clue and picture comes from
+  the activity file. Practice scores stay inside this game and never enter the
+  Review Center results.
+</footer>
+{% block script %}{% endblock %}
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("{{ url_for('whoswho.sw') }}").catch(function () {});
+}
+</script>
+</body>
+</html>

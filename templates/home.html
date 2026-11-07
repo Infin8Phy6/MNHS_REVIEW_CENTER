@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <h2>Home</h2>
+    {% if user %}
+        <p>Welcome back, <b class="user-email">{{ user.full_name() }}</b>!</p>
+    {% else %}
+        <p>Welcome! You can take quizzes right away — no account needed.</p>
+        <p style="color: #666; font-size: 0.92rem;">
+            An account is only required if you want to save your scores and
+            download your answered quizzes.
+        </p>
+    {% endif %}
+
+    <div style="margin-top: 18px;">
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 12px;">
+                <a href="/quiz_setup" class="btn btn-primary cta">Take a Quiz</a>
+            </li>
+            {% if user %}
+                <li style="margin-bottom: 12px;">
+                    <a href="/my-results" class="btn btn-outline cta">My Saved Results</a>
+                </li>
+                <li style="margin-bottom: 12px;">
+                    <a href="/profile" class="btn btn-outline cta">My Profile</a>
+                </li>
+            {% else %}
+                <li style="margin-bottom: 12px;">
+                    <a href="/signup" class="btn btn-outline cta">Create a Free Account</a>
+                </li>
+            {% endif %}
+            <li style="margin-bottom: 12px;">
+                <a href="/reset_password" class="btn btn-outline cta">Reset Password</a>
+            </li>
+            <li style="margin-bottom: 12px;">
+                <a href="/admin/login" class="btn btn-outline cta">Staff &amp; Admin Log In</a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

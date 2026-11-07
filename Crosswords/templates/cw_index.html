@@ -1,0 +1,30 @@
+{% extends "cw_base.html" %}
+{% block title %}Pick a puzzle{% endblock %}
+{% block body %}
+<section class="card">
+  <h2>Crosswords</h2>
+  <p class="muted">{{ words_per_puzzle }} hidden words, {{ points_per_word }} points for
+    every exact one, {{ max_points }} at the most. Click the tiles that spell the answer,
+    press <b>Check</b>. Retry as many puzzles as you like - your best attempt counts.</p>
+
+  {% if not puzzles %}
+    <p class="empty">No open puzzles yet. A teacher has to build one first.</p>
+  {% endif %}
+
+  {% for p in puzzles %}
+    <div class="puzzle-row">
+      <div>
+        <b>#{{ p.row.id }} &middot; {{ p.row.title }}</b>
+        <span class="muted">{{ (p.row.time_limit // 60) if p.row.time_limit >= 60 else 1 }}-minute board</span>
+        {% if p.best %}
+          <span class="chip">Best {{ p.best.score }} / {{ max_points }}
+            {% if p.best.tries > 1 %}&middot; {{ p.best.tries }} tries{% endif %}</span>
+        {% endif %}
+      </div>
+      <form method="post" action="{{ url_for('crossword.start', pid=p.row.id) }}">
+        <button class="btn primary" type="submit">Play</button>
+      </form>
+    </div>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.36
+Flask==3.0.3
+Werkzeug==3.0.6
+dash==2.18.1
+# Worksheet + answer-key PDFs: Crosswords (cw_pdf.py) and the staff game
+# worksheets (ELEMENTALS/sheet_pdf.py, ETABLE/etg_pdf.py, JUMBLED/jl_sheet_pdf.py)
+reportlab==4.2.5
+# Who's Who pictures on Google Drive (optional — the game works without them)
+google-api-python-client==2.201.0
+google-auth==2.62.0
+google-auth-httplib2==0.4.4
+google-auth-oauthlib==1.5.0
+# Web Push schedule reminders (app.py push section)
+pywebpush==2.5.0
+# DOCX export: Quantum Architect worksheets and answer keys
+python-docx==1.2.0
+# PDF Studio (staff page /staff/pdf-studio and the desktop pdf_studio.py):
+# page surgery, rendering/watermarking, and picture tools. A missing one only
+# closes the tools that use it - the page says which, and the rest still runs.
+pypdf>=5.4,<7
+# 47 is where pywebpush 2.5.0's own requirement starts; the desk studio's older
+# "<46" pin would have downgraded it and broken the schedule reminders.
+cryptography>=47,<51
+Pillow>=10.3,<14
+PyMuPDF>=1.24,<2

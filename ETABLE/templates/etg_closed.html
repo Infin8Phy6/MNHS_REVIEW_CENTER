@@ -1,0 +1,10 @@
+{% extends "etg_base.html" %}
+{% block title %}Staff only{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>Staff only</h1>
+  <p class="help">Worksheet downloads are for teachers and admins. Sign in at the Review
+    Center&rsquo;s staff door (<b>/admin/login</b>) and open this page again.</p>
+  {% if back_url %}<p class="help"><a href="{{ back_url }}">Back to the games</a></p>{% endif %}
+</section>
+{% endblock %}

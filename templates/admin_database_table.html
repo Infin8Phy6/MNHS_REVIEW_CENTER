@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <p style="margin: 0;"><a href="/admin/database" style="color: #888;">All tables</a></p>
+    <h2>{{ table }}</h2>
+    <p style="color: #666; margin-top: 0;">
+        {% if learner_only %}
+            {{ total }} row{{ '' if total == 1 else 's' }} for this learner
+            &mdash; page {{ page }} of {{ pages }}.
+        {% else %}
+            {{ total }} row{{ '' if total == 1 else 's' }} &mdash; page {{ page }} of {{ pages }}.
+        {% endif %}
+        {% if not key %}This table has no single key column, so rows can only be read here.{% endif %}
+    </p>
+
+    {% if learner_options %}
+    <form method="GET" class="admin-filters db-learner-filter">
+        <div class="admin-filter-field">
+            <label for="dbLearner">Drop one learner into the list:</label>
+            <select id="dbLearner" name="value" onchange="this.form.submit()">
+                <option value="">-- every row --</option>
+                {% for value, label in learner_options %}
+                <option value="{{ value }}" {% if value|string == learner_only %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" name="col" value="{{ learner_col }}">
+            <noscript><button type="submit" class="btn btn-primary">Apply</button></noscript>
+        </div>
+        <p class="db-help">
+            Keeps only the rows whose <strong>{{ learner_col or 'learner' }}</strong> column
+            points at that account, so one learner can be corrected without paging
+            through the table.
+        </p>
+    </form>
+    {% endif %}
+
+    <div class="db-scroll">
+        <table class="db-table">
+            <thead>
+                <tr>
+                    {% for c in columns %}<th>{{ c.name }}</th>{% endfor %}
+                    {% if key %}<th></th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% for c in columns %}
+                    <td class="{% if c.name == 'password_hash' %}db-null-cell{% endif %}">
+                        {%- set value = row[c.name] -%}
+                        {%- if value is none -%}
+                            <span class="db-null">empty</span>
+                        {%- elif c.name == 'password_hash' -%}
+                            <span title="hidden">&bull;&bull;&bull;&bull;&bull;&bull;</span>
+                        {%- else -%}
+                            {{ value | string | truncate(chars, true) }}
+                        {%- endif -%}
+                    </td>
+                    {% endfor %}
+                    {% if key %}
+                    <td>
+                        <a href="/admin/database/{{ table }}/{{ row[key.name] }}"
+                           class="btn btn-outline db-open">Edit</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr><td colspan="{{ columns | length }}">This table is empty.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pages > 1 %}
+    {% set keep = '&col=' ~ learner_col ~ '&value=' ~ learner_only if learner_only else '' %}
+    <div class="db-pager">
+        {% if page > 1 %}
+            <a href="/admin/database/{{ table }}?page={{ page - 1 }}{{ keep }}" class="btn btn-outline">Newer rows</a>
+        {% endif %}
+        <span class="db-page-num">Page {{ page }} / {{ pages }}</span>
+        {% if page < pages %}
+            <a href="/admin/database/{{ table }}?page={{ page + 1 }}{{ keep }}" class="btn btn-outline">Older rows</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

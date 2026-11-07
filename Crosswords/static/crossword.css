@@ -1,0 +1,122 @@
+/* Crosswords - navy and amber, one file, no framework. */
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: #eef3f8; color: #222;
+  font: 16px/1.5 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+header, footer { background: #14213d; color: #fff; }
+header { display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; flex-wrap: wrap; gap: 10px; }
+.brand { display: flex; gap: 10px; align-items: center; text-decoration: none; color: #fff; }
+.brand .dot { width: 42px; height: 42px; border-radius: 10px; background: #fca311;
+  color: #14213d; font-weight: 800; display: grid; place-items: center; }
+.brand b { letter-spacing: 1px; }
+.brand i { display: block; font-style: normal; font-size: 12px; opacity: .75; }
+nav { display: flex; gap: 14px; }
+nav a { color: #cdd7e5; text-decoration: none; font-weight: 600; }
+nav a:hover { color: #fca311; }
+main { max-width: 1060px; margin: 24px auto; padding: 0 16px; }
+footer { margin-top: 32px; padding: 14px 20px; font-size: 13px; color: #cdd7e5; }
+
+.card { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(20, 33, 61, .12); }
+h2 { margin: 0 0 8px; color: #14213d; }
+.muted { color: #667085; font-size: 14px; }
+.empty { color: #667085; font-style: italic; }
+.row { display: flex; gap: 10px; align-items: end; }
+.row.wrap { flex-wrap: wrap; align-items: center; }
+
+.btn { display: inline-block; border: 1px solid #14213d; background: #fff;
+  color: #14213d; border-radius: 9px; padding: 8px 14px; font-weight: 600;
+  font-size: 14px; text-decoration: none; cursor: pointer; }
+.btn.primary { background: #fca311; border-color: #fca311; color: #14213d; }
+.btn.danger { border-color: #c82333; color: #c82333; }
+.btn:disabled { opacity: .5; cursor: default; }
+
+.chip { display: inline-block; background: #eef3f8; border-radius: 20px;
+  font-size: 12px; padding: 2px 10px; margin-left: 8px; color: #14213d; }
+.chip.off { background: #f3d9db; color: #8f1620; }
+.flash { border-radius: 10px; padding: 10px 14px; font-weight: 600; }
+.flash.good { background: #d9efd9; color: #14591b; }
+.flash.bad { background: #fbe0e3; color: #8f1620; }
+
+.puzzle-row { display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; border-top: 1px solid #e3e8ef; padding: 12px 0; flex-wrap: wrap; }
+
+.create .row { flex-wrap: wrap; }
+.create label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.create input, .wordlist input { border: 1px solid #c8d0dc; border-radius: 8px;
+  padding: 8px; font-size: 15px; }
+.wordlist { border-collapse: collapse; margin: 12px 0; width: 100%; }
+.wordlist th { text-align: left; font-size: 13px; color: #667085; padding: 4px 6px; }
+.wordlist td { padding: 3px 6px; }
+.wordlist td:first-child { width: 30px; color: #667085; }
+.wordlist input[name="word[]"] { width: 170px; text-transform: uppercase; }
+.wordlist input[name="clue[]"] { width: 100%; min-width: 220px; }
+
+.board { background: #fff; border-radius: 14px; padding: 20px;
+  box-shadow: 0 1px 3px rgba(20, 33, 61, .12); }
+.board-head { display: flex; justify-content: space-between; align-items: center; }
+.clock { font: 800 26px/1 "Consolas", monospace; color: #14213d; }
+.clock.low { color: #c82333; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+.grid { display: grid; gap: 2px; background: #14213d; padding: 2px;
+  border-radius: 8px; user-select: none; }
+.grid .cell { position: relative; background: #fff; aspect-ratio: 1;
+  display: grid; place-items: center; font: 700 clamp(12px, 2.6vw, 22px)/1 inherit;
+  color: #14213d; cursor: pointer; }
+.grid .cell .num { position: absolute; top: 1px; left: 2px; font-size: 9px;
+  font-weight: 600; color: #667085; }
+.grid .cell.sel { background: #ffe2a8; }
+.grid .cell.lock { background: #d9efd9; color: #14591b; cursor: default; }
+.grid.revealed .cell { cursor: default; }
+
+.score-line { font-size: 18px; margin-bottom: 8px; }
+.clues { list-style: none; margin: 4px 0 12px; padding: 0; font-size: 14px; }
+.clues li { padding: 4px 8px; border-radius: 7px; cursor: pointer; }
+.clues li b { color: #667085; margin-right: 4px; }
+.clues li.target { background: #ffe2a8; }
+.clues li.solved { background: #d9efd9; color: #14591b; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.say { min-height: 22px; font-weight: 600; }
+.say.good { color: #14591b; }
+.say.bad { color: #c82333; }
+
+.total { font-size: 22px; }
+.marks { columns: 2; gap: 24px; font-size: 14px; }
+.marks p { margin: 2px 0; break-inside: avoid; }
+.marks .hit b { color: #14591b; }
+.marks .miss b { color: #8f1620; }
+@media (max-width: 700px) { .marks { columns: 1; } }
+.roster { width: 100%; border-collapse: collapse; }
+.roster td { border-top: 1px solid #e3e8ef; padding: 8px 6px; }
+.roster .num { font-weight: 800; color: #14213d; }
+
+/* ---------------- printable worksheet ---------------- */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.sheet { background: #fff; border: 1px solid #d9e0ea; border-radius: 12px; padding: 14px 16px; }
+.sheet-title { font-weight: 800; color: #14213d; font-size: 1.05rem; }
+.sheet-tag { display: inline-block; background: #fca311; color: #14213d; font-size: .7rem;
+  font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
+.sheet-line { margin-top: 8px; font-size: .95rem; }
+.sheet-note { font-size: .82rem; color: #41506b; margin-top: 2px; }
+.cw-sheet-grid { display: flex; justify-content: center; margin: 14px 0; }
+table.cwgrid { border-collapse: collapse; }
+table.cwgrid td.cell { position: relative; width: 22px; height: 22px;
+  border: 1px solid #14213d; text-align: center; vertical-align: middle; }
+table.cwgrid td.cell.black { background: #14213d; border-color: #14213d; }
+table.cwgrid .cwn { position: absolute; top: 0; left: 1px; font-size: 8px; color: #41506b; }
+table.cwgrid .cwl { font-weight: 800; font-size: 13px; color: #14213d; text-transform: uppercase; }
+.cw-clues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; font-size: .88rem; }
+.cw-clues ol { margin: 4px 0 0; padding-left: 22px; }
+.cw-clues li { margin-bottom: 4px; }
+.cw-blank { color: #14213d; font-weight: 700; letter-spacing: 1px; }
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  header, nav, footer, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { max-width: none; margin: 0; padding: 0; }
+  .sheet { border: 0; border-radius: 0; padding: 0; }
+}

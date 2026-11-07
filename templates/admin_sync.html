@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container card">
+    <h2>Sync to Live Server</h2>
+    {% if message %}
+    <p class="res-message">{{ message }}</p>
+    {% endif %}
+
+    <p style="color: #666; margin-top: 0;">
+        Results and accounts made while students use this laptop stay on this
+        laptop until you send them. The live server is only changed by the
+        button below.
+    </p>
+
+    {% if not settings.server_url or not settings.token %}
+    <p class="db-warning">
+        Not set up yet. Open <code>sync_config.json</code> beside
+        <code>app.py</code> and fill in <code>server_url</code> (for example
+        <code>https://yourname.pythonanywhere.com</code>) and <code>token</code>.
+        The same token must be in the live server's WSGI file as
+        <code>MNHS_SYNC_TOKEN</code>.
+    </p>
+    {% else %}
+    <p class="games-note">
+        Sending to <b>{{ settings.server_url }}</b>. This laptop needs an internet
+        connection for the button to work, even though the quiz pages do not.
+    </p>
+    {% endif %}
+
+    <table class="db-table">
+        <thead>
+            <tr><th>Waiting to be sent</th><th>Rows</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>New accounts</td><td>{{ counts.users }}</td></tr>
+            <tr><td>Saved quiz results</td><td>{{ counts.attempts }}</td></tr>
+            <tr><td>Ungraded quizzes</td><td>{{ counts.ungraded }}</td></tr>
+        </tbody>
+    </table>
+
+    <form method="post" action="/admin/sync/run" style="margin-top: 18px;">
+        <button type="submit" class="btn btn-primary"
+                {% if not settings.server_url or not settings.token %}disabled{% endif %}>
+            Send now
+        </button>
+    </form>
+
+    {% if last %}
+    <p class="games-note" style="margin-top: 18px;">
+        Last attempt: {{ last.ran_at.strftime('%Y-%m-%d %H:%M') }} &mdash;
+        {% if last.ok %}finished{% else %}stopped{% endif %}. {{ last.message }}
+    </p>
+    {% endif %}
+
+    <p class="games-note">
+        Safe to press twice: a result carries its own code and an account is
+        known by its email, so the live server ignores whatever it already has.
+        Only new rows are sent &mdash; corrections made here afterwards are not
+        pushed over the live copy.
+    </p>
+</div>
+{% endblock %}
